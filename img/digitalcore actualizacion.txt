@@ -1,0 +1,98 @@
+-- ══════════════════════════════════════════════════════════════════
+-- 1. Al crear usuario: inicializa cant_publicaciones_restantes = 2
+-- ══════════════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION public.inicializar_publicaciones_gratuitas()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.cant_publicaciones_restantes := 2;
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER trigger_inicializar_publicaciones
+  BEFORE INSERT ON public."Usuario"
+  FOR EACH ROW
+  EXECUTE FUNCTION public.inicializar_publicaciones_gratuitas();
+
+
+-- ══════════════════════════════════════════════════════════════════
+-- 2. Al publicar: actualiza contadores según plan del usuario
+-- ══════════════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION public.decrementar_publicaciones_restantes()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  intLimitePlan         INT;
+  intPublisDePlanUsadas INT;
+BEGIN
+  IF NEW.id_usuario IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- Siempre actualizar publicaciones_hechas con el total real del usuario
+  UPDATE public."Usuario"
+  SET publicaciones_hechas = (
+    SELECT COUNT(*)
+    FROM public."Publicacion"
+    WHERE id_usuario = NEW.id_usuario
+  )
+  WHERE id_usuario = NEW.id_usuario;
+
+  -- Obtener límite del plan activo y vigente (NULL si no tiene plan)
+  SELECT p.cant_publicaciones
+  INTO intLimitePlan
+  FROM public."Suscripcion" s
+  JOIN public."PlanPublicacion" p ON s.id_plan = p.id_plan
+  WHERE s.id_usuario = NEW.id_usuario
+    AND s.fecha_fin > NOW()
+    AND p.cant_publicaciones IS NOT NULL
+  LIMIT 1;
+
+  IF intLimitePlan IS NOT NULL THEN
+    -- Tiene plan activo: contar publicaciones de pago hechas (excluyendo la actual)
+    SELECT COUNT(*)
+    INTO intPublisDePlanUsadas
+    FROM public."Publicacion"
+    WHERE id_usuario = NEW.id_usuario
+      AND gratuito = FALSE
+      AND id_publicacion != NEW.id_publicacion;
+
+    IF intPublisDePlanUsadas < intLimitePlan THEN
+      -- Plan con cupo disponible → no tocar cant_publicaciones_restantes
+      NULL;
+
+    ELSE
+      -- Plan agotado → usar colchón gratuito si le quedan
+      UPDATE public."Usuario"
+      SET cant_publicaciones_restantes = GREATEST(
+            COALESCE(cant_publicaciones_restantes, 0) - 1,
+            0
+          )
+      WHERE id_usuario = NEW.id_usuario
+        AND COALESCE(cant_publicaciones_restantes, 0) > 0;
+
+    END IF;
+
+  ELSE
+    -- Sin plan activo → decrementar gratuitas directamente
+    UPDATE public."Usuario"
+    SET cant_publicaciones_restantes = GREATEST(
+          COALESCE(cant_publicaciones_restantes, 0) - 1,
+          0
+        )
+    WHERE id_usuario = NEW.id_usuario
+      AND COALESCE(cant_publicaciones_restantes, 0) > 0;
+
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER trg_decrementar_publicaciones
+  AFTER INSERT ON public."Publicacion"
+  FOR EACH ROW
+  EXECUTE FUNCTION public.decrementar_publicaciones_restantes();

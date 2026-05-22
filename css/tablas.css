@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+tr {
+    height: 5vh;
+}
+th, td {    
+    font-weight: 900;
+    font-size: medium;
+    margin: 0px;
+}
+th {border: 3px solid rgb(0, 71, 0) ;
+    border-top: 1px solid rgb(0, 71, 0);}
+.thl {border-left: none;}
+.thr {border-right: none;}
+
+.t10 {width: 10%;}
+.t8 {width: 8%;}
+.t5 {width: 5%;}
+.t3 {width: 3%;}
+.tPlaca {width: 17vh;}
+
+.pb {border-bottom: 1px solid rgb(0, 71, 0);}
+.pm {border-left: 1px dashed rgb(0, 71, 0);
+     border-right: 1px dashed rgb(0, 71, 0);}
+

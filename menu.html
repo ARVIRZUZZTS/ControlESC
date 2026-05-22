@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTROL Exp. Santa Cruz</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/tablas.css">
+</head>
+<body>
+<header>
+    <h1>CONTROL DE FLOTAS<!--PARTE DE LLEGADAS DE BUSES--></h1>
+    <img src="img/logoX.png" alt="Logo">
+</header>
+
+<main>
+    <nav>
+        <h3 id="fecha"></h3>
+        <div class="topButt">
+            <button id="estaBtn">
+                <img src="img/calcu.svg" alt="rueda">
+                <div>Datos</div>
+            </button>
+            <button id="confBtn">
+                <img src="img/config.svg" alt="reporte">
+                <div>Ajustes</div>
+            </button>
+        </div>
+        <div class="topButt">
+            <button id="ruedaBtn">
+                <img src="img/wheel.svg" alt="rueda">
+                <div>RUEDAS</div>
+            </button>
+            <button id="aceiteBtn">
+                <img src="img/aceite.svg" alt="reporte">
+                <div>ACEITES</div>
+            </button>
+        </div>
+        <button id="flotaBtn">
+            <img src="img/flota.svg" alt="flota">
+            <div>FLOTAS</div>
+        </button>
+        <button id="reporteBtn">
+            <img src="img/reporte.svg" alt="flota">
+            <div>REPORTES</div>
+        </button>
+    </nav>
+    <div id="dinamic">
+        <div id="titleDin">
+            <h2>DATOS</h2>
+        </div>
+        <hr>
+        <div id="contDin"></div>
+    </div>
+</main>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

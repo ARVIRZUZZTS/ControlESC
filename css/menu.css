@@ -1,0 +1,49 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    align-items: center;
+    margin: auto;
+    margin: 2vh 0;
+}
+form label {
+    font-size: 1.5em;
+    text-align: left;
+}
+.nmrvrow {
+    width: 95%;
+    display: flex;
+    margin: auto;
+    justify-content: flex-start;
+    justify-self: center;
+    gap: 2vh;
+}
+
+.ilC {
+    display: flex;
+    flex-direction: column;
+    justify-self: right;
+    gap: 1vh;
+}
+.ilR {
+    display: flex;
+    justify-self: right;
+    align-items: center;
+    gap: 2vh;
+}
+.il100 { width: 100%; }
+.il80 { width: 80%; }
+.il60 { width: 60%; }
+.il40 { width: 40%; }
+.il30 { width: 30%; }
+.il25 { width: 25%; }
+.il20 { width: 20%; }
+.il10 { width: 10%; }
+
+.min { width: min-content;
+       gap: 1vh; }
+.mid { display: flex;
+       justify-content: center;
+       gap: 1vh; }
+
+.noWr { white-space: nowrap; }

@@ -1,0 +1,18 @@
+INSERT INTO `flota`(`placa`, `propietario`, `chofer1`, `chofer2`, `estado`, `ubicacion`, `viajes`) VALUES 
+('3056-EAY', 'JHONNY CABALLERO', 'HUGO GABRIEL RASGUIDO', '', 'Parqueado', 'Cochabamba', ''),
+('1803-BNE', 'CARMEN VELASCO', '', '', 'Parqueado', 'Cochabamba', ''),
+('1800-FIU', 'MIGUELINA PEREDO', 'MARIO CRUZ LACATO', '', 'Parqueado', 'Cochabamba', ''),
+('2537-DER', 'REINALDO ALBERTO', 'REINALDO JORGE OCZACHOQUE', '', 'Parqueado', 'Cochabamba', ''),
+('2996-UKF', 'JHONNY CABALLERO', 'JHONNY VARGAS HERBAS', '', 'Parqueado', 'Cochabamba', ''),
+('2447-CPE', 'ELOY TERCEROS', 'ELOY TERCEROS MONTAÑO', '', 'Parqueado', 'Cochabamba', ''),
+('2494-RXU', 'JHONNY CABALLERO', 'CALIXTO ANDIA QUINTEROS', '', 'Parqueado', 'Cochabamba', ''),
+('2550-TFU', 'RUTH CABALLERO', 'DEMETRIO GALINDO MERIDA', '', 'Parqueado', 'Cochabamba', ''),
+('1194-UKE', 'ERICK MENDOZA', 'ERICK MENDOZA MONTESINOS', '', 'Parqueado', 'Cochabamba', ''),
+('2830-UTA', 'JHONNY CABALLERO', 'ARIEL VARGAS VALLEJOS', '', 'Parqueado', 'Cochabamba', ''),
+('1461-KUX', 'VIVIAN CABALLERO', 'WILSON LAZARTE MONTAÑO', '', 'Parqueado', 'Cochabamba', ''),
+('1580-EYR', 'JUAN QUISPE LLAMPA', 'JUAN QUISPE LLAMPAS', '432168', 'Parqueado', 'Cochabamba', ''),
+('2130-YXG', 'JHONNY VARGAS', 'JHONNY VARGAS', '', 'Parqueado', 'Cochabamba', ''),
+('2447-DKT', 'RICHAR IRUSTA', 'RICHAR IRUSTA JIMENEZ', '', 'Parqueado', 'Cochabamba', ''),
+('2701-YNF', 'JHONNY CABALLERO', 'ARCENIO CABALLERO V.', '', 'Parqueado', 'Cochabamba', ''),
+('2264-KGD', 'VICTOR HUGO VELASCO', 'VICTOR HUGO VELARSCO CAERO', '', 'Parqueado', 'Cochabamba', ''),
+('2218-PCT', '', 'ALEX SANDRO VILLARROEL ROMERO', '', 'Parqueado', 'Cochabamba', '')
