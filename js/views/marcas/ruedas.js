@@ -23,6 +23,13 @@ export async function marcasRuedasView() {
 
         const res = await fetch("php/views/marcas/marcasRuedas.php");
         const data = await res.json();
+
+        if (data.status === "error") {
+            cont.innerHTML = `<p>${data.message}</p>`;
+            console.error(data.message);
+            return;
+        }
+
         let html = `
             <table id="tbFlotas">
                 <thead>

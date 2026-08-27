@@ -14,6 +14,13 @@ export async function flotasListView() {
 
         const res = await fetch("php/views/flotas.php");
         const data = await res.json();
+
+        if (data.status === "error") {
+            cont.innerHTML = `<p>${data.message}</p>`;
+            console.error(data.message);
+            return;
+        }
+
         let html = `
             <table id="tbFlotas">
                 <thead>

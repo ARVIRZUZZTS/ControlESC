@@ -46,6 +46,12 @@ export async function ruedasListView() {
         const res = await fetch("php/views/ruedas.php");
         const data = await res.json();
 
+        if (data.status === "error") {
+            cont.innerHTML = `<p>${data.message}</p>`;
+            console.error(data.message);
+            return;
+        }
+
         const options = placas.map(p => `<option value="${p.placa}"></option>`).join("");
         const almacen = `<option value="Almacen"></option><option value="Baja"></option>`;
         const datalistHTML  =   `<datalist id="placasList">
