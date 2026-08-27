@@ -1,4 +1,4 @@
-export function ruedaPos() {
+export async function ruedaPos() {
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
     title.innerHTML = ``;
@@ -19,8 +19,8 @@ export function ruedaPos() {
                 <thead>
                     <tr>
                         <th class="thl t8">N°</th>
-                        <th class="t10">Nombre Planilla</th>
-                        <th class="t10">Descripcion</th>
+                        <th class="t10">Nombre Posicion</th>
+                        <th class="t10">Placa</th>
                         <th class="t3">Editar</th>
                         <th class="thr t3">Eliminar</th>
                     </tr>
@@ -31,10 +31,10 @@ export function ruedaPos() {
             html += `
                 <tr>
                     <td class="pb t8">${planilla.id}</td>
-                    <td class="pb pm t10">${planilla.nombrePlanilla}</td>
-                    <td class="pb pm t10">${planilla.descripcion}</td>
-                    <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${flota.placa}"><img src="img/edit.svg" alt="reporte"></button></td>
-                    <td class="pb t3"><button class="btnEliminar listBtn" data-id="${flota.placa}"><img src="img/trash.svg" alt="reporte"></button></td>
+                    <td class="pb pm t10">${planilla.nombrePosicion}</td>
+                    <td class="pb pm t10">${planilla.placa}</td>
+                    <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${planilla.id}"><img src="img/edit.svg" alt="reporte"></button></td>
+                    <td class="pb t3"><button class="btnEliminar listBtn" data-id="${planilla.id}"><img src="img/trash.svg" alt="reporte"></button></td>
                 </tr>
             `;
         });

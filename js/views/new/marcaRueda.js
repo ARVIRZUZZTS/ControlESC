@@ -26,37 +26,28 @@ export async function newMarcaRuedaView() {
                 <div class="nmrvrow">
                     <div class="il100 ilR">
                         <label class="noWr">Nombre Marca:</label>
-                        <input class="il100" type="text" name="marca_rueda" placeholder="..." maxlength="25" required>
-                    </div>
-                </div>
-                <div class="nmrvrow">
-                    <div class="il100 ilR">
-                        <label class="noWr">Modelo de Marca:</label>
-                        <input class="il100" type="text" name="modelo" placeholder="..." maxlength="25">
+                        <input class="il100" type="text" name="nombre_marca_rueda" placeholder="..." maxlength="25" required>
                     </div>
                 </div>
                 <div class="nmrvrow">
                     <div class="ilR">
-                        <label>Diámetro:</label>
-                        <input class="il30" type="number" step="0.01" name="diametro" placeholder="0.00 cm"
+                        <label>Medida:</label>
+                        <input class="il30" type="number" step="0.01" name="medida" placeholder="0.00 cm"
                             oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
                     </div>
                     <div class="ilR">
-                        <label>Ancho:</label>
-                        <input class="il30" type="number" step="0.01" name="ancho" placeholder="0.00 cm" 
-                            oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
+                        <label>Serie:</label>
+                        <input class="il30" type="text" name="serie" placeholder="..." maxlength="25">
                     </div>
                     <div class="ilR">
-                        <label>Perfil:</label>
-                        <input class="il30" type="number" step="0.01" name="perfil" placeholder="0.00 cm" 
-                            oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
+                        <label>Trilla:</label>
+                        <input class="il30" type="text" name="trilla" placeholder="..." maxlength="50">
                     </div>
                 </div>
                 <div class="nmrvrow">
                     <div class="il40 ilR">
-                        <label>Precio Unitario (Bs.):</label>
-                        <input class="il30" type="number" step="0.01" name="precio" placeholder="0.00" required
-                            oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7);">
+                        <label>Aro:</label>
+                        <input class="il30" type="text" name="aro" placeholder="..." maxlength="50">
                     </div>
                     <div class="il30 ilR">
                         <label>Media Viajes:</label>

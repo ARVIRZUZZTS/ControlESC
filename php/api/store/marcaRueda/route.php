@@ -11,23 +11,20 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO marca_rueda (marca_rueda, modelo, diametro, ancho, perfil, precio, media_viajes) 
-    VALUES (?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO marca_rueda (nombre_marca_rueda, medida, serie, trilla, aro, media_viajes) 
+    VALUES (?,?,?,?,?,?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
-    $diametro = ($data['diametro'] === "") ? 0 : $data['diametro'];
-    $ancho = ($data['ancho'] === "") ? 0 : $data['ancho'];
-    $perfil = ($data['perfil'] === "") ? 0 : $data['perfil'];
-    $stmt->bind_param("ssddddi",
-        $data['marca_rueda'],
-        $data['modelo'],
-        $diametro,
-        $ancho,
-        $perfil,
-        $data['precio'],
+    $medida = ($data['medida'] === "") ? 0 : $data['medida'];
+    $stmt->bind_param("sdsssi",
+        $data['nombre_marca_rueda'],
+        $medida,
+        $data['serie'],
+        $data['trilla'],
+        $data['aro'],
         $data['media_viajes']
     );
 

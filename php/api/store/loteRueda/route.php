@@ -11,18 +11,19 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO rueda_reporte (id_marca_rueda, precio_unitario, precio_total, cantidad, fecha_compra) 
-    VALUES (?,?,?,?,?)";
+    $sql = "INSERT INTO rueda_lote (id_marca_rueda, precio_unitario, precio_total, cantidad, stock, fecha_compra) 
+    VALUES (?,?,?,?,?,?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
     $precio_unitario = ($data['precio_unitario'] === "") ?  $data['precio_total'] / $data['cantidad'] : $data['precio_unitario'];
-    $stmt->bind_param("iddis",
+    $stmt->bind_param("idddis",
         $data['marca_rueda'],
         $precio_unitario,
         $data['precio_total'],
+        $data['cantidad'],
         $data['cantidad'],
         $data['fecha_compra']
     );

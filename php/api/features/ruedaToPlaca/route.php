@@ -9,7 +9,7 @@ if ($data) {
     $placa = trim($data["placa"]);
 
     if ($placa === "Baja") {
-        $sql = "UPDATE rueda_individual SET placa = '-', estado = 'Baja' WHERE id_rueda = ?";
+        $sql = "UPDATE rueda_flota SET placa = '-', estado = 'Baja' WHERE id_rf = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("i", $id_rueda);
         $stmt->execute();
@@ -20,7 +20,7 @@ if ($data) {
     }
 
     if ($placa === "Almacen") {
-        $sql = "UPDATE rueda_individual SET placa = 'Almacenado' WHERE id_rueda = ?";
+        $sql = "UPDATE rueda_flota SET placa = 'Almacenado' WHERE id_rf = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("i", $id_rueda);
         $stmt->execute();
@@ -46,9 +46,9 @@ if ($data) {
     }
     $stmt->close();
 
-    $sql = "UPDATE rueda_individual SET placa = ?, estado = 'Activo' WHERE id_rueda = ?";
+    $sql = "UPDATE rueda_flota SET placa = ?, estado = 'Activo' WHERE id_rf = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ss", $placa, $id_rueda);
+    $stmt->bind_param("si", $placa, $id_rueda);
     
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Rueda asignada a placa correctamente"]);

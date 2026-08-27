@@ -9,8 +9,8 @@ try {
     }
     
     $sql = "SELECT *
-            FROM rueda_individual
-            WHERE id_rr = ?";
+            FROM rueda_flota
+            WHERE id_rl = ?";
 
     $stmt = $conexion->prepare($sql);
     
@@ -18,7 +18,7 @@ try {
         throw new Exception("Error al preparar la consulta: " . $conexion->error);
     }
     
-    $stmt->bind_param("s", $_GET['id_lote']);
+    $stmt->bind_param("i", $_GET['id_lote']);
     $stmt->execute();
     $result = $stmt->get_result();
     

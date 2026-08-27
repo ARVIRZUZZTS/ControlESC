@@ -1,6 +1,6 @@
-import { ruedaPos } from "./views/config/ruedaPos.js";
+import { ruedaPos } from "./config/ruedaPos.js";
 
-export function configView() {
+export async function configView() {
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
     title.innerHTML = ``;

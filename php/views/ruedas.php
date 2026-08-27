@@ -1,10 +1,10 @@
 <?php
 require_once("../conexion.php");
 
-$sql = "SELECT rr.id_rr, rr.precio_unitario, rr.precio_total, rr.cantidad, rr.en_uso, rr.fecha_compra, mr.marca_rueda
-        FROM rueda_reporte rr
-        INNER JOIN marca_rueda mr ON rr.id_marca_rueda = mr.id_marca_rueda
-        ORDER BY fecha_compra DESC";
+$sql = "SELECT rl.id_rl, rl.precio_unitario, rl.precio_total, rl.cantidad, rl.stock, rl.fecha_compra, mr.nombre_marca_rueda
+        FROM rueda_lote rl
+        INNER JOIN marca_rueda mr ON rl.id_marca_rueda = mr.id_marca_rueda
+        ORDER BY rl.fecha_compra DESC";
 
 $stmt = $conexion->prepare($sql);
 $stmt->execute();

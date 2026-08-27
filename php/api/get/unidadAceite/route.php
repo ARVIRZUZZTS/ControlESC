@@ -4,7 +4,7 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_ua, unidad_aceite, abrev, conversion
+    $sql = "SELECT id_ua, unidad_aceite, conversion
             FROM unidad_aceite";
 
     $stmt = $conexion->prepare($sql);

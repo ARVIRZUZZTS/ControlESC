@@ -34,7 +34,7 @@ export async function loteRuedaInfo(id_lote) {
         let html = `
             <div class="infoSection">
                 <div class="nmrvrow">
-                    <p><strong>Marca:</strong> ${data_info_rueda.marca_rueda}</p>
+                    <p><strong>Marca:</strong> ${data_info_rueda.nombre_marca_rueda}</p>
                     <p><strong>Fecha de Compra:</strong> ${data_info_rueda.fecha_compra}</p>
                 </div>
                 <div class="nmrvrow">
@@ -43,7 +43,7 @@ export async function loteRuedaInfo(id_lote) {
                 </div>                
                 <div class="nmrvrow">
                     <p><strong>Cantidad:</strong> ${data_info_rueda.cantidad}</p>
-                    <p><strong>En Uso:</strong> ${data_info_rueda.en_uso}</p>
+                    <p><strong>Stock:</strong> ${data_info_rueda.stock}</p>
                 </div>
             </div>
         `;
@@ -67,16 +67,16 @@ export async function loteRuedaInfo(id_lote) {
         `;
         console.log(data_ruedas_individuales);
         data_ruedas_individuales.forEach(indRueda => {
-            let fech_baja = indRueda.fecha_baja == null ? "-" : indRueda.fecha_baja;
+            let fech_uso = indRueda.fecha_uso == null ? "-" : indRueda.fecha_uso;
             html += `
                 <tr>
-                    <td class="pb t8"><input type="text" name="tPlaca" value=""></td>
-                    <td class="pb pm t8">INNER</td>
-                    <td class="pb pm t3">${indRueda.id_ri}</td>
-                    <td class="pb pm t3">${indRueda.viajes}</td>
-                    <td class="pb pm t5">${indRueda.fecha_instalacion_historial}</td>
-                    <td class="pb pm t8">${fech_baja}</td>
-                    <td class="pb pm t3">${indRueda.costo_viaje}</td>
+                    <td class="pb t8"><input type="text" name="tPlaca" value="${indRueda.placa}"></td>
+                    <td class="pb pm t8">${indRueda.codigo}</td>
+                    <td class="pb pm t3">${indRueda.id_rf}</td>
+                    <td class="pb pm t3">${indRueda.viajes_hechos}</td>
+                    <td class="pb pm t5">${fech_uso}</td>
+                    <td class="pb pm t8">-</td>
+                    <td class="pb pm t3">-</td>
                     <td class="pb pm t8">${indRueda.estado}</td>
                     <td class="pb t3"><button class="btnEliminar listBtn" data-id=""><img src="img/trash.svg" alt="reporte"></button></td>
                 </tr>

@@ -1,10 +1,10 @@
 <?php
-require_once("../conexion.php");
+require_once("../../../conexion.php");
 
 header('Content-Type: application/json');
 
-$sql = "SELECT id_rp AS id, nombre_planilla AS nombrePlanilla, descripcion
-            FROM ruedas_posicion";
+$sql = "SELECT id_pr AS id, nombre_posicion AS nombrePosicion, placa
+            FROM posicion_rueda";
 
 $response = [
     'success' => false,

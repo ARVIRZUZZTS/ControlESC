@@ -30,7 +30,7 @@ export async function newLoteRuedaView() {
         const marca_ruedaRes = await fetch("php/api/get/marcaRueda/route.php");
         const marcasResponse = await marca_ruedaRes.json();
         const marcas_ruedas = marcasResponse.data || marcasResponse;
-        const searchOpt = marcas_ruedas.map(m => `<option value="${m.id_marca_rueda}">${m.marca_rueda}</option>`).join("");
+        const searchOpt = marcas_ruedas.map(m => `<option value="${m.id_marca_rueda}">${m.nombre_marca_rueda}</option>`).join("");
         const selectHtml = `<select id="selectMarca" name="marca_rueda">${searchOpt}</select>`;
         console.log(marcas_ruedas);
         let html = `
@@ -53,7 +53,7 @@ export async function newLoteRuedaView() {
                 <div class="nmrvrow">
                     <div class="il40 ilR">
                         <label class="noWr">Precio Unitario (Bs.):</label>
-                        <input class="il40" type="number" step="0.01" name="precio_unitario" placeholder="${marcas_ruedas[0]?.precio || '0.00'}"
+                        <input class="il40" type="number" step="0.01" name="precio_unitario" placeholder="0.00"
                             oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7);">
                     </div>
                     <div class="il40 ilR">
@@ -84,8 +84,6 @@ export async function newLoteRuedaView() {
             const marcaEncontrada = marcas_ruedas.find(m => m.id_marca_rueda == idSeleccionado);
         
             if (marcaEncontrada) {
-                inpPrecioUni.value = marcaEncontrada.precio; 
-                inpPrecioUni.placeholder = marcaEncontrada.precio;
                 actualizarTotal(); 
             }
         };

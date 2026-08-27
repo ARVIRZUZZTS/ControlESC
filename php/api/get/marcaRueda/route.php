@@ -4,9 +4,9 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_marca_rueda, marca_rueda, precio
+    $sql = "SELECT id_marca_rueda, nombre_marca_rueda, media_viajes
             FROM marca_rueda
-            ORDER BY marca_rueda ASC";
+            ORDER BY nombre_marca_rueda ASC";
 
     $stmt = $conexion->prepare($sql);
     

@@ -3,8 +3,8 @@ require_once("../../conexion.php");
 
 $sql = "SELECT *
         FROM marca_aceite ma
-        INNER JOIN unidad_aceite ua ON ua.id_ua = ma.unidad_aceite
-        ORDER BY marca_aceite DESC";
+        INNER JOIN unidad_aceite ua ON ua.id_ua = ma.id_ua
+        ORDER BY ma.nombre_marca_aceite DESC";
 
 $stmt = $conexion->prepare($sql);
 $stmt->execute();

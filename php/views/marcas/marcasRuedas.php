@@ -3,7 +3,7 @@ require_once("../../conexion.php");
 
 $sql = "SELECT *
         FROM marca_rueda
-        ORDER BY marca_rueda ASC";
+        ORDER BY nombre_marca_rueda ASC";
 
 $stmt = $conexion->prepare($sql);
 $stmt->execute();

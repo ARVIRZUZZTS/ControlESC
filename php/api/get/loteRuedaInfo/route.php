@@ -8,10 +8,10 @@ try {
         throw new Exception("Parámetro 'id_lote' no proporcionado");
     }
     
-    $sql = "SELECT rueda_reporte.*, marca_rueda.marca_rueda, marca_rueda.modelo, marca_rueda.precio, marca_rueda.media_viajes
-            FROM rueda_reporte
-            INNER JOIN marca_rueda ON rueda_reporte.id_marca_rueda = marca_rueda.id_marca_rueda
-            WHERE id_rr = ?";
+    $sql = "SELECT rueda_lote.*, marca_rueda.nombre_marca_rueda, marca_rueda.media_viajes
+            FROM rueda_lote
+            INNER JOIN marca_rueda ON rueda_lote.id_marca_rueda = marca_rueda.id_marca_rueda
+            WHERE id_rl = ?";
 
     $stmt = $conexion->prepare($sql);
     
@@ -19,7 +19,7 @@ try {
         throw new Exception("Error al preparar la consulta: " . $conexion->error);
     }
     
-    $stmt->bind_param("s", $_GET['id_lote']);
+    $stmt->bind_param("i", $_GET['id_lote']);
     $stmt->execute();
     $result = $stmt->get_result();
     

@@ -30,12 +30,7 @@ export async function newMarcaAceiteView() {
                 <div class="nmrvrow">
                     <div class="il40 ilR">
                         <label>Nombre Marca:</label>
-                        <input type="text" name="marca_aceite" placeholder="..." maxlength="25" required>
-                    </div>
-                    <div class="il25 ilR">
-                        <label>Cantidad:</label>
-                        <input class="il30" type="number" name="cantidad" placeholder="cant." maxlength="30" required
-                            oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
+                        <input type="text" name="nombre_marca_aceite" placeholder="..." maxlength="25" required>
                     </div>
                     <div class="il25 ilR">
                         <label class="noWr">Unidad Aceite:</label>
@@ -44,7 +39,7 @@ export async function newMarcaAceiteView() {
         const unidadAceiteResponse = await unidadAceiteRes.json();
         const unidadAceite = unidadAceiteResponse.data || unidadAceiteResponse;
         const searchOpt = unidadAceite.map(u => `<option value="${u.id_ua}">${u.unidad_aceite}</option>`).join("");
-        const selectHtml  =   `<select id="placasListSearch" name="unidad_aceite">${searchOpt}</select>`;
+        const selectHtml  =   `<select id="placasListSearch" name="id_ua">${searchOpt}</select>`;
         html += selectHtml;
         html += `
                     </div>
@@ -68,14 +63,12 @@ export async function newMarcaAceiteView() {
 
         cont.innerHTML = html;
 
-        const inpMarcaAc = cont.querySelector('input[name="marca_aceite"]');
+        const inpMarcaAc = cont.querySelector('input[name="nombre_marca_aceite"]');
         const inpPrecio = cont.querySelector('input[name="precio"]');
-        const inpCantidad = cont.querySelector('input[name="cantidad"]');
         const inpMediaViajes = cont.querySelector('input[name="media_viajes"]');
 
         if (inpMarcaAc) inpMarcaAc.addEventListener("keydown", comillasFilter);
         if (inpPrecio) inpPrecio.addEventListener("keydown", decimalFilter);
-        if (inpCantidad) inpCantidad.addEventListener("keydown", hardFilter);
         if (inpMediaViajes) inpMediaViajes.addEventListener("keydown", hardFilter);
 
         const form = document.getElementById("formNuevaMarca");

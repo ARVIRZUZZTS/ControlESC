@@ -63,7 +63,7 @@ export async function ruedasListView() {
                         <th class="th t8">Precio Unitario</th>
                         <th class="th t8">Precio Total</th>
                         <th class="th t5">Cantidad</th>
-                        <th class="th t5">En Uso</th>
+                        <th class="th t5">Stock</th>
                         <th class="thr t3">Info.</th>
                     </tr>
                 </thead>
@@ -78,16 +78,16 @@ export async function ruedasListView() {
             }
 
             html += `
-                <tr data-id_rueda="${rueda.id_rr}">
-                    <td class="pb t5">${rueda.id_rr}</td>
-                    <td class="pb pm t10">${rueda.marca_rueda}</td>
+                <tr data-id_rueda="${rueda.id_rl}">
+                    <td class="pb t5">${rueda.id_rl}</td>
+                    <td class="pb pm t10">${rueda.nombre_marca_rueda}</td>
                     <td class="pb pm t8">${rueda.fecha_compra}</td>
                     <td class="pb pm t8">${rueda.precio_unitario}</td>
                     <td class="pb pm t8">${rueda.precio_total}</td>
                     <td class="pb pm t5">${rueda.cantidad}</td>
-                    <td class="pb pm t5">${rueda.en_uso}</td>
+                    <td class="pb pm t5">${rueda.stock}</td>
                     <td class="pb t3">
-                        <button class="btnInfo listBtn" data-id="${rueda.id_rr}">
+                        <button class="btnInfo listBtn" data-id="${rueda.id_rl}">
                             <img src="img/info.svg" alt="reporte">
                         </button>
                     </td>

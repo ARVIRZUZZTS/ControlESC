@@ -28,8 +28,7 @@ export async function marcasAceitesView() {
                 <thead>
                     <tr>
                         <th class="thl t10">Nombre</th>
-                        <th class="t10">Cantidad</th>
-                        <th class="t10">Total Lt.</th>
+                        <th class="t10">Unidad</th>
                         <th class="t8">Precio</th>
                         <th class="t5">Viajes</th>
                         <th class="t3">Editar</th>
@@ -40,13 +39,10 @@ export async function marcasAceitesView() {
         `;
         data.forEach(marcAceite => {
             
-            let cantLt = marcAceite.cantidad * marcAceite.conversion;
-            let cantAbrev = marcAceite.cantidad * 1;
             html += `
                 <tr>
-                    <td class="pb t10">${marcAceite.marca_aceite}</td>
-                    <td class="pb pm t10">${cantAbrev} ${marcAceite.abrev}.</td>
-                    <td class="pb pm t10">${cantLt} Lt.</td>
+                    <td class="pb t10">${marcAceite.nombre_marca_aceite}</td>
+                    <td class="pb pm t10">${marcAceite.unidad_aceite}</td>
                     <td class="pb pm t8">${marcAceite.precio} Bs.</td>
                     <td class="pb pm t10">${marcAceite.media_viajes}</td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${marcAceite.id_marca_aceite}"><img src="img/edit.svg" alt="reporte"></button></td>
