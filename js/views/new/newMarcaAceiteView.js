@@ -12,13 +12,13 @@ export async function newMarcaAceiteView() {
     title.innerHTML = ``;
 
     let titleHtml = `
-        <h2>NUEVA MARCA DE ACEITE</h2>
-        <div class="btnsTitle">
-            <button type="submit" id="saveBtn" form="formNuevaMarca">
-                <img src="img/save.svg" alt="Guardar">GUARDAR
-            </button>
+        <div class="backTitle">
             <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+            <h2>NUEVA MARCA DE ACEITE</h2>
         </div>
+        <button type="submit" id="saveBtn" form="formNuevaMarca">
+            <img src="img/save.svg" alt="Guardar">GUARDAR
+        </button>
     `;
     title.innerHTML = titleHtml;
 

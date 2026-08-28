@@ -10,6 +10,7 @@ export async function flotasListView() {
         <button id="newFlotaBtn"><img src="img/newFlota.svg" alt="reporte"></button>
     `;
     title.innerHTML = titleHtml;
+
     try {
 
         const res = await fetch("php/views/flotas.php");
@@ -31,9 +32,7 @@ export async function flotasListView() {
                         <th class="t10">Chofer 2</th>
                         <th class="t5">Estado</th>
                         <th class="t5">Viajes</th>
-                        <th class="t3">Info.</th>
-                        <th class="t3">Editar</th>
-                        <th class="thr t3">Eliminar</th>
+                        <th class="thr t3">Info.</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,9 +46,7 @@ export async function flotasListView() {
                     <td class="pb pm t10">${flota.chofer2}</td>
                     <td class="pb pm t5">${flota.estado}</td>
                     <td class="pb pm t5">${flota.viajes}</td>
-                    <td class="pb pm t3"><button class="btnInfo listBtn" data-id="${flota.placa}" onclick="flota('${flota.placa}')"><img src="img/info.svg" alt="reporte"></button></td>
-                    <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${flota.placa}"><img src="img/edit.svg" alt="reporte"></button></td>
-                    <td class="pb t3"><button class="btnEliminar listBtn" data-id="${flota.placa}"><img src="img/trash.svg" alt="reporte"></button></td>
+                    <td class="pb t3"><button class="btnInfo listBtn" data-id="${flota.placa}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
                 </tr>
             `;
         });
@@ -60,6 +57,12 @@ export async function flotasListView() {
         `;
 
         cont.innerHTML = html;
+
+        document.querySelectorAll("#tbFlotas .btnInfo").forEach(btn => {
+            btn.addEventListener("click", function() {
+                flota(this.dataset.id);
+            });
+        });
 
     } catch (error) {
         cont.innerHTML = "<p>Error cargando flotas</p>";

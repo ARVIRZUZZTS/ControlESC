@@ -8,9 +8,9 @@ export async function loteRuedaInfo(id_lote) {
     
     //<button id="newMarcaRuedaBtn"><img src="img/newMarca.svg" alt="Marcas"></button>  V
     let titleHtml = `
-        <h2>LOTE DE RUEDAS ${id_lote}°</h2>
-        <div class="btnsTitle">
+        <div class="backTitle">
             <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+            <h2>LOTE DE RUEDAS ${id_lote}°</h2>
         </div>
     `;
     title.innerHTML = titleHtml;

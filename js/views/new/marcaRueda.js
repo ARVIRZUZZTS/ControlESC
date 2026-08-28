@@ -8,13 +8,13 @@ export async function newMarcaRuedaView() {
     title.innerHTML = ``;
 
     let titleHtml = `
-        <h2>NUEVA MARCA DE RUEDA</h2>
-        <div class="btnsTitle">
-            <button type="submit" id="saveBtn" form="formNuevaMarca">
-                <img src="img/save.svg" alt="Guardar">GUARDAR
-            </button>
+        <div class="backTitle">
             <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+            <h2>NUEVA MARCA DE RUEDA</h2>
         </div>
+        <button type="submit" id="saveBtn" form="formNuevaMarca">
+            <img src="img/save.svg" alt="Guardar">GUARDAR
+        </button>
     `;
     title.innerHTML = titleHtml;
 
@@ -24,9 +24,9 @@ export async function newMarcaRuedaView() {
         let html = `
             <form id="formNuevaMarca" class="formStyle">
                 <div class="nmrvrow">
-                    <div class="il100 ilR">
+                    <div class="il80 ilR">
                         <label class="noWr">Nombre Marca:</label>
-                        <input class="il100" type="text" name="nombre_marca_rueda" placeholder="..." maxlength="25" required>
+                        <input class="il80" type="text" name="nombre_marca_rueda" placeholder="..." maxlength="25" required>
                     </div>
                 </div>
                 <div class="nmrvrow">

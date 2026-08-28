@@ -13,13 +13,13 @@ export async function newLoteRuedaView() {
     title.innerHTML = ``;
     
     let titleHtml = `
-        <h2>NUEVO LOTE DE RUEDAS</h2>
-        <div class="btnsTitle">
-            <button id="saveBtn" form="formNuevoLote" type="submit">
-                <img src="img/save.svg" alt="NewRueda">GUARDAR
-            </button>
+        <div class="backTitle">
             <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+            <h2>NUEVO LOTE DE RUEDAS</h2>
         </div>
+        <button id="saveBtn" form="formNuevoLote" type="submit">
+            <img src="img/save.svg" alt="NewRueda">GUARDAR
+        </button>
     `;
     title.innerHTML = titleHtml;
 

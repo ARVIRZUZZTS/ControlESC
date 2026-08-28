@@ -8,11 +8,11 @@ export async function marcasRuedasView() {
     title.innerHTML = ``;
     
     let titleHtml = `
-        <h2>MARCAS DE RUEDAS</h2>
-        <div class="btnsTitle">
-        <button id="newMarcaRuedaBtn"><img src="img/newMarca.svg" alt="Marcas"></button>
-        <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+        <div class="backTitle">
+            <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+            <h2>MARCAS DE RUEDAS</h2>
         </div>
+        <button id="newMarcaRuedaBtn"><img src="img/newMarca.svg" alt="Marcas"></button>
     `;
     title.innerHTML = titleHtml;
 
