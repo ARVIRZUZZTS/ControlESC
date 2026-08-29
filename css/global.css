@@ -1,7 +1,28 @@
+/*------------VARIABLES DE COLOR------------*/
+:root {
+    --bag-gradient-start: rgb(255, 255, 255);
+    --bag-gradient-end: rgb(226, 238, 252);
+    --bg-gradient-start: rgb(220, 235, 255);
+    --bg-gradient-end: rgb(85, 164, 255);
+    --text-primary: rgb(0, 40, 90);
+    --text-dark: rgb(0, 20, 50);
+    --accent: rgb(0, 55, 120);
+    --bg-light: rgb(140, 200, 245);
+    --bg-lighter: rgb(150, 210, 250);
+    --bg-lightest: rgb(200, 225, 255);
+    --bg-hover: rgb(120, 190, 250);
+    --bg-selected: rgb(60, 150, 220);
+    --input-border: rgb(15, 65, 130);
+    --input-outline: rgb(0, 120, 230);
+    --btn-gradient-end: rgb(170, 214, 255);
+    --highlight-start: rgb(0, 55, 120);
+    --highlight-end: rgb(0, 100, 130);
+    --shadow: rgba(0, 40, 90, 0.5);
+}
 /*------------FORMATO------------*/
 body {
-    background: linear-gradient(135deg,rgb(243, 250, 243),rgb(201, 255, 201));
-    color: rgb(6, 46, 6);
+    background: linear-gradient(135deg,var(--bag-gradient-start),var(--bag-gradient-end));
+    color: var(--text-primary);
     margin: 0;
     height: 100vh !important;
     width: 100% !important;
@@ -13,8 +34,8 @@ body {
 
 header {
     height: 10vh;
-    background-color: rgb(189, 255, 189);
-    box-shadow: 0px 10px 10px 0px rgb(6, 46, 6);;
+    background-color: var(--bg-lightest);
+    box-shadow: 0px 10px 10px 0px var(--text-primary);;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -41,7 +62,7 @@ main {
 }
 /*------------ELEMENTOS HTML------------*/
 *:focus-visible {
-    outline: 3px solid rgba(6, 46, 6, 0.5);
+    outline: 3px solid var(--shadow);
     outline-offset: 2px;
 }
     /*------------TITULOS------------*/
@@ -62,31 +83,35 @@ button {
     cursor: pointer;
     transition: 200ms;
     border-radius: 5px;
-    color: rgb(0, 71, 0);
+    color: var(--text-primary);
     font-size: 2.5vh;
-    background: linear-gradient(135deg, rgb(255, 255, 255), rgb(148, 240, 240));
-    border: solid 2px rgb(0, 71, 0);
-    border-left: 6px solid rgb(0, 71, 0);
+    background: linear-gradient(135deg, rgb(255, 255, 255), var(--btn-gradient-end));
+    border: solid 2px var(--text-primary);
+    border-left: 6px solid var(--text-primary);
 }
 button:hover {
-    box-shadow: 0px 0px 15px 5px rgba(6, 46, 6, 0.5);
+    box-shadow: 0px 0px 15px 5px var(--shadow);
     transform: translateY(-2px);
-    background-color: rgb(161, 245, 161);
+    background-color: var(--bg-hover);
 }
 .negative {
-    color: rgb(3, 32, 3);
+    color: var(--text-dark);
 }
     /*------------INPUT------------*/
 input {
     padding: 1vh;
-    border: solid 2px rgb(21, 100, 21);
-    outline: rgb(0, 215, 0);
+    border: solid 2px var(--input-border);
+    outline: none;
     border-radius: 5px;
     font-size: 2.5vh;
+    transition: 200ms;
 }
-input:active {
-    background-color: rgb(192, 255, 192);
-    box-shadow: 5px 0px 20px rgb(0, 26, 0);
+input:hover {
+    background-color: var(--bg-lighter);
+}
+input:focus {
+    background-color: var(--bg-lighter);
+    box-shadow: 0px 0px 8px 2px var(--input-border);
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -98,33 +123,33 @@ select {
     border-radius: 5px;
     height: 5vh;
     font-size: 2.5vh;
-    color: rgb(0, 71, 0);
-    background-color: rgb(192, 255, 192);
-    border: solid 2px rgb(0, 71, 0);
-    border-bottom: 6px solid rgb(0, 71, 0);
+    color: var(--text-primary);
+    background-color: var(--bg-lighter);
+    border: solid 2px var(--text-primary);
+    border-bottom: 6px solid var(--text-primary);
 }
 
 select option {
-    background-color: rgb(197, 255, 197);
+    background-color: var(--bg-lightest);
     color: black;
     border-radius: 5px;
-    border: solid 2px rgb(0, 71, 0);
-    border-bottom: 6px solid rgb(0, 71, 0);
+    border: solid 2px var(--text-primary);
+    border-bottom: 6px solid var(--text-primary);
 }
 
 select option:checked {
-    background-color: rgb(90, 207, 90);
+    background-color: var(--bg-selected);
     color: white;
 }
     /*------------HR------------*/
 hr {    
     height: 3px;
-    background-color: rgb(0, 71, 0);
+    background-color: var(--text-primary);
 }
     /*------------TEXTAREA------------*/
 textarea {
     padding: 1vh;
-    border: solid 2px rgb(21, 100, 21);
+    border: solid 2px var(--input-border);
     border-radius: 5px;
     outline: none;
     resize: none;
@@ -158,8 +183,8 @@ textarea {
 #dinamic {
     width: 75%;
     height: 100%;
-    border: 1px solid rgb(0, 71, 0);
-    border-left: 6px solid rgb(0, 71, 0);
+    border: 1px solid var(--accent);
+    border-left: 6px solid var(--accent);
     border-radius: 5px;
     padding: 1vh;
 }
@@ -172,10 +197,10 @@ textarea {
 
 
 .chooseN {
-    background-color: rgb(199, 236, 199);
+    background-color: var(--bg-lightest);
 }
 .chooseS {
-    background-color: rgb(161, 245, 161);
+    background-color: var(--bg-hover);
 }
 /*------------ELEMENTOS PUNTUALES------------*/
 #saveBtn {
@@ -187,7 +212,7 @@ textarea {
 .highlight {
     display: flex;
     border-radius: 30px;
-    background: linear-gradient(135deg, rgb(0, 71, 0), rgb(0, 150, 150));
+    background: linear-gradient(135deg, var(--highlight-start), var(--highlight-end));
     color: white !important;
     justify-content: space-between;
     padding: 0px 5vh;

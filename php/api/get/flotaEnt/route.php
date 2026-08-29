@@ -8,11 +8,17 @@ try {
         throw new Exception("Parámetro 'placa' no proporcionado");
     }
     
-    $sql = "SELECT f.placa, f.propietario, IFNULL(e1.empleado, 'Sin Asignar') AS chofer1, IFNULL(e2.empleado, 'Sin Asignar') AS chofer2, f.estado, f.ubicacion, f.viajes
+    $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_u, f.viajes,
+                   COALESCE(e1.empleado, 'Sin Asignar') AS chofer1_nombre,
+                   COALESCE(e2.empleado, 'Sin Asignar') AS chofer2_nombre,
+                   COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
+                   COALESCE(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion
             FROM flota f
-            INNER JOIN empleado e1 ON e1.id_empleado = f.chofer1
+            LEFT JOIN empleado e1 ON e1.id_empleado = f.chofer1
             LEFT JOIN empleado e2 ON e2.id_empleado = f.chofer2
-            WHERE placa = ?";
+            LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
+            LEFT JOIN ubicacion u ON u.id_u = f.id_u
+            WHERE f.placa = ?";
 
     $stmt = $conexion->prepare($sql);
     

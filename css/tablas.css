@@ -11,8 +11,8 @@ th, td {
     font-size: medium;
     margin: 0px;
 }
-th {border: 2px solid rgb(0, 71, 0) ;
-    border-top: 1px solid rgb(0, 71, 0);}
+th {border: 2px solid var(--accent) ;
+    border-top: 1px solid var(--accent);}
 .thl {border-left: none;}
 .thr {border-right: none;}
 
@@ -22,9 +22,9 @@ th {border: 2px solid rgb(0, 71, 0) ;
 .t3 {width: 3%;}
 .tPlaca {width: 17vh;}
 
-.pb {border-bottom: 1px solid rgb(0, 71, 0);}
-.pm {border-left: 1px dashed rgb(0, 71, 0);
-     border-right: 1px dashed rgb(0, 71, 0);}
+.pb {border-bottom: 1px solid var(--accent);}
+.pm {border-left: 1px dashed var(--accent);
+     border-right: 1px dashed var(--accent);}
 
 thead {
     position: sticky;
@@ -35,5 +35,5 @@ thead th {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: rgb(192, 255, 192);
+    background-color: var(--bg-lighter);
 }

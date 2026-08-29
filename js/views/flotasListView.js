@@ -31,6 +31,7 @@ export async function flotasListView() {
                         <th class="t10">Chofer 1</th>
                         <th class="t10">Chofer 2</th>
                         <th class="t5">Estado</th>
+                        <th class="t10">Ubicacion</th>
                         <th class="t5">Viajes</th>
                         <th class="thr t3">Info.</th>
                     </tr>
@@ -45,6 +46,7 @@ export async function flotasListView() {
                     <td class="pb pm t10">${flota.chofer1}</td>
                     <td class="pb pm t10">${flota.chofer2}</td>
                     <td class="pb pm t5">${flota.estado}</td>
+                    <td class="pb pm t10">${flota.ubicacion}</td>
                     <td class="pb pm t5">${flota.viajes}</td>
                     <td class="pb t3"><button class="btnInfo listBtn" data-id="${flota.placa}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
                 </tr>

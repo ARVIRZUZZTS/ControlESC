@@ -56,3 +56,23 @@ export function comillasFilter(event) {
         console.warn("Caracter no permitido: comillas bloqueadas por seguridad.");
     }
 }
+
+export function validarPlaca(texto) {
+    return /^\d{3,5}-[A-Z]{3}$/.test(texto.trim());
+}
+
+export function placaFilter(event) {
+    const teclasControl = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+    if (teclasControl.includes(event.key)) return;
+    if (!/[0-9A-Za-z-]/.test(event.key)) {
+        event.preventDefault();
+        console.warn(`[Seguridad] Carácter bloqueado en PlacaFilter: "${event.key}".`);
+    }
+}
+
+export function validarPropietario(texto) {
+    const limpio = texto.trim();
+    if (limpio.length === 0) return false;
+    if (limpio.length > 100) return false;
+    return /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(limpio);
+}
