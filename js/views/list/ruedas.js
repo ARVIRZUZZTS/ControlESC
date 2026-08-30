@@ -75,7 +75,6 @@ export async function ruedasListView() {
                         <th class="thl t5">ID</th>
                         <th class="th t10">Marca</th>
                         <th class="th t8">Fecha Compra</th>
-                        <th class="th t8">Precio Unitario</th>
                         <th class="th t8">Precio Total</th>
                         <th class="th t5">Cantidad</th>
                         <th class="th t5">Stock</th>
@@ -95,9 +94,8 @@ export async function ruedasListView() {
             html += `
                 <tr data-id_rueda="${rueda.id_rl}">
                     <td class="pb t5">${rueda.id_rl}</td>
-                    <td class="pb pm t10">${rueda.nombre_marca_rueda}</td>
+                    <td class="pb pm t10">${rueda.marcas || "-"}</td>
                     <td class="pb pm t8">${rueda.fecha_compra}</td>
-                    <td class="pb pm t8">${rueda.precio_unitario}</td>
                     <td class="pb pm t8">${rueda.precio_total}</td>
                     <td class="pb pm t5">${rueda.cantidad}</td>
                     <td class="pb pm t5">${rueda.stock}</td>

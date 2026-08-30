@@ -22,6 +22,7 @@ export async function loteRuedaInfo(id_lote) {
         const res_info_rueda = await fetch(`php/api/get/loteRuedaInfo/route.php?id_lote=${id_lote}`);
         const loteResponse = await res_info_rueda.json();
         const data_info_rueda = loteResponse.data || loteResponse;
+        const data_ruedas_detalles = loteResponse.detalles || [];
         
         const res_rueda_individuales = await fetch(`php/api/get/ruedasIndividuales/route.php?id_lote=${id_lote}`);
         const ruedas_individualesResponse = await res_rueda_individuales.json();
@@ -34,17 +35,21 @@ export async function loteRuedaInfo(id_lote) {
         let html = `
             <div class="infoSection">
                 <div class="nmrvrow">
-                    <p><strong>Marca:</strong> ${data_info_rueda.nombre_marca_rueda}</p>
-                    <p><strong>Fecha de Compra:</strong> ${data_info_rueda.fecha_compra}</p>
+                    <p><strong>F. Compra:</strong> ${data_info_rueda.fecha_compra}</p>
+                    <p><strong>Precio Total:</strong> ${data_info_rueda.precio_total} Bs.</p>
                 </div>
-                <div class="nmrvrow">
-                    <p><strong>Precio Unitario:</strong> ${data_info_rueda.precio_unitario} Bs.</p>
-                    <p><strong>Precio Total:</strong> ${data_info_rueda.precio_total} Bs.</p>                
-                </div>                
                 <div class="nmrvrow">
                     <p><strong>Cantidad:</strong> ${data_info_rueda.cantidad}</p>
                     <p><strong>Stock:</strong> ${data_info_rueda.stock}</p>
                 </div>
+                <div class="nmrvrow">
+                    <p><strong>Ruedas:</strong></p>
+                </div>
+                <ul style="list-style:none; margin:0; padding:0 2vh;">
+                    ${data_ruedas_detalles.map(rd => `
+                        <li><strong>${rd.nombre_marca_rueda}</strong> - ${rd.precio_rueda} Bs.</li>
+                    `).join("")}
+                </ul>
             </div>
         `;
 

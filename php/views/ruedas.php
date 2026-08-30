@@ -4,9 +4,12 @@ require_once("../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT rl.id_rl, rl.precio_unitario, rl.precio_total, rl.cantidad, rl.stock, rl.fecha_compra, mr.nombre_marca_rueda
+    $sql = "SELECT rl.id_rl, rl.precio_total, rl.cantidad, rl.stock, rl.fecha_compra,
+                   (SELECT GROUP_CONCAT(DISTINCT mr.nombre_marca_rueda ORDER BY mr.nombre_marca_rueda SEPARATOR ', ')
+                    FROM rueda_detalle rd
+                    INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
+                    WHERE rd.id_rl = rl.id_rl) AS marcas
             FROM rueda_lote rl
-            INNER JOIN marca_rueda mr ON rl.id_marca_rueda = mr.id_marca_rueda
             ORDER BY rl.fecha_compra DESC";
 
     $stmt = $conexion->prepare($sql);

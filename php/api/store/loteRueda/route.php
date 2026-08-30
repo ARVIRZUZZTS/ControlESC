@@ -11,35 +11,62 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO rueda_lote (id_marca_rueda, precio_unitario, precio_total, cantidad, stock, fecha_compra) 
-    VALUES (?,?,?,?,?,?)";
+    if (!isset($data['ruedas']) || !is_array($data['ruedas']) || count($data['ruedas']) === 0) {
+        throw new Exception("No se recibieron ruedas.");
+    }
 
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) {
+    $fecha_compra = isset($data['fecha_compra']) ? $data['fecha_compra'] : null;
+    $cantidad = count($data['ruedas']);
+    $precio_total = 0;
+    foreach ($data['ruedas'] as $r) {
+        $precio_total += floatval($r['precio_rueda']);
+    }
+
+    $conexion->autocommit(false);
+
+    $sqlLote = "INSERT INTO rueda_lote (precio_total, cantidad, stock, fecha_compra) VALUES (?,?,?,?)";
+    $stmtLote = $conexion->prepare($sqlLote);
+    if (!$stmtLote) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
-    $precio_unitario = ($data['precio_unitario'] === "") ?  $data['precio_total'] / $data['cantidad'] : $data['precio_unitario'];
-    $stmt->bind_param("idddis",
-        $data['marca_rueda'],
-        $precio_unitario,
-        $data['precio_total'],
-        $data['cantidad'],
-        $data['cantidad'],
-        $data['fecha_compra']
-    );
+    $stock = $cantidad;
+    $stmtLote->bind_param("diis", $precio_total, $cantidad, $stock, $fecha_compra);
+    if (!$stmtLote->execute()) {
+        throw new Exception("Error al ejecutar el lote: " . $stmtLote->error);
+    }
+    $id_rl = $stmtLote->insert_id;
+    $stmtLote->close();
 
-    if ($stmt->execute()) {
-        echo json_encode([
-            "status" => "success",
-            "message" => "Lote de ruedas guardado correctamente",
-            "id" => $stmt->insert_id
-        ]);
-    } else {
-        throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+    $sqlDetalle = "INSERT INTO rueda_detalle (id_rl, id_marca_rueda, precio_rueda) VALUES (?,?,?)";
+    $stmtDetalle = $conexion->prepare($sqlDetalle);
+    if (!$stmtDetalle) {
+        throw new Exception("Error en la preparacion del detalle: " . $conexion->error);
     }
 
-    $stmt->close();
+    foreach ($data['ruedas'] as $r) {
+        $id_marca = intval($r['id_marca_rueda']);
+        $precio_rueda = floatval($r['precio_rueda']);
+        $stmtDetalle->bind_param("iid", $id_rl, $id_marca, $precio_rueda);
+        if (!$stmtDetalle->execute()) {
+            throw new Exception("Error al guardar una rueda del lote: " . $stmtDetalle->error);
+        }
+    }
+    $stmtDetalle->close();
+
+    $conexion->commit();
+    $conexion->autocommit(true);
+
+    echo json_encode([
+        "status" => "success",
+        "message" => "Lote de ruedas guardado correctamente",
+        "id" => $id_rl
+    ]);
+
 } catch (Exception $e) {
+    if (isset($conexion) && !$conexion->errno && $conexion->connect_errno === 0) {
+        $conexion->rollback();
+        $conexion->autocommit(true);
+    }
     http_response_code(500);
     echo json_encode([
         "status" => "error",

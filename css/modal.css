@@ -96,6 +96,22 @@
     flex: 1;
     min-width: 0;
 }
+.lote-marca-precio {
+    display: flex;
+    gap: 1.5vh;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+}
+.lote-marca-precio select {
+    flex: 1;
+    min-width: 0;
+}
+.lote-marca-precio input {
+    width: 40%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 /*------------ALERT------------*/
 .modal-alert-overlay {
     z-index: 3000;

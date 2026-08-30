@@ -329,7 +329,7 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `precio_rueda`)
 
 CREATE TABLE `rueda_flota` (
   `id_rf` int(11) NOT NULL,
-  `id_rl` int(11) DEFAULT NULL,
+  `id_rd` int(11) DEFAULT NULL,
   `placa` varchar(10) NOT NULL DEFAULT '-',
   `codigo` varchar(20) NOT NULL,
   `viajes_hechos` int(11) DEFAULT NULL,
