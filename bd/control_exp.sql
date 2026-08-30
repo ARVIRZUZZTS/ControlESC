@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2026 at 03:31 AM
+-- Generation Time: Aug 31, 2026 at 12:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,17 +59,17 @@ CREATE TABLE `aceite_lote` (
 --
 
 INSERT INTO `aceite_lote` (`id_al`, `id_marca_aceite`, `precio_total`, `precio_unitario`, `id_ua`, `cantidad`, `stock`, `fecha_compra`) VALUES
-(1, 1, 300.00, 150.00, 3, 2.000, NULL, '2026-04-03'),
-(2, 1, 300.00, 300.00, 2, 1.000, NULL, '2026-04-02'),
-(3, 1, 300.00, 100.00, 1, 3.000, NULL, '2026-04-01'),
-(4, 1, 300.00, 150.00, 2, 2.000, NULL, '2026-04-01'),
-(5, 1, 300.00, 75.00, 1, 4.000, NULL, '2026-03-07'),
-(6, 2, 300.00, 150.00, 1, 2.000, NULL, '2026-03-07'),
-(7, 2, 300.00, 150.00, 1, 2.000, NULL, '2026-03-07'),
-(8, 2, 300.00, 100.00, 3, 3.000, NULL, '2026-03-02'),
-(9, 2, 300.00, 150.00, 1, 2.000, NULL, '2026-03-02'),
-(10, 2, 300.00, 300.00, 2, 1.000, NULL, '2026-03-01'),
-(11, 2, 300.00, 150.00, 3, 2.000, NULL, '2026-03-03');
+(1, 1, 300.00, 150.00, 3, 2.000, 2.000, '2026-04-03'),
+(2, 1, 300.00, 300.00, 2, 1.000, 1.000, '2026-04-02'),
+(3, 1, 300.00, 100.00, 1, 3.000, 3.000, '2026-04-01'),
+(4, 1, 300.00, 150.00, 2, 2.000, 2.000, '2026-04-01'),
+(5, 1, 300.00, 75.00, 1, 4.000, 4.000, '2026-03-07'),
+(6, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-07'),
+(7, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-07'),
+(8, 2, 300.00, 100.00, 3, 3.000, 3.000, '2026-03-02'),
+(9, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-02'),
+(10, 2, 300.00, 300.00, 2, 1.000, 1.000, '2026-03-01'),
+(11, 2, 300.00, 150.00, 3, 2.000, 2.000, '2026-03-03');
 
 -- --------------------------------------------------------
 
@@ -253,6 +253,7 @@ INSERT INTO `marca_aceite` (`id_marca_aceite`, `nombre_marca_aceite`, `precio`, 
 CREATE TABLE `marca_rueda` (
   `id_marca_rueda` int(11) NOT NULL,
   `nombre_marca_rueda` varchar(100) NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL,
   `medida` decimal(10,2) DEFAULT NULL,
   `serie` varchar(50) DEFAULT NULL,
   `trilla` varchar(50) DEFAULT NULL,
@@ -264,8 +265,8 @@ CREATE TABLE `marca_rueda` (
 -- Dumping data for table `marca_rueda`
 --
 
-INSERT INTO `marca_rueda` (`id_marca_rueda`, `nombre_marca_rueda`, `medida`, `serie`, `trilla`, `aro`, `media_viajes`) VALUES
-(1, 'Santos', 23.00, '23', '23', '23', 23);
+INSERT INTO `marca_rueda` (`id_marca_rueda`, `nombre_marca_rueda`, `precio_unitario`, `medida`, `serie`, `trilla`, `aro`, `media_viajes`) VALUES
+(1, 'Santos', 150.00, 23.00, '23', '23', '23', 23);
 
 -- --------------------------------------------------------
 
@@ -302,6 +303,27 @@ CREATE TABLE `reporte` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rueda_detalle`
+--
+
+CREATE TABLE `rueda_detalle` (
+  `id_rd` int(11) NOT NULL,
+  `id_rl` int(11) NOT NULL,
+  `id_marca_rueda` int(11) NOT NULL,
+  `precio_rueda` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `rueda_detalle`
+--
+
+INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `precio_rueda`) VALUES
+(1, 1, 1, 50.00),
+(2, 1, 1, 50.00);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rueda_flota`
 --
 
@@ -323,8 +345,6 @@ CREATE TABLE `rueda_flota` (
 
 CREATE TABLE `rueda_lote` (
   `id_rl` int(11) NOT NULL,
-  `id_marca_rueda` int(11) DEFAULT NULL,
-  `precio_unitario` decimal(10,2) DEFAULT NULL,
   `precio_total` decimal(10,2) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `stock` int(11) DEFAULT NULL,
@@ -335,8 +355,8 @@ CREATE TABLE `rueda_lote` (
 -- Dumping data for table `rueda_lote`
 --
 
-INSERT INTO `rueda_lote` (`id_rl`, `id_marca_rueda`, `precio_unitario`, `precio_total`, `cantidad`, `stock`, `fecha_compra`) VALUES
-(1, 1, 50.00, 100.00, 2, 2, '2026-08-26');
+INSERT INTO `rueda_lote` (`id_rl`, `precio_total`, `cantidad`, `stock`, `fecha_compra`) VALUES
+(1, 100.00, 2, 2, '2026-08-26');
 
 -- --------------------------------------------------------
 
@@ -401,3 +421,226 @@ INSERT INTO `unidad_aceite` (`id_ua`, `unidad_aceite`, `conversion`) VALUES
 (1, 'LITROS', 1.000),
 (2, 'GALONES', 3.875),
 (3, 'BALDES', 30.000);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `aceite_flota`
+--
+ALTER TABLE `aceite_flota`
+  ADD PRIMARY KEY (`id_af`);
+
+--
+-- Indexes for table `aceite_lote`
+--
+ALTER TABLE `aceite_lote`
+  ADD PRIMARY KEY (`id_al`);
+
+--
+-- Indexes for table `descripcion`
+--
+ALTER TABLE `descripcion`
+  ADD PRIMARY KEY (`id_descripcion`);
+
+--
+-- Indexes for table `detalle`
+--
+ALTER TABLE `detalle`
+  ADD PRIMARY KEY (`id_detalle`);
+
+--
+-- Indexes for table `empleado`
+--
+ALTER TABLE `empleado`
+  ADD PRIMARY KEY (`id_empleado`);
+
+--
+-- Indexes for table `empleado_reporte`
+--
+ALTER TABLE `empleado_reporte`
+  ADD PRIMARY KEY (`id_er`);
+
+--
+-- Indexes for table `flota`
+--
+ALTER TABLE `flota`
+  ADD PRIMARY KEY (`placa`);
+
+--
+-- Indexes for table `flota_estados`
+--
+ALTER TABLE `flota_estados`
+  ADD PRIMARY KEY (`id_fe`);
+
+--
+-- Indexes for table `marca_aceite`
+--
+ALTER TABLE `marca_aceite`
+  ADD PRIMARY KEY (`id_marca_aceite`);
+
+--
+-- Indexes for table `marca_rueda`
+--
+ALTER TABLE `marca_rueda`
+  ADD PRIMARY KEY (`id_marca_rueda`);
+
+--
+-- Indexes for table `posicion_rueda`
+--
+ALTER TABLE `posicion_rueda`
+  ADD PRIMARY KEY (`id_pr`);
+
+--
+-- Indexes for table `reporte`
+--
+ALTER TABLE `reporte`
+  ADD PRIMARY KEY (`id_rep`);
+
+--
+-- Indexes for table `rueda_detalle`
+--
+ALTER TABLE `rueda_detalle`
+  ADD PRIMARY KEY (`id_rd`);
+
+--
+-- Indexes for table `rueda_flota`
+--
+ALTER TABLE `rueda_flota`
+  ADD PRIMARY KEY (`id_rf`);
+
+--
+-- Indexes for table `rueda_lote`
+--
+ALTER TABLE `rueda_lote`
+  ADD PRIMARY KEY (`id_rl`);
+
+--
+-- Indexes for table `tipo_empleado`
+--
+ALTER TABLE `tipo_empleado`
+  ADD PRIMARY KEY (`id_te`);
+
+--
+-- Indexes for table `ubicacion`
+--
+ALTER TABLE `ubicacion`
+  ADD PRIMARY KEY (`id_u`);
+
+--
+-- Indexes for table `unidad_aceite`
+--
+ALTER TABLE `unidad_aceite`
+  ADD PRIMARY KEY (`id_ua`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `aceite_flota`
+--
+ALTER TABLE `aceite_flota`
+  MODIFY `id_af` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `aceite_lote`
+--
+ALTER TABLE `aceite_lote`
+  MODIFY `id_al` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `descripcion`
+--
+ALTER TABLE `descripcion`
+  MODIFY `id_descripcion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `detalle`
+--
+ALTER TABLE `detalle`
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `empleado`
+--
+ALTER TABLE `empleado`
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `empleado_reporte`
+--
+ALTER TABLE `empleado_reporte`
+  MODIFY `id_er` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `flota_estados`
+--
+ALTER TABLE `flota_estados`
+  MODIFY `id_fe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `marca_aceite`
+--
+ALTER TABLE `marca_aceite`
+  MODIFY `id_marca_aceite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `marca_rueda`
+--
+ALTER TABLE `marca_rueda`
+  MODIFY `id_marca_rueda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `posicion_rueda`
+--
+ALTER TABLE `posicion_rueda`
+  MODIFY `id_pr` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reporte`
+--
+ALTER TABLE `reporte`
+  MODIFY `id_rep` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rueda_detalle`
+--
+ALTER TABLE `rueda_detalle`
+  MODIFY `id_rd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `rueda_flota`
+--
+ALTER TABLE `rueda_flota`
+  MODIFY `id_rf` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rueda_lote`
+--
+ALTER TABLE `rueda_lote`
+  MODIFY `id_rl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `tipo_empleado`
+--
+ALTER TABLE `tipo_empleado`
+  MODIFY `id_te` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `ubicacion`
+--
+ALTER TABLE `ubicacion`
+  MODIFY `id_u` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `unidad_aceite`
+--
+ALTER TABLE `unidad_aceite`
+  MODIFY `id_ua` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

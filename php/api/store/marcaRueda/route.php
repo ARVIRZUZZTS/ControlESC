@@ -11,16 +11,18 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO marca_rueda (nombre_marca_rueda, medida, serie, trilla, aro, media_viajes) 
-    VALUES (?,?,?,?,?,?)";
+    $sql = "INSERT INTO marca_rueda (nombre_marca_rueda, precio_unitario, medida, serie, trilla, aro, media_viajes) 
+    VALUES (?,?,?,?,?,?,?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
     $medida = ($data['medida'] === "") ? 0 : $data['medida'];
-    $stmt->bind_param("sdsssi",
+    $precio = ($data['precio_unitario'] === "" || !isset($data['precio_unitario']) || $data['precio_unitario'] === null) ? 0 : $data['precio_unitario'];
+    $stmt->bind_param("sdssssi",
         $data['nombre_marca_rueda'],
+        $precio,
         $medida,
         $data['serie'],
         $data['trilla'],

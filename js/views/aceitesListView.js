@@ -1,5 +1,6 @@
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { newAceiteView } from "./new/newAceiteView.js";
+import { autocompleteSeleccion } from "../components/autocomplete.js";
 
 export async function aceitesListView() {
     
@@ -11,18 +12,18 @@ export async function aceitesListView() {
     const placasRes = await fetch("php/api/get/placasList/route.php");
     const placasResponse = await placasRes.json();
     const placas = placasResponse.data || placasResponse;
-    const searchOpt = placas.map(p => `<option value="${p.placa}"></option>`).join("");
-    const datalistHTMLSearch  =   `<datalist id="placasListSearch">${searchOpt}</datalist>`;
 
     let titleHtml = `
         <h2>LOTES DE ACEITE</h2>
         <div class="btnsTitle">
-            <input class="tPlaca" 
-                type="text" 
-                list="placasListSearch"
-                maxlength="10"
-                autocomplete="off"
-                placeholder="Por Placa">
+            <div class="ac-wrap">
+                <input id="busquedaPlacaAceites" 
+                    type="text" 
+                    class="tPlaca"
+                    maxlength="10"
+                    autocomplete="off"
+                    placeholder="Por Placa">
+            </div>
             <select id="filtroRuedas">
                 <option value="todas">Todas</option>
                 <option value="activas">Activas</option>
@@ -36,6 +37,14 @@ export async function aceitesListView() {
         </div>
     `;
     title.innerHTML = titleHtml;
+
+    autocompleteSeleccion({
+        input: document.getElementById("busquedaPlacaAceites"),
+        opciones: placas.map(p => ({ id: p.placa, label: p.placa })),
+        valorActual: "",
+        placeholder: "Por Placa",
+        modoBuscador: true
+    });
 
     document.getElementById("marcaAceiteBtn").addEventListener("click", marcasAceitesView);
     document.getElementById("newAceiteBtn").addEventListener("click", newAceiteView);

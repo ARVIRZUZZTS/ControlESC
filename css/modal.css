@@ -58,11 +58,23 @@
     padding: 2vh 3vh;
     border-top: 2px solid var(--accent);
 }
+.modal-accept {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vh;
+}
 .modal-fila {
     display: flex;
     align-items: center;
     gap: 1.5vh;
     margin-bottom: 2.5vh;
+}
+.modal-body form {
+    display: block;
+    align-items: initial;
+    gap: 0;
+    margin: 0;
 }
 .modal-fila label {
     width: 30%;
@@ -71,11 +83,35 @@
     font-size: 2.3vh;
 }
 .modal-fila input[type="text"],
-.modal-fila input[type="number"] {
+.modal-fila input[type="number"],
+.modal-fila input[type="date"] {
     flex: 1;
     min-width: 0;
+}
+.modal-fila .ac-wrap input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
 }
 .modal-fila select {
     flex: 1;
     min-width: 0;
+}
+/*------------ALERT------------*/
+.modal-alert-overlay {
+    z-index: 3000;
+}
+.modal-alert {
+    max-width: 480px;
+}
+.modal-alert-body {
+    text-align: center;
+    font-size: 2.6vh;
+    padding: 4vh 3vh;
+}
+.modal-alert-body p {
+    margin: 0;
+    word-break: break-word;
+}
+.modal-alert-footer {
+    justify-content: center;
 }

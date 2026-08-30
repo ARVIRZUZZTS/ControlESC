@@ -35,6 +35,7 @@ export async function marcasRuedasView() {
                 <thead>
                     <tr>
                         <th class="thl t10">Nombre</th>
+                        <th class="t8">Precio U.</th>
                         <th class="t10">Medida</th>
                         <th class="t5">Serie</th>
                         <th class="t5">Trilla</th>
@@ -50,6 +51,7 @@ export async function marcasRuedasView() {
             html += `
                 <tr>
                     <td class="pb t10">${marcRueda.nombre_marca_rueda}</td>
+                    <td class="pb pm t8">${marcRueda.precio_unitario}</td>
                     <td class="pb pm t10">${marcRueda.medida}</td>
                     <td class="pb pm t5">${marcRueda.serie}</td>
                     <td class="pb pm t5">${marcRueda.trilla}</td>

@@ -1,6 +1,7 @@
 import { marcasRuedasView } from "../marcas/ruedas.js";
 import { newLoteRuedaView } from "../new/loteRueda.js";
 import { loteRuedaInfo } from "../lotes/loteRuedaInfo.js";
+import { autocompleteSeleccion } from "../../components/autocomplete.js";
 
 export async function ruedasListView() {
     
@@ -12,18 +13,18 @@ export async function ruedasListView() {
     const placasRes = await fetch("php/api/get/placasList/route.php");
     const placasResponse = await placasRes.json();
     const placas = placasResponse.data || placasResponse;
-    const searchOpt = placas.map(p => `<option value="${p.placa}"></option>`).join("");
-    const datalistHTMLSearch  =   `<datalist id="placasListSearch">${searchOpt}</datalist>`;
 
     let titleHtml = `
-        <h2>GESTION DE RUEDAS</h2>
+        <h2>LOTES DE RUEDAS</h2>
         <div class="btnsTitle">
-            <input class="tPlaca" 
-                type="text" 
-                list="placasListSearch"
-                maxlength="10"
-                autocomplete="off"
-                placeholder="Por Placa">
+            <div class="ac-wrap">
+                <input id="busquedaPlacaRuedas" 
+                    type="text" 
+                    class="tPlaca"
+                    maxlength="10"
+                    autocomplete="off"
+                    placeholder="Por Placa">
+            </div>
             <select id="filtroRuedas">
                 <option value="todas">Todas</option>
                 <option value="activas">Activas</option>
@@ -37,6 +38,14 @@ export async function ruedasListView() {
         </div>
     `;
     title.innerHTML = titleHtml;
+
+    autocompleteSeleccion({
+        input: document.getElementById("busquedaPlacaRuedas"),
+        opciones: placas.map(p => ({ id: p.placa, label: p.placa })),
+        valorActual: "",
+        placeholder: "Por Placa",
+        modoBuscador: true
+    });
 
     document.getElementById("marcaRuedaBtn").addEventListener("click", marcasRuedasView);
     document.getElementById("newRuedaBtn").addEventListener("click", newLoteRuedaView);
@@ -104,7 +113,7 @@ export async function ruedasListView() {
                 </tbody>
             </table>
         `;
-        cont.innerHTML = html + datalistHTML + datalistHTMLSearch;
+        cont.innerHTML = html + datalistHTML;
 
         document.querySelectorAll(".btnInfo").forEach(btn => {
             btn.addEventListener("click", function() {
