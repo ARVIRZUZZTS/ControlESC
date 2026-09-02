@@ -37,7 +37,7 @@ try {
     $id_rl = $stmtLote->insert_id;
     $stmtLote->close();
 
-    $sqlDetalle = "INSERT INTO rueda_detalle (id_rl, id_marca_rueda, precio_rueda) VALUES (?,?,?)";
+    $sqlDetalle = "INSERT INTO rueda_detalle (id_rl, id_marca_rueda, codigo, precio_rueda, viajes_hechos, estado) VALUES (?,?,?,?,?,?)";
     $stmtDetalle = $conexion->prepare($sqlDetalle);
     if (!$stmtDetalle) {
         throw new Exception("Error en la preparacion del detalle: " . $conexion->error);
@@ -46,7 +46,10 @@ try {
     foreach ($data['ruedas'] as $r) {
         $id_marca = intval($r['id_marca_rueda']);
         $precio_rueda = floatval($r['precio_rueda']);
-        $stmtDetalle->bind_param("iid", $id_rl, $id_marca, $precio_rueda);
+        $codigo = "-";
+        $viajes = 0;
+        $estado = "Activo";
+        $stmtDetalle->bind_param("iisdis", $id_rl, $id_marca, $codigo, $precio_rueda, $viajes, $estado);
         if (!$stmtDetalle->execute()) {
             throw new Exception("Error al guardar una rueda del lote: " . $stmtDetalle->error);
         }

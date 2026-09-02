@@ -18,6 +18,26 @@ form label {
     justify-self: center;
     gap: 2vh;
 }
+.loteSeparador {
+    width: 95%;
+    margin: 2vh auto;
+    border: none;
+    border-top: 2px solid #ccc;
+}
+.loteTitulo {
+    width: 95%;
+    margin: 0 auto 1vh auto;
+    font-size: 1.2em;
+    text-align: left;
+}
+#tbResumenLote {
+    width: 95%;
+    margin: 1vh auto;
+}
+#tbDetalleLote {
+    width: 95%;
+    margin: 0 auto;
+}
 
 .ilC {
     display: flex;

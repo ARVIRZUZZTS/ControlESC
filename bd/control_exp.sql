@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2026 at 12:34 AM
+-- Generation Time: Sep 02, 2026 at 03:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -266,7 +266,8 @@ CREATE TABLE `marca_rueda` (
 --
 
 INSERT INTO `marca_rueda` (`id_marca_rueda`, `nombre_marca_rueda`, `precio_unitario`, `medida`, `serie`, `trilla`, `aro`, `media_viajes`) VALUES
-(1, 'Santos', 150.00, 23.00, '23', '23', '23', 23);
+(1, 'Santos', 150.00, 23.00, '23', '23', '23', 23),
+(4, 'Michelin', 200.00, 25.00, '548s', '25', 'Completo', 50);
 
 -- --------------------------------------------------------
 
@@ -310,16 +311,28 @@ CREATE TABLE `rueda_detalle` (
   `id_rd` int(11) NOT NULL,
   `id_rl` int(11) NOT NULL,
   `id_marca_rueda` int(11) NOT NULL,
-  `precio_rueda` decimal(10,2) NOT NULL
+  `codigo` varchar(20) DEFAULT '-',
+  `precio_rueda` decimal(10,2) NOT NULL,
+  `viajes_hechos` int(11) NOT NULL,
+  `estado` enum('Operativo','Inactivo','Baja') NOT NULL DEFAULT 'Inactivo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rueda_detalle`
 --
 
-INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `precio_rueda`) VALUES
-(1, 1, 1, 50.00),
-(2, 1, 1, 50.00);
+INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `precio_rueda`, `viajes_hechos`, `estado`) VALUES
+(1, 1, 1, '-', 50.00, 0, 'Inactivo'),
+(2, 1, 1, '-', 50.00, 0, 'Inactivo'),
+(5, 2, 1, '-', 150.00, 0, 'Inactivo'),
+(6, 2, 1, '-', 150.00, 0, 'Inactivo'),
+(7, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(8, 3, 1, '-', 150.00, 0, 'Inactivo'),
+(9, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(10, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(11, 3, 1, '-', 150.00, 0, 'Inactivo'),
+(12, 3, 1, '-', 150.00, 0, 'Inactivo'),
+(13, 3, 4, '-', 200.00, 0, 'Inactivo');
 
 -- --------------------------------------------------------
 
@@ -331,10 +344,9 @@ CREATE TABLE `rueda_flota` (
   `id_rf` int(11) NOT NULL,
   `id_rd` int(11) DEFAULT NULL,
   `placa` varchar(10) NOT NULL DEFAULT '-',
-  `codigo` varchar(20) NOT NULL,
-  `viajes_hechos` int(11) DEFAULT NULL,
-  `estado` varchar(20) DEFAULT NULL,
-  `fecha_uso` date DEFAULT NULL
+  `viajes_hechos` int(11) DEFAULT 0,
+  `estado` enum('Operativo','Baja') DEFAULT NULL,
+  `fecha_instalacion` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -356,7 +368,9 @@ CREATE TABLE `rueda_lote` (
 --
 
 INSERT INTO `rueda_lote` (`id_rl`, `precio_total`, `cantidad`, `stock`, `fecha_compra`) VALUES
-(1, 100.00, 2, 2, '2026-08-26');
+(1, 100.00, 2, 2, '2026-08-26'),
+(2, 300.00, 2, 2, '2026-08-30'),
+(3, 1250.00, 7, 7, '2026-08-30');
 
 -- --------------------------------------------------------
 
@@ -590,7 +604,7 @@ ALTER TABLE `marca_aceite`
 -- AUTO_INCREMENT for table `marca_rueda`
 --
 ALTER TABLE `marca_rueda`
-  MODIFY `id_marca_rueda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_marca_rueda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `posicion_rueda`
@@ -608,7 +622,7 @@ ALTER TABLE `reporte`
 -- AUTO_INCREMENT for table `rueda_detalle`
 --
 ALTER TABLE `rueda_detalle`
-  MODIFY `id_rd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_rd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `rueda_flota`
@@ -620,7 +634,7 @@ ALTER TABLE `rueda_flota`
 -- AUTO_INCREMENT for table `rueda_lote`
 --
 ALTER TABLE `rueda_lote`
-  MODIFY `id_rl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_rl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tipo_empleado`

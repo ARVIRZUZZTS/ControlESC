@@ -9,9 +9,13 @@ try {
     }
     $id_lote = $_GET['id_lote'];
 
-    $sqlLote = "SELECT id_rl, precio_total, cantidad, stock, fecha_compra
-                FROM rueda_lote
-                WHERE id_rl = ?";
+    $sqlLote = "SELECT rl.id_rl, rl.precio_total, rl.cantidad, rl.stock, rl.fecha_compra,
+                       (SELECT GROUP_CONCAT(DISTINCT mr.nombre_marca_rueda ORDER BY mr.nombre_marca_rueda SEPARATOR ', ')
+                        FROM rueda_detalle rd
+                        INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
+                        WHERE rd.id_rl = rl.id_rl) AS marcas
+                FROM rueda_lote rl
+                WHERE rl.id_rl = ?";
 
     $stmt = $conexion->prepare($sqlLote);
 

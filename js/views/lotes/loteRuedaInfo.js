@@ -5,8 +5,7 @@ export async function loteRuedaInfo(id_lote) {
     const title = document.getElementById("titleDin");
     cont.innerHTML = `<p>Cargando Lote de Ruedas...</p>`;
     title.innerHTML = ``;
-    
-    //<button id="newMarcaRuedaBtn"><img src="img/newMarca.svg" alt="Marcas"></button>  V
+
     let titleHtml = `
         <div class="backTitle">
             <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
@@ -15,75 +14,77 @@ export async function loteRuedaInfo(id_lote) {
     `;
     title.innerHTML = titleHtml;
 
-    //document.getElementById("newMarcaRuedaBtn").addEventListener("click", newMarcaRuedaView);
     document.getElementById("backBtn").addEventListener("click", ruedasListView);
 
     try {
         const res_info_rueda = await fetch(`php/api/get/loteRuedaInfo/route.php?id_lote=${id_lote}`);
         const loteResponse = await res_info_rueda.json();
         const data_info_rueda = loteResponse.data || loteResponse;
-        const data_ruedas_detalles = loteResponse.detalles || [];
-        
+
         const res_rueda_individuales = await fetch(`php/api/get/ruedasIndividuales/route.php?id_lote=${id_lote}`);
         const ruedas_individualesResponse = await res_rueda_individuales.json();
         const data_ruedas_individuales = ruedas_individualesResponse.data || ruedas_individualesResponse;
-        
-        const placasRes = await fetch("php/api/get/placasList/route.php");
-        const placasResponse = await placasRes.json();
-        const placas = placasResponse.data || placasResponse;
 
         let html = `
-            <div class="infoSection">
-                <div class="nmrvrow">
-                    <p><strong>F. Compra:</strong> ${data_info_rueda.fecha_compra}</p>
-                    <p><strong>Precio Total:</strong> ${data_info_rueda.precio_total} Bs.</p>
-                </div>
-                <div class="nmrvrow">
-                    <p><strong>Cantidad:</strong> ${data_info_rueda.cantidad}</p>
-                    <p><strong>Stock:</strong> ${data_info_rueda.stock}</p>
-                </div>
-                <div class="nmrvrow">
-                    <p><strong>Ruedas:</strong></p>
-                </div>
-                <ul style="list-style:none; margin:0; padding:0 2vh;">
-                    ${data_ruedas_detalles.map(rd => `
-                        <li><strong>${rd.nombre_marca_rueda}</strong> - ${rd.precio_rueda} Bs.</li>
-                    `).join("")}
-                </ul>
-            </div>
+            <table id="tbResumenLote">
+                <thead>
+                    <tr>
+                        <th class="thl t5">ID</th>
+                        <th class="th t10">Marca</th>
+                        <th class="th t8">Fecha Compra</th>
+                        <th class="th t8">Precio Total</th>
+                        <th class="th t5">Cantidad</th>
+                        <th class="th t5">Stock</th>
+                        <th class="thr t3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pb pm t5">${data_info_rueda.id_rl}</td>
+                        <td class="pb pm t10">${data_info_rueda.marcas || "-"}</td>
+                        <td class="pb pm t8">${data_info_rueda.fecha_compra}</td>
+                        <td class="pb pm t8">${data_info_rueda.precio_total} Bs.</td>
+                        <td class="pb pm t5">${data_info_rueda.cantidad}</td>
+                        <td class="pb pm t5">${data_info_rueda.stock}</td>
+                        <td class="pb t3"></td>
+                    </tr>
+                </tbody>
+            </table>
         `;
 
         html += `
-            <table id="tbFlotas">
+            <hr class="loteSeparador">
+            <h3 class="loteTitulo">Detalle de Lote</h3>
+            <table id="tbDetalleLote">
                 <thead>
                     <tr>
-                        <th class="thl t8">Placa</th>
-                        <th class="thl t8">Posicion</th>
-                        <th class="t3">ID Rueda</th>
-                        <th class="t3">Viajes</th>
-                        <th class="t5">Fechas de Instalacion</th>
-                        <th class="t8">Fechas de Baja</th>
-                        <th class="t3">Costo X Viaje</th>
-                        <th class="t8">Estado</th>
-                        <th class="thr t3">Acciones</th>
+                        <th class="thl t">Placa</th>
+                        <th class="th t">Codigo</th>
+                        <th class="th t">Marca</th>
+                        <th class="th t15">Precio Rueda</th>
+                        <th class="th t15">Viajes Hechos</th>
+                        <th class="th t8">Estado</th>
+                        <th class="thr t5">Info</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
-        console.log(data_ruedas_individuales);
-        data_ruedas_individuales.forEach(indRueda => {
-            let fech_uso = indRueda.fecha_uso == null ? "-" : indRueda.fecha_uso;
+
+        data_ruedas_individuales.forEach(rd => {
+            const placa = rd.estado_flota === "Activo" ? (rd.placa || "-") : "";
             html += `
                 <tr>
-                    <td class="pb t8"><input type="text" name="tPlaca" value="${indRueda.placa}"></td>
-                    <td class="pb pm t8">${indRueda.codigo}</td>
-                    <td class="pb pm t3">${indRueda.id_rf}</td>
-                    <td class="pb pm t3">${indRueda.viajes_hechos}</td>
-                    <td class="pb pm t5">${fech_uso}</td>
-                    <td class="pb pm t8">-</td>
-                    <td class="pb pm t3">-</td>
-                    <td class="pb pm t8">${indRueda.estado}</td>
-                    <td class="pb t3"><button class="btnEliminar listBtn" data-id=""><img src="img/trash.svg" alt="reporte"></button></td>
+                    <td class="pb pm t">${placa}</td>
+                    <td class="pb pm t">${rd.codigo}</td>
+                    <td class="pb pm t">${rd.nombre_marca_rueda}</td>
+                    <td class="pb pm t15">${rd.precio_rueda} Bs.</td>
+                    <td class="pb pm t15">${rd.viajes_hechos}</td>
+                    <td class="pb pm t8">${rd.estado}</td>
+                    <td class="pb t5">
+                        <button class="btnInfo listBtn" data-id="${rd.id_rd}">
+                            <img src="img/info.svg" alt="info">
+                        </button>
+                    </td>
                 </tr>
             `;
         });
@@ -95,45 +96,8 @@ export async function loteRuedaInfo(id_lote) {
 
         cont.innerHTML = html;
 
-        document.querySelectorAll(".tPlaca").forEach(input => {
-            input.addEventListener("change", function () {
-                const fila = this.closest("tr");
-                const id_rueda = fila.dataset.id_rueda;
-                const placa = this.value.trim();
-            
-                guardarPlacaRueda(id_rueda, placa);            
-            });
-        
-        });
-
     } catch (error) {
         cont.innerHTML = "<p>Error cargando Lote de Ruedas</p>";
         console.error(error);
-    }
-}
-
-async function guardarPlacaRueda(id_rueda, placa) {
-
-    if (placa !== "") {
-        try {
-            const res = await fetch("php/api/features/ruedaToPlaca/route.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id_rueda: id_rueda,
-                    placa: placa
-                })
-            });
-            const data = await res.json();
-            if (data.status === "ok") {
-                console.log("Rueda actualizada", data);
-            } else {
-                console.log("Error actualizando rueda", data);
-            }
-        } catch (error) {
-            console.error("Error guardando:", error);
-        }
     }
 }

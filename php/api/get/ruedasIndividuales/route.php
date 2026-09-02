@@ -5,31 +5,36 @@ header('Content-Type: application/json');
 
 try {
     if (!isset($_GET['id_lote'])) {
-        throw new Exception("Parámetro 'id_lote' no proporcionado");
+        throw new Exception("Parametro 'id_lote' no proporcionado");
     }
-    
-    $sql = "SELECT *
-            FROM rueda_flota
-            WHERE id_rl = ?";
+
+    $sql = "SELECT rd.id_rd, rd.codigo, rd.precio_rueda, rd.viajes_hechos, rd.estado,
+                   mr.nombre_marca_rueda,
+                   rf.placa, rf.estado AS estado_flota
+            FROM rueda_detalle rd
+            INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
+            LEFT JOIN rueda_flota rf ON rf.id_rd = rd.id_rd
+            WHERE rd.id_rl = ?
+            ORDER BY rd.id_rd ASC";
 
     $stmt = $conexion->prepare($sql);
-    
+
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conexion->error);
     }
-    
+
     $stmt->bind_param("i", $_GET['id_lote']);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $ruedas = [];
-    
+
     while ($row = $result->fetch_assoc()) {
         $ruedas[] = $row;
     }
-    
+
     $stmt->close();
-    
+
     if (count($ruedas) === 0) {
         echo json_encode([
             "status" => "error",
