@@ -113,3 +113,68 @@ export function abrirAlert({ mensaje = "", titulo = "Aviso" } = {}) {
         overlay
     };
 }
+
+export function abrirConfirmation({ titulo = "Confirmacion", mensaje = "", onAceptar = null, onCancelar = null, botonAceptar = "ACEPTAR" } = {}) {
+
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay modal-alert-overlay modal-confirm-overlay";
+
+    const html = `
+        <div class="modal-panel modal-alert modal-confirm" role="alertdialog" aria-modal="true">
+            <div class="modal-header">
+                <h3>${titulo}</h3>
+                <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body modal-alert-body modal-confirm-body">
+                <p>${mensaje}</p>
+            </div>
+            <div class="modal-footer modal-confirm-footer">
+                <button type="button" class="modal-cancel">CANCELAR</button>
+                <button type="button" class="modal-accept">${botonAceptar}</button>
+            </div>
+        </div>
+    `;
+
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+
+    let cerrado = false;
+
+    const cerrar = () => {
+        if (cerrado) return;
+        cerrado = true;
+        overlay.remove();
+        document.removeEventListener("keydown", onEsc);
+    };
+
+    const onEsc = (e) => {
+        if (e.key === "Escape") { e.preventDefault(); cerrar(); }
+    };
+
+    const aceptar = () => {
+        if (cerrado) return;
+        if (onAceptar) onAceptar();
+        cerrar();
+    };
+
+    overlay.querySelector(".modal-close").addEventListener("click", cerrar);
+    overlay.querySelector(".modal-cancel").addEventListener("click", () => {
+        if (onCancelar) onCancelar();
+        cerrar();
+    });
+    overlay.querySelector(".modal-accept").addEventListener("click", aceptar);
+
+    overlay.addEventListener("mousedown", (e) => {
+        if (e.target === overlay) {
+            if (onCancelar) onCancelar();
+            cerrar();
+        }
+    });
+
+    document.addEventListener("keydown", onEsc);
+
+    return {
+        cerrar,
+        overlay
+    };
+}

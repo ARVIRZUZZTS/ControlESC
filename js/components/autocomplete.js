@@ -4,7 +4,8 @@ export function autocompleteSeleccion({
     valorActual = "",
     placeholder = "",
     onCambio = null,
-    modoBuscador = false
+    modoBuscador = false,
+    placeholderSiempre = false
 } = {}) {
 
     if (!input) return null;
@@ -93,7 +94,9 @@ export function autocompleteSeleccion({
             if (onCambio) {
                 if (input.value.trim() === "" ) {
                     const valorDefecto = original ? original.label : "";
-                    input.value = valorDefecto;
+                    if (!placeholderSiempre) {
+                        input.value = valorDefecto;
+                    }
                     onCambio({
                         id: original ? original.id : null,
                         label: original ? original.label : "",

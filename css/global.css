@@ -252,3 +252,9 @@ textarea {
     background-color: var(--bg-selected);
     color: white;
 }
+/*------------PLACA BAJA------------*/
+.placa-baja {
+    background: #cfcfcf;
+    color: #666;
+    font-style: italic;
+}

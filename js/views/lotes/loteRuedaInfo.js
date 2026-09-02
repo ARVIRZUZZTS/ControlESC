@@ -1,4 +1,6 @@
 import { ruedasListView } from "../list/ruedas.js";
+import { autocompleteSeleccion } from "../../components/autocomplete.js";
+import { abrirAlert, abrirConfirmation } from "../../components/modal.js";
 
 export async function loteRuedaInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -24,6 +26,11 @@ export async function loteRuedaInfo(id_lote) {
         const res_rueda_individuales = await fetch(`php/api/get/ruedasIndividuales/route.php?id_lote=${id_lote}`);
         const ruedas_individualesResponse = await res_rueda_individuales.json();
         const data_ruedas_individuales = ruedas_individualesResponse.data || ruedas_individualesResponse;
+
+        const placasRes = await fetch("php/api/get/placasList/route.php");
+        const placasResponse = await placasRes.json();
+        const placas = placasResponse.data || placasResponse;
+        const placasOptions = placas.map(p => ({ id: p.placa, label: p.placa }));
 
         let html = `
             <table id="tbResumenLote">
@@ -58,11 +65,11 @@ export async function loteRuedaInfo(id_lote) {
             <table id="tbDetalleLote">
                 <thead>
                     <tr>
-                        <th class="thl t">Placa</th>
-                        <th class="th t">Codigo</th>
-                        <th class="th t">Marca</th>
-                        <th class="th t15">Precio Rueda</th>
-                        <th class="th t15">Viajes Hechos</th>
+                        <th class="thl t8">Placa</th>
+                        <th class="th t15">Codigo</th>
+                        <th class="th t10">Marca</th>
+                        <th class="th t10">Precio Rueda</th>
+                        <th class="th t8">Viajes Hechos</th>
                         <th class="th t8">Estado</th>
                         <th class="thr t5">Info</th>
                     </tr>
@@ -71,14 +78,22 @@ export async function loteRuedaInfo(id_lote) {
         `;
 
         data_ruedas_individuales.forEach(rd => {
-            const placa = rd.estado_flota === "Activo" ? (rd.placa || "-") : "";
+            const baja = rd.estado === "Baja";
+            const operativa = rd.estado === "Operativo";
+            const placaClass = baja ? " placa-baja" : "";
+            const valorPlaca = baja ? "BAJA" : (operativa ? (rd.placa || "") : "");
+
             html += `
-                <tr>
-                    <td class="pb pm t">${placa}</td>
-                    <td class="pb pm t">${rd.codigo}</td>
-                    <td class="pb pm t">${rd.nombre_marca_rueda}</td>
-                    <td class="pb pm t15">${rd.precio_rueda} Bs.</td>
-                    <td class="pb pm t15">${rd.viajes_hechos}</td>
+                <tr data-id_rd="${rd.id_rd}">
+                    <td class="pb pm t8">
+                        <div class="ac-wrap">
+                            <input type="text" class="inputPlacaRueda${placaClass}" maxlength="10" autocomplete="off">
+                        </div>
+                    </td>
+                    <td class="pb pm t15">${rd.codigo}</td>
+                    <td class="pb pm t10">${rd.nombre_marca_rueda}</td>
+                    <td class="pb pm t10">${rd.precio_rueda} Bs.</td>
+                    <td class="pb pm t8">${rd.viajes_hechos}</td>
                     <td class="pb pm t8">${rd.estado}</td>
                     <td class="pb t5">
                         <button class="btnInfo listBtn" data-id="${rd.id_rd}">
@@ -95,6 +110,76 @@ export async function loteRuedaInfo(id_lote) {
         `;
 
         cont.innerHTML = html;
+
+        document.querySelectorAll("#tbDetalleLote tbody tr").forEach(fila => {
+            const id_rd = fila.dataset.id_rd;
+            const rd = data_ruedas_individuales.find(r => String(r.id_rd) === String(id_rd));
+            if (!rd) return;
+
+            const input = fila.querySelector(".inputPlacaRueda");
+            const rd_estado = rd.estado;
+            const baja = rd_estado === "Baja";
+            const operativa = rd_estado === "Operativo";
+            const placaActual = baja ? "" : (operativa ? (rd.placa || "") : "");
+
+            const opciones = operativa
+                ? [...placasOptions, { id: null, label: "-- Quitar de Flota --" }]
+                : placasOptions;
+
+            const ac = autocompleteSeleccion({
+                input,
+                opciones,
+                valorActual: placaActual,
+                placeholder: baja ? "BAJA" : (operativa ? placaActual : "Instalar a Flota:"),
+                placeholderSiempre: true,
+                onCambio: ({ tocado }) => {
+                    if (!tocado) return;
+                    const nueva = input.value.trim();
+                    const previa = placaActual === "BAJA" ? "" : placaActual;
+                    if (nueva === placaActual || nueva === previa) return;
+
+                    const ejecutar = (accion) =>
+                        fetch("php/api/features/ruedaFlota/route.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ accion, id_rd: parseInt(id_rd), placa: nueva })
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.status === "success") {
+                                loteRuedaInfo(id_lote);
+                            } else {
+                                abrirAlert({ mensaje: "Error: " + data.message });
+                            }
+                        });
+
+                    if (baja) {
+                        const mensaje = `Esta seguro de que quiere Instalar una Rueda que fue dada de Baja? tiene ${rd.viajes_hechos} viajes hechos.`;
+                        abrirConfirmation({
+                            titulo: "Confirmar Instalacion",
+                            mensaje,
+                            onAceptar: () => ejecutar("instalar")
+                        });
+                    } else if (operativa && nueva && nueva !== placaActual) {
+                        if (nueva === "-- Quitar de Flota --") {
+                            abrirConfirmation({
+                                titulo: "Confirmar",
+                                mensaje: "Esta seguro de quitar la rueda de la flota y dejarla en almacen?",
+                                onAceptar: () => ejecutar("quitar")
+                            });
+                        } else {
+                            abrirConfirmation({
+                                titulo: "Confirmar Traslado",
+                                mensaje: `Esta seguro de mover la rueda de la placa ${placaActual} a la placa ${nueva}?`,
+                                onAceptar: () => ejecutar("mover")
+                            });
+                        }
+                    } else if (!operativa && nueva) {
+                        ejecutar("instalar");
+                    }
+                }
+            });
+        });
 
     } catch (error) {
         cont.innerHTML = "<p>Error cargando Lote de Ruedas</p>";

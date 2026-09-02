@@ -48,7 +48,7 @@ try {
         $precio_rueda = floatval($r['precio_rueda']);
         $codigo = "-";
         $viajes = 0;
-        $estado = "Activo";
+        $estado = "Inactivo";
         $stmtDetalle->bind_param("iisdis", $id_rl, $id_marca, $codigo, $precio_rueda, $viajes, $estado);
         if (!$stmtDetalle->execute()) {
             throw new Exception("Error al guardar una rueda del lote: " . $stmtDetalle->error);

@@ -10,10 +10,11 @@ try {
 
     $sql = "SELECT rd.id_rd, rd.codigo, rd.precio_rueda, rd.viajes_hechos, rd.estado,
                    mr.nombre_marca_rueda,
-                   rf.placa, rf.estado AS estado_flota
+                   (SELECT rf.id_rf FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS id_rf,
+                   (SELECT rf.placa FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS placa,
+                   (SELECT rf.estado FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS estado_flota
             FROM rueda_detalle rd
             INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
-            LEFT JOIN rueda_flota rf ON rf.id_rd = rd.id_rd
             WHERE rd.id_rl = ?
             ORDER BY rd.id_rd ASC";
 

@@ -131,3 +131,23 @@
 .modal-alert-footer {
     justify-content: center;
 }
+/*------------CONFIRM------------*/
+.modal-confirm-overlay {
+    z-index: 3000;
+}
+.modal-confirm {
+    max-width: 480px;
+}
+.modal-confirm-body {
+    text-align: center;
+    font-size: 2.6vh;
+    padding: 4vh 3vh;
+}
+.modal-confirm-body p {
+    margin: 0;
+    word-break: break-word;
+}
+.modal-confirm-footer {
+    justify-content: space-between;
+    align-items: center;
+}
