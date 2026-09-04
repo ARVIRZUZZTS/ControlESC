@@ -1,4 +1,5 @@
 import { flota } from "./entitie/flota.js";
+import { newFlotaView } from "./new/newFlotasView.js";
 
 export async function flotasListView() {
 
@@ -10,6 +11,8 @@ export async function flotasListView() {
         <button id="newFlotaBtn"><img src="img/newFlota.svg" alt="reporte"></button>
     `;
     title.innerHTML = titleHtml;
+
+    document.getElementById("newFlotaBtn").addEventListener("click", newFlotaView);
 
     try {
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 02, 2026 at 03:21 AM
+-- Generation Time: Sep 04, 2026 at 01:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -132,7 +132,8 @@ INSERT INTO `empleado` (`id_empleado`, `empleado`, `mensual`, `total`, `id_te`, 
 (14, 'ARCENIO CABALLERO V.', 1500.00, 0.00, 1, '2026-04-10'),
 (15, 'ARIEL VARGAS VALLEJOS', 1500.00, 0.00, 1, '2026-04-10'),
 (16, 'JHONNY VARGAS HERBAS', 1500.00, 0.00, 1, '2026-04-10'),
-(17, 'HUGO GABRIEL RASGUIDO', 1500.00, 0.00, 1, '2026-04-10');
+(17, 'HUGO GABRIEL RASGUIDO', 1500.00, 0.00, 1, '2026-04-10'),
+(20, 'GABRIEL RENE MORENO', NULL, NULL, 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -171,6 +172,7 @@ CREATE TABLE `flota` (
 
 INSERT INTO `flota` (`placa`, `propietario`, `chofer1`, `chofer2`, `id_fe`, `id_u`, `viajes`) VALUES
 ('1194-UKE', 'ERICK MENDOZA', 1, 0, 1, 1, 0),
+('1234-ABC', 'David Chavez', 15, 0, 1, 2, 0),
 ('1461-KUX', 'VIVIAN CABALLERO', 2, 0, 1, 1, 0),
 ('1580-EYR', 'JUAN QUISPE LLAMPA', 3, 0, 1, 1, 0),
 ('1800-FIU', 'MIGUELINA PEREDO', 4, 0, 1, 1, 0),
@@ -326,13 +328,27 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `prec
 (2, 1, 1, '-', 50.00, 0, 'Inactivo'),
 (5, 2, 1, '-', 150.00, 0, 'Inactivo'),
 (6, 2, 1, '-', 150.00, 0, 'Inactivo'),
-(7, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(7, 3, 4, '-', 200.00, 0, 'Operativo'),
 (8, 3, 1, '-', 150.00, 0, 'Inactivo'),
-(9, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(9, 3, 4, '-', 200.00, 0, 'Operativo'),
 (10, 3, 4, '-', 200.00, 0, 'Inactivo'),
-(11, 3, 1, '-', 150.00, 0, 'Inactivo'),
+(11, 3, 1, '-', 150.00, 0, 'Operativo'),
 (12, 3, 1, '-', 150.00, 0, 'Inactivo'),
-(13, 3, 4, '-', 200.00, 0, 'Inactivo');
+(13, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(16, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(17, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(18, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(19, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(20, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(21, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(22, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(23, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(24, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(25, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(26, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(27, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(28, 5, 4, '-', 200.00, 0, 'Operativo'),
+(29, 6, 1, '-', 150.00, 0, 'Inactivo');
 
 -- --------------------------------------------------------
 
@@ -349,6 +365,18 @@ CREATE TABLE `rueda_flota` (
   `fecha_instalacion` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `rueda_flota`
+--
+
+INSERT INTO `rueda_flota` (`id_rf`, `id_rd`, `placa`, `viajes_hechos`, `estado`, `fecha_instalacion`) VALUES
+(1, 7, '1803-BNE', 0, 'Baja', '2026-09-02'),
+(2, 9, '1803-BNE', 0, 'Operativo', '2026-09-02'),
+(3, 7, '2447-CPE', 0, 'Operativo', '2026-09-02'),
+(4, 11, '1803-BNE', 0, 'Operativo', '2026-09-02'),
+(5, 28, '1803-BNE', 0, 'Baja', '2026-09-02'),
+(6, 28, '2447-CPE', 0, 'Operativo', '2026-09-02');
+
 -- --------------------------------------------------------
 
 --
@@ -360,17 +388,21 @@ CREATE TABLE `rueda_lote` (
   `precio_total` decimal(10,2) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `stock` int(11) DEFAULT NULL,
-  `fecha_compra` date DEFAULT NULL
+  `fecha_compra` date DEFAULT NULL,
+  `estado` enum('Operativo','Eliminado') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rueda_lote`
 --
 
-INSERT INTO `rueda_lote` (`id_rl`, `precio_total`, `cantidad`, `stock`, `fecha_compra`) VALUES
-(1, 100.00, 2, 2, '2026-08-26'),
-(2, 300.00, 2, 2, '2026-08-30'),
-(3, 1250.00, 7, 7, '2026-08-30');
+INSERT INTO `rueda_lote` (`id_rl`, `precio_total`, `cantidad`, `stock`, `fecha_compra`, `estado`) VALUES
+(1, 100.00, 2, 2, '2026-08-26', 'Operativo'),
+(2, 300.00, 2, 2, '2026-08-30', 'Operativo'),
+(3, 1250.00, 7, 7, '2026-08-30', 'Operativo'),
+(4, 2150.00, 12, 12, '2026-09-02', 'Operativo'),
+(5, 200.00, 1, 1, '2026-09-02', 'Operativo'),
+(6, 150.00, 1, 1, '2026-09-02', 'Operativo');
 
 -- --------------------------------------------------------
 
@@ -580,7 +612,7 @@ ALTER TABLE `detalle`
 -- AUTO_INCREMENT for table `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `empleado_reporte`
@@ -622,19 +654,19 @@ ALTER TABLE `reporte`
 -- AUTO_INCREMENT for table `rueda_detalle`
 --
 ALTER TABLE `rueda_detalle`
-  MODIFY `id_rd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_rd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `rueda_flota`
 --
 ALTER TABLE `rueda_flota`
-  MODIFY `id_rf` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_rf` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `rueda_lote`
 --
 ALTER TABLE `rueda_lote`
-  MODIFY `id_rl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_rl` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tipo_empleado`

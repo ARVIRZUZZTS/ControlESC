@@ -42,7 +42,7 @@ export async function loteRuedaInfo(id_lote) {
                         <th class="th t8">Precio Total</th>
                         <th class="th t5">Cantidad</th>
                         <th class="th t5">Stock</th>
-                        <th class="thr t3"></th>
+                        <th class="thr t3">Eliminar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +53,7 @@ export async function loteRuedaInfo(id_lote) {
                         <td class="pb pm t8">${data_info_rueda.precio_total} Bs.</td>
                         <td class="pb pm t5">${data_info_rueda.cantidad}</td>
                         <td class="pb pm t5">${data_info_rueda.stock}</td>
-                        <td class="pb t3"></td>
+                        <td class="pb t3">trash.svg</td>
                     </tr>
                 </tbody>
             </table>

@@ -31,9 +31,17 @@ export function autocompleteSeleccion({
     function posicionar() {
         if (lista.style.display === "none") return;
         const r = input.getBoundingClientRect();
-        lista.style.top = (r.bottom + 4) + "px";
+        const espacioAbajo = window.innerHeight - r.bottom - 8;
+        const altoEstimado = lista.offsetHeight || 200;
         lista.style.left = r.left + "px";
         lista.style.width = r.width + "px";
+        if (espacioAbajo >= altoEstimado) {
+            lista.style.top = (r.bottom + 4) + "px";
+            lista.style.bottom = "auto";
+        } else {
+            lista.style.top = "auto";
+            lista.style.bottom = (window.innerHeight - r.top + 4) + "px";
+        }
     }
 
     function mostrar(opcionesMostrar) {
