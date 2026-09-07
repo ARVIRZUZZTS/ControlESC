@@ -1,6 +1,6 @@
 import { ruedasListView } from "../list/ruedas.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
-import { abrirAlert, abrirConfirmation } from "../../components/modal.js";
+import { abrirAlert, abrirConfirmation, abrirEliminar } from "../../components/modal.js";
 
 export async function loteRuedaInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -53,7 +53,11 @@ export async function loteRuedaInfo(id_lote) {
                         <td class="pb pm t8">${data_info_rueda.precio_total} Bs.</td>
                         <td class="pb pm t5">${data_info_rueda.cantidad}</td>
                         <td class="pb pm t5">${data_info_rueda.stock}</td>
-                        <td class="pb t3">trash.svg</td>
+                        <td class="pb t3">
+                    <button class="btnInfo listBtn btnEliminarLote" data-id="${data_info_rueda.id_rl}">
+                        <img src="img/trash.svg" alt="Eliminar">
+                    </button>
+                </td>
                     </tr>
                 </tbody>
             </table>
@@ -110,6 +114,29 @@ export async function loteRuedaInfo(id_lote) {
         `;
 
         cont.innerHTML = html;
+
+        document.querySelector(".btnEliminarLote").addEventListener("click", function () {
+            const id = this.dataset.id;
+            const mensaje = `Esta seguro que quiere eliminar este ${id} de Lote de Ruedas, con el valor de ${data_info_rueda.precio_total} Bs. contando con ${data_info_rueda.cantidad} de ruedas?`;
+            abrirEliminar({
+                titulo: "Eliminar Lote de Ruedas",
+                mensaje,
+                botonEliminar: "ELIMINAR",
+                onConfirmar: async () => {
+                    const res = await fetch("php/api/store/loteRuedaEliminar/route.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id_rl: parseInt(id) })
+                    });
+                    const result = await res.json();
+                    if (result.status === "success") {
+                        ruedasListView();
+                    } else {
+                        abrirAlert({ mensaje: "Error: " + result.message });
+                    }
+                }
+            });
+        });
 
         document.querySelectorAll("#tbDetalleLote tbody tr").forEach(fila => {
             const id_rd = fila.dataset.id_rd;

@@ -10,6 +10,7 @@ try {
                     INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
                     WHERE rd.id_rl = rl.id_rl) AS marcas
             FROM rueda_lote rl
+            WHERE rl.estado = 'Operativo'
             ORDER BY rl.fecha_compra DESC";
 
     $stmt = $conexion->prepare($sql);

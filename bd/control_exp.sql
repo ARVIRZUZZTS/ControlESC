@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 04, 2026 at 01:59 AM
+-- Generation Time: Sep 07, 2026 at 04:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,12 +24,26 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `aceite_detalle`
+--
+
+CREATE TABLE `aceite_detalle` (
+  `id_ad` int(11) NOT NULL,
+  `id_al` int(11) DEFAULT NULL,
+  `precio_ingresado` decimal(10,2) DEFAULT NULL,
+  `stock` decimal(10,3) DEFAULT NULL,
+  `estado` enum('Agotado','En Uso','Almacen') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `aceite_flota`
 --
 
 CREATE TABLE `aceite_flota` (
   `id_af` int(11) NOT NULL,
-  `id_al` int(11) DEFAULT NULL,
+  `id_ad` int(11) DEFAULT NULL,
   `placa` varchar(10) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `unidad_aceite` decimal(10,2) DEFAULT NULL,
@@ -45,12 +59,10 @@ CREATE TABLE `aceite_flota` (
 
 CREATE TABLE `aceite_lote` (
   `id_al` int(11) NOT NULL,
-  `id_marca_aceite` int(11) DEFAULT NULL,
+  `id_marca_aceite` int(11) NOT NULL,
   `precio_total` decimal(10,2) DEFAULT NULL,
-  `precio_unitario` decimal(10,2) DEFAULT NULL,
-  `id_ua` int(2) DEFAULT NULL,
   `cantidad` decimal(10,3) DEFAULT NULL,
-  `stock` decimal(10,3) DEFAULT NULL,
+  `stock_total` decimal(10,3) DEFAULT NULL,
   `fecha_compra` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -58,18 +70,18 @@ CREATE TABLE `aceite_lote` (
 -- Dumping data for table `aceite_lote`
 --
 
-INSERT INTO `aceite_lote` (`id_al`, `id_marca_aceite`, `precio_total`, `precio_unitario`, `id_ua`, `cantidad`, `stock`, `fecha_compra`) VALUES
-(1, 1, 300.00, 150.00, 3, 2.000, 2.000, '2026-04-03'),
-(2, 1, 300.00, 300.00, 2, 1.000, 1.000, '2026-04-02'),
-(3, 1, 300.00, 100.00, 1, 3.000, 3.000, '2026-04-01'),
-(4, 1, 300.00, 150.00, 2, 2.000, 2.000, '2026-04-01'),
-(5, 1, 300.00, 75.00, 1, 4.000, 4.000, '2026-03-07'),
-(6, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-07'),
-(7, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-07'),
-(8, 2, 300.00, 100.00, 3, 3.000, 3.000, '2026-03-02'),
-(9, 2, 300.00, 150.00, 1, 2.000, 2.000, '2026-03-02'),
-(10, 2, 300.00, 300.00, 2, 1.000, 1.000, '2026-03-01'),
-(11, 2, 300.00, 150.00, 3, 2.000, 2.000, '2026-03-03');
+INSERT INTO `aceite_lote` (`id_al`, `id_marca_aceite`, `precio_total`, `cantidad`, `stock_total`, `fecha_compra`) VALUES
+(1, 1, 300.00, 2.000, 2.000, '2026-04-03'),
+(2, 1, 300.00, 1.000, 1.000, '2026-04-02'),
+(3, 1, 300.00, 3.000, 3.000, '2026-04-01'),
+(4, 1, 300.00, 2.000, 2.000, '2026-04-01'),
+(5, 1, 300.00, 4.000, 4.000, '2026-03-07'),
+(6, 1, 300.00, 2.000, 2.000, '2026-03-07'),
+(7, 1, 300.00, 2.000, 2.000, '2026-03-07'),
+(8, 1, 300.00, 3.000, 3.000, '2026-03-02'),
+(9, 1, 300.00, 2.000, 2.000, '2026-03-02'),
+(10, 1, 300.00, 1.000, 1.000, '2026-03-01'),
+(11, 1, 300.00, 2.000, 2.000, '2026-03-03');
 
 -- --------------------------------------------------------
 
@@ -163,32 +175,34 @@ CREATE TABLE `flota` (
   `chofer2` int(11) DEFAULT NULL,
   `id_fe` int(11) DEFAULT NULL,
   `id_u` int(11) DEFAULT NULL,
-  `viajes` int(11) DEFAULT NULL
+  `viajes` int(11) DEFAULT NULL,
+  `capacidad_aceite` decimal(10,3) NOT NULL DEFAULT 0.000,
+  `aceite_actual` decimal(10,3) NOT NULL DEFAULT 0.000
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `flota`
 --
 
-INSERT INTO `flota` (`placa`, `propietario`, `chofer1`, `chofer2`, `id_fe`, `id_u`, `viajes`) VALUES
-('1194-UKE', 'ERICK MENDOZA', 1, 0, 1, 1, 0),
-('1234-ABC', 'David Chavez', 15, 0, 1, 2, 0),
-('1461-KUX', 'VIVIAN CABALLERO', 2, 0, 1, 1, 0),
-('1580-EYR', 'JUAN QUISPE LLAMPA', 3, 0, 1, 1, 0),
-('1800-FIU', 'MIGUELINA PEREDO', 4, 0, 1, 1, 0),
-('1803-BNE', 'CARMEN VELASCO', 5, 0, 1, 1, 0),
-('2130-YXG', 'JHONNY VARGAS', 6, 0, 1, 1, 0),
-('2218-PCT', '-', 7, 0, 1, 1, 0),
-('2264-KGD', 'VICTOR HUGO VELASCO', 8, 0, 1, 1, 0),
-('2447-CPE', 'ELOY TERCEROS', 9, 0, 1, 1, 0),
-('2447-DKT', 'RICHAR IRUSTA', 10, 0, 1, 1, 0),
-('2494-RXU', 'JHONNY CABALLERO', 11, 0, 1, 1, 0),
-('2537-DER', 'REINALDO ALBERTO', 12, 0, 1, 1, 0),
-('2550-TFU', 'RUTH CABALLERO', 13, 0, 1, 1, 0),
-('2701-YNF', 'JHONNY CABALLERO', 14, 0, 1, 1, 0),
-('2830-UTA', 'JHONNY CABALLERO', 15, 0, 1, 1, 0),
-('2996-UKF', 'JHONNY CABALLERO', 16, 0, 1, 1, 0),
-('3056-EAY', 'JHONNY CABALLERO', 17, 0, 1, 1, 0);
+INSERT INTO `flota` (`placa`, `propietario`, `chofer1`, `chofer2`, `id_fe`, `id_u`, `viajes`, `capacidad_aceite`, `aceite_actual`) VALUES
+('1194-UKE', 'ERICK MENDOZA', 1, 0, 1, 1, 0, 30.000, 0.000),
+('1234-ABC', 'David Chavez', 15, 0, 1, 2, 0, 30.000, 0.000),
+('1461-KUX', 'VIVIAN CABALLERO', 2, 0, 1, 1, 0, 30.000, 0.000),
+('1580-EYR', 'JUAN QUISPE LLAMPA', 3, 0, 1, 1, 0, 30.000, 0.000),
+('1800-FIU', 'MIGUELINA PEREDO', 4, 0, 1, 1, 0, 30.000, 0.000),
+('1803-BNE', 'CARMEN VELASCO', 5, 0, 1, 1, 0, 30.000, 0.000),
+('2130-YXG', 'JHONNY VARGAS', 6, 0, 1, 1, 0, 30.000, 0.000),
+('2218-PCT', '-', 7, 0, 1, 1, 0, 30.000, 0.000),
+('2264-KGD', 'VICTOR HUGO VELASCO', 8, 0, 1, 1, 0, 30.000, 0.000),
+('2447-CPE', 'ELOY TERCEROS', 9, 0, 1, 1, 0, 30.000, 0.000),
+('2447-DKT', 'RICHAR IRUSTA', 10, 0, 1, 1, 0, 30.000, 0.000),
+('2494-RXU', 'JHONNY CABALLERO', 11, 0, 1, 1, 0, 30.000, 0.000),
+('2537-DER', 'REINALDO ALBERTO', 12, 0, 1, 1, 0, 30.000, 0.000),
+('2550-TFU', 'RUTH CABALLERO', 13, 0, 1, 1, 0, 30.000, 0.000),
+('2701-YNF', 'JHONNY CABALLERO', 14, 0, 1, 1, 0, 30.000, 0.000),
+('2830-UTA', 'JHONNY CABALLERO', 15, 0, 1, 1, 0, 30.000, 0.000),
+('2996-UKF', 'JHONNY CABALLERO', 16, 0, 1, 1, 0, 30.000, 0.000),
+('3056-EAY', 'JHONNY CABALLERO', 17, 0, 1, 1, 0, 30.000, 0.000);
 
 -- --------------------------------------------------------
 
@@ -234,17 +248,16 @@ CREATE TABLE `marca_aceite` (
   `id_marca_aceite` int(11) NOT NULL,
   `nombre_marca_aceite` varchar(100) NOT NULL,
   `precio` decimal(10,2) DEFAULT NULL,
-  `id_ua` int(11) DEFAULT NULL,
-  `media_viajes` int(11) DEFAULT NULL
+  `id_ua` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `marca_aceite`
 --
 
-INSERT INTO `marca_aceite` (`id_marca_aceite`, `nombre_marca_aceite`, `precio`, `id_ua`, `media_viajes`) VALUES
-(1, 'marca', 150.00, 2, 30),
-(2, 'santos', 300.00, 1, 30);
+INSERT INTO `marca_aceite` (`id_marca_aceite`, `nombre_marca_aceite`, `precio`, `id_ua`) VALUES
+(1, 'marca', 150.00, 2),
+(2, 'santos', 300.00, 1);
 
 -- --------------------------------------------------------
 
@@ -335,7 +348,7 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `prec
 (11, 3, 1, '-', 150.00, 0, 'Operativo'),
 (12, 3, 1, '-', 150.00, 0, 'Inactivo'),
 (13, 3, 4, '-', 200.00, 0, 'Inactivo'),
-(16, 4, 4, '-', 200.00, 0, 'Inactivo'),
+(16, 4, 4, '-', 200.00, 0, 'Operativo'),
 (17, 4, 4, '-', 200.00, 0, 'Inactivo'),
 (18, 4, 4, '-', 200.00, 0, 'Inactivo'),
 (19, 4, 1, '-', 150.00, 0, 'Inactivo'),
@@ -375,7 +388,8 @@ INSERT INTO `rueda_flota` (`id_rf`, `id_rd`, `placa`, `viajes_hechos`, `estado`,
 (3, 7, '2447-CPE', 0, 'Operativo', '2026-09-02'),
 (4, 11, '1803-BNE', 0, 'Operativo', '2026-09-02'),
 (5, 28, '1803-BNE', 0, 'Baja', '2026-09-02'),
-(6, 28, '2447-CPE', 0, 'Operativo', '2026-09-02');
+(6, 28, '2447-CPE', 0, 'Operativo', '2026-09-02'),
+(7, 16, '2550-TFU', 0, 'Operativo', '2026-09-05');
 
 -- --------------------------------------------------------
 
@@ -401,7 +415,7 @@ INSERT INTO `rueda_lote` (`id_rl`, `precio_total`, `cantidad`, `stock`, `fecha_c
 (2, 300.00, 2, 2, '2026-08-30', 'Operativo'),
 (3, 1250.00, 7, 7, '2026-08-30', 'Operativo'),
 (4, 2150.00, 12, 12, '2026-09-02', 'Operativo'),
-(5, 200.00, 1, 1, '2026-09-02', 'Operativo'),
+(5, 200.00, 1, 1, '2026-09-02', 'Eliminado'),
 (6, 150.00, 1, 1, '2026-09-02', 'Operativo');
 
 -- --------------------------------------------------------
@@ -471,6 +485,12 @@ INSERT INTO `unidad_aceite` (`id_ua`, `unidad_aceite`, `conversion`) VALUES
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `aceite_detalle`
+--
+ALTER TABLE `aceite_detalle`
+  ADD PRIMARY KEY (`id_ad`);
 
 --
 -- Indexes for table `aceite_flota`
@@ -585,6 +605,12 @@ ALTER TABLE `unidad_aceite`
 --
 
 --
+-- AUTO_INCREMENT for table `aceite_detalle`
+--
+ALTER TABLE `aceite_detalle`
+  MODIFY `id_ad` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `aceite_flota`
 --
 ALTER TABLE `aceite_flota`
@@ -660,7 +686,7 @@ ALTER TABLE `rueda_detalle`
 -- AUTO_INCREMENT for table `rueda_flota`
 --
 ALTER TABLE `rueda_flota`
-  MODIFY `id_rf` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_rf` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `rueda_lote`

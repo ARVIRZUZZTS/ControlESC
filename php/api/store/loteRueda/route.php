@@ -24,7 +24,7 @@ try {
 
     $conexion->autocommit(false);
 
-    $sqlLote = "INSERT INTO rueda_lote (precio_total, cantidad, stock, fecha_compra) VALUES (?,?,?,?)";
+    $sqlLote = "INSERT INTO rueda_lote (precio_total, cantidad, stock, fecha_compra, estado) VALUES (?,?,?,?, 'Operativo')";
     $stmtLote = $conexion->prepare($sqlLote);
     if (!$stmtLote) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);

@@ -151,3 +151,10 @@
     justify-content: space-between;
     align-items: center;
 }
+/*------------ELIMINAR------------*/
+.modal-danger .modal-accept.modal-danger-accept {
+    color: #fff;
+    background: linear-gradient(135deg, rgb(255, 80, 80), rgb(180, 0, 0));
+    border: solid 2px rgb(120, 0, 0);
+    border-left: 6px solid rgb(120, 0, 0);
+}
