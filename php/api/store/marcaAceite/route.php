@@ -11,18 +11,17 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO marca_aceite (nombre_marca_aceite, precio, id_ua, media_viajes) 
-    VALUES (?,?,?,?)";
+    $sql = "INSERT INTO marca_aceite (nombre_marca_aceite, precio, id_ua) 
+    VALUES (?,?,?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
-    $stmt->bind_param("sdii",
+    $stmt->bind_param("sdi",
         $data['nombre_marca_aceite'],
         $data['precio'],
-        $data['id_ua'],
-        $data['media_viajes']
+        $data['id_ua']
     );
 
     if ($stmt->execute()) {

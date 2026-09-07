@@ -1,95 +1,85 @@
 import { marcasAceitesView } from "../marcas/marcasAceitesView.js";
+import { abrirModal } from "../../components/modal.js";
 
-import { hardFilter } from "../../utils.js";
 import { decimalFilter } from "../../utils.js";
 import { comillasFilter } from "../../utils.js";
 
 export async function newMarcaAceiteView() {
-    const cont = document.getElementById("contDin");
-    const title = document.getElementById("titleDin");
-    
-    cont.innerHTML = `<p>Cargando Vista de Nueva Marca Aceite...</p>`;
-    title.innerHTML = ``;
 
-    let titleHtml = `
-        <div class="backTitle">
-            <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-            <h2>NUEVA MARCA DE ACEITE</h2>
-        </div>
-        <button type="submit" id="saveBtn" form="formNuevaMarca">
-            <img src="img/save.svg" alt="Guardar">GUARDAR
-        </button>
-    `;
-    title.innerHTML = titleHtml;
+    let cerrar = () => {};
 
-    document.getElementById("backBtn").addEventListener("click", marcasAceitesView);
-    
     try {
-        let html = `
-            <form id="formNuevaMarca" class="formStyle">
-                <div class="nmrvrow">
-                    <div class="il40 ilR">
-                        <label>Nombre Marca:</label>
-                        <input type="text" name="nombre_marca_aceite" placeholder="..." maxlength="25" required>
-                    </div>
-                    <div class="il25 ilR">
-                        <label class="noWr">Unidad Aceite:</label>
-            `;
         const unidadAceiteRes = await fetch("php/api/get/unidadAceite/route.php");
         const unidadAceiteResponse = await unidadAceiteRes.json();
         const unidadAceite = unidadAceiteResponse.data || unidadAceiteResponse;
-        const searchOpt = unidadAceite.map(u => `<option value="${u.id_ua}">${u.unidad_aceite}</option>`).join("");
-        const selectHtml  =   `<select id="placasListSearch" name="id_ua">${searchOpt}</select>`;
-        html += selectHtml;
-        html += `
-                    </div>
+
+        const optUnidades = unidadAceite.map(u =>
+            `<option value="${u.id_ua}">${u.unidad_aceite}</option>`
+        ).join("");
+
+        const contenidoHTML = `
+            <form id="formNuevaMarca">
+                <div class="modal-fila">
+                    <label>Nombre Marca:</label>
+                    <input type="text" name="nombre_marca_aceite" placeholder="..." maxlength="25" required>
                 </div>
-                <div class="nmrvrow">
-                    <div class="il40 ilR">
-                        <label>Precio Unitario (Bs.):</label>
-                        <input class="il30" type="number" step="0.01" name="precio" placeholder="0.00" required
-                            oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7);">
-                    </div>
-                    <div class="il25 ilR">
-                        <label>Media Viajes:</label>
-                        <input class="il30" type="number" name="media_viajes" placeholder="0" required
-                            oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
-                    </div>
+                <div class="modal-fila">
+                    <label>Unidad Aceite:</label>
+                    <select name="id_ua" required>
+                        <option value="" selected disabled>-- Elija Unidad --</option>
+                        ${optUnidades}
+                    </select>
+                </div>
+                <div class="modal-fila">
+                    <label>Precio Unitario (Bs.):</label>
+                    <input type="number" step="0.01" name="precio" placeholder="0.00" required
+                        oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7);">
                 </div>
             </form>
-            <hr>
         `;
 
+        const resultado = abrirModal({
+            titulo: "NUEVA MARCA DE ACEITE",
+            contenidoHTML: contenidoHTML,
+            onSubmit: () => {
+                const form = resultado.overlay.querySelector("#formNuevaMarca");
+                if (form) form.requestSubmit();
+            }
+        });
+        cerrar = resultado.cerrar;
 
-        cont.innerHTML = html;
+        const form = resultado.overlay.querySelector("#formNuevaMarca");
 
-        const inpMarcaAc = cont.querySelector('input[name="nombre_marca_aceite"]');
-        const inpPrecio = cont.querySelector('input[name="precio"]');
-        const inpMediaViajes = cont.querySelector('input[name="media_viajes"]');
+        const inpMarcaAc = resultado.overlay.querySelector('input[name="nombre_marca_aceite"]');
+        const inpPrecio = resultado.overlay.querySelector('input[name="precio"]');
 
         if (inpMarcaAc) inpMarcaAc.addEventListener("keydown", comillasFilter);
         if (inpPrecio) inpPrecio.addEventListener("keydown", decimalFilter);
-        if (inpMediaViajes) inpMediaViajes.addEventListener("keydown", hardFilter);
 
-        const form = document.getElementById("formNuevaMarca");
-        
-        form.addEventListener("submit", async (e) => { 
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             const formData = new FormData(form);
             const dataFinal = Object.fromEntries(formData.entries());
 
             console.log("Datos listos para enviar:", dataFinal);
-            
+
             const res = await fetch("php/api/store/marcaAceite/route.php", {
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(dataFinal)
             });
-            marcasAceitesView();
+
+            const result = await res.json();
+            if (result.status === "success") {
+                cerrar();
+                marcasAceitesView();
+            } else {
+                console.error("Error guardando marca:", result.message);
+            }
         });
 
     } catch (error) {
-        cont.innerHTML = "<p>Error cargando formulario</p>";
         console.error(error);
     }
 }
