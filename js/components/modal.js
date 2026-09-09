@@ -1,9 +1,9 @@
-export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR" } = {}) {
+export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR", generativo = false } = {}) {
 
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay";
     overlay.id = "modalOverlay";    const html = `
-        <div class="modal-panel" role="dialog" aria-modal="true">
+        <div class="modal-panel${generativo ? " modal-panel-generativo" : ""}" role="dialog" aria-modal="true">
             <div class="modal-header">
                 <h3>${titulo}</h3>
                 <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>

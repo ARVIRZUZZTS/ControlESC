@@ -44,6 +44,7 @@ export async function newAceiteView() {
         const resultado = abrirModal({
             titulo: "NUEVO LOTE DE ACEITE",
             contenidoHTML: contenidoHTML,
+            generativo: true,
             onSubmit: () => {
                 const form = resultado.overlay.querySelector("#formNuevoLoteAceite");
                 if (form) form.requestSubmit();
@@ -62,19 +63,40 @@ export async function newAceiteView() {
             inpPrecioTot.value = total.toFixed(2);
         }
 
+        function renumFila() {
+            const filasDom = contDetalles.querySelectorAll(".loteGenerativoFila");
+            filasDom.forEach((f, i) => {
+                const label = f.querySelector(".loteGenerativoHeader label");
+                if (label) label.textContent = `Marca ${i + 1}`;
+            });
+        }
+
+        function quitarFila(fila) {
+            fila.remove();
+            filas = filas.filter(f => f.fila !== fila);
+            renumFila();
+            actualizarTotal();
+        }
+
         function agregarFila() {
             const fila = document.createElement("div");
-            fila.className = "modal-fila";
+            fila.className = "loteGenerativoFila";
+            const esPrimera = filas.length === 0;
             fila.innerHTML = `
-                <label>Marca ${filas.length + 1}:</label>
-                <div class="lote-marca-precio">
+                <div class="loteGenerativoHeader">
+                    ${esPrimera ? "" : `<button type="button" class="btnQuitarMarca btnQuitarFila">×</button>`}
+                    <label>Marca ${filas.length + 1}:</label>
+                </div>
+                <div class="loteGenerativoCol">
                     <select name="marca_al[]">
                         <option value="" data-precio="" data-unidad="">-- Elija Marca --</option>
                         ${optMarcas}
                     </select>
-                    <input type="number" step="0.001" name="stock_al[]" placeholder="stock" min="0">
-                    <input type="number" step="0.01" name="precio_al[]" placeholder="0.00" min="0">
-                    <span class="asUnidad"></span>
+                    <div class="lotegenerativoMarca">
+                        <input type="number" step="0.001" name="stock_al[]" placeholder="Cantidad" min="0">
+                        <input type="number" step="0.01" name="precio_al[]" placeholder="0.00" min="0">
+                        <span class="asUnidad"></span>
+                    </div>
                 </div>
             `;
             contDetalles.appendChild(fila);
@@ -84,7 +106,7 @@ export async function newAceiteView() {
             const precio = fila.querySelector('input[name="precio_al[]"]');
             const unidadSpan = fila.querySelector(".asUnidad");
 
-            filas.push({ marca: select, stock, precio, unidadSpan });
+            filas.push({ fila, marca: select, stock, precio, unidadSpan });
 
             stock.addEventListener("keydown", decimalFilter);
             precio.addEventListener("keydown", decimalFilter);
@@ -102,6 +124,10 @@ export async function newAceiteView() {
                 }
                 actualizarTotal();
             });
+
+            if (!esPrimera) {
+                fila.querySelector(".btnQuitarFila").addEventListener("click", () => quitarFila(fila));
+            }
         }
 
         overlay.querySelector("#addDetalleAceite").addEventListener("click", agregarFila);

@@ -74,6 +74,22 @@ export async function newLoteRuedaView() {
             inpPrecioTot.value = total.toFixed(2);
         }
 
+        function renumFilas() {
+            const filasDom = contRuedas.querySelectorAll(".modal-fila");
+            filasDom.forEach((f, i) => {
+                const label = f.querySelector("label");
+                if (label) label.textContent = `Rueda ${i + 1}:`;
+            });
+        }
+
+        function quitarFila(fila, objeto) {
+            fila.remove();
+            filas = filas.filter(f => f !== objeto);
+            inpCantidad.value = filas.length;
+            renumFilas();
+            calcularTotal();
+        }
+
         function generarFilas(n) {
             contRuedas.innerHTML = "";
             filas = [];
@@ -81,7 +97,10 @@ export async function newLoteRuedaView() {
                 const fila = document.createElement("div");
                 fila.className = "modal-fila";
                 fila.innerHTML = `
-                    <label>Rueda ${i + 1}:</label>
+                    <div class="loteGenerativoHeader">
+                        ${i === 0 ? "" : `<button type="button" class="btnQuitarMarca btnQuitarFila">×</button>`}
+                        <label>Rueda ${i + 1}:</label>
+                    </div>
                     <div class="lote-marca-precio">
                         <select name="marca_rd[]">
                             <option value="" data-precio="">-- Elija Marca --</option>
@@ -95,7 +114,8 @@ export async function newLoteRuedaView() {
 
                 const select = fila.querySelector("select");
                 const precio = fila.querySelector("input");
-                filas.push({ marca: select, precio });
+                const objeto = { fila, marca: select, precio };
+                filas.push(objeto);
 
                 if (precio) precio.addEventListener("keydown", decimalFilter);
                 precio.addEventListener("input", calcularTotal);
@@ -107,6 +127,9 @@ export async function newLoteRuedaView() {
                     }
                     calcularTotal();
                 });
+                if (i > 0) {
+                    fila.querySelector(".btnQuitarFila").addEventListener("click", () => quitarFila(fila, objeto));
+                }
             }
             calcularTotal();
         }

@@ -176,3 +176,56 @@
     font-size: 2.3vh;
     font-weight: bold;
 }
+/*------------MODAL GENERATIVO------------*/
+.modal-panel-generativo .modal-header h3 {
+    text-align: left;
+}
+.btnQuitarMarca {
+    min-height: 4vh;
+    min-width: 4vh;
+    line-height: 1;
+    padding: 0 1.5vh;
+    flex-shrink: 0;
+}
+.loteGenerativoFila {
+    display: flex;
+    align-items: center;
+    gap: 1.5vh;
+    margin-bottom: 2.5vh;
+}
+.loteGenerativoHeader {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5vh;
+    width: 30%;
+    min-width: 0;
+    flex-shrink: 0;
+}
+.loteGenerativoHeader label {
+    width: auto;
+    text-align: right;
+    font-weight: bold;
+    font-size: 2.3vh;
+    white-space: nowrap;
+}
+.loteGenerativoCol {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    flex: 1;
+    min-width: 0;
+}
+.loteGenerativoCol > select {
+    width: 100%;
+    min-width: 0;
+}
+.lotegenerativoMarca {
+    display: flex;
+    gap: 1.5vh;
+    align-items: center;
+}
+.lotegenerativoMarca input {
+    flex: 1;
+    min-width: 0;
+}
