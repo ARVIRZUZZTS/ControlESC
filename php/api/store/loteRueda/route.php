@@ -17,20 +17,39 @@ try {
 
     $fecha_compra = isset($data['fecha_compra']) ? $data['fecha_compra'] : null;
     $cantidad = count($data['ruedas']);
-    $precio_total = 0;
-    foreach ($data['ruedas'] as $r) {
-        $precio_total += floatval($r['precio_rueda']);
+
+    $precio_real = isset($data['precio_total']) ? floatval($data['precio_total']) : 0;
+
+    $precio_estimado = 0;
+    $sqlPrecioMarca = "SELECT precio_unitario FROM marca_rueda WHERE id_marca_rueda = ?";
+    $stmtPrecioMarca = $conexion->prepare($sqlPrecioMarca);
+    if (!$stmtPrecioMarca) {
+        throw new Exception("Error en la preparacion del precio de marca: " . $conexion->error);
     }
+    foreach ($data['ruedas'] as $r) {
+        $id_marca = intval($r['id_marca_rueda']);
+        $stmtPrecioMarca->bind_param("i", $id_marca);
+        $stmtPrecioMarca->execute();
+        $resPrecio = $stmtPrecioMarca->get_result();
+        $filaPrecio = $resPrecio->fetch_assoc();
+        $precio_estimado += $filaPrecio ? floatval($filaPrecio['precio_unitario']) : 0;
+    }
+    $stmtPrecioMarca->close();
+
+    if ($precio_real <= 0) {
+        $precio_real = $precio_estimado;
+    }
+    $estado_precio = $precio_real > $precio_estimado ? "Subio" : ($precio_real < $precio_estimado ? "Bajo" : "Mantuvo");
 
     $conexion->autocommit(false);
 
-    $sqlLote = "INSERT INTO rueda_lote (precio_total, cantidad, stock, fecha_compra, estado) VALUES (?,?,?,?, 'Operativo')";
+    $sqlLote = "INSERT INTO rueda_lote (precio_total, precio_estimado, precio_real, estado_precio, cantidad, stock, fecha_compra, estado) VALUES (?,?,?,?,?,?,?, 'Operativo')";
     $stmtLote = $conexion->prepare($sqlLote);
     if (!$stmtLote) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
     $stock = $cantidad;
-    $stmtLote->bind_param("diis", $precio_total, $cantidad, $stock, $fecha_compra);
+    $stmtLote->bind_param("dddsiis", $precio_real, $precio_estimado, $precio_real, $estado_precio, $cantidad, $stock, $fecha_compra);
     if (!$stmtLote->execute()) {
         throw new Exception("Error al ejecutar el lote: " . $stmtLote->error);
     }
@@ -62,7 +81,9 @@ try {
     echo json_encode([
         "status" => "success",
         "message" => "Lote de ruedas guardado correctamente",
-        "id" => $id_rl
+        "id" => $id_rl,
+        "precio_estimado" => $precio_estimado,
+        "precio_real" => $precio_real
     ]);
 
 } catch (Exception $e) {

@@ -112,6 +112,22 @@
     min-width: 0;
     box-sizing: border-box;
 }
+.modal-fila-aviso .avisoDetalles {
+    flex: 1;
+    min-width: 0;
+    font-size: 2.6vh;
+    font-weight: bold;
+    color: var(--accent);
+}
+.modal-fila > span#precioEstimadoText,
+.modal-fila > span#precioEstimadoRuedas {
+    flex: 1;
+    min-width: 0;
+    text-align: right;
+    font-size: 2.6vh;
+    font-weight: bold;
+    color: var(--accent);
+}
 /*------------ALERT------------*/
 .modal-alert-overlay {
     z-index: 3000;

@@ -9,7 +9,7 @@ try {
     }
 
     $sql = "SELECT rd.id_rd, rd.codigo, rd.precio_rueda, rd.viajes_hechos, rd.estado,
-                   mr.nombre_marca_rueda,
+                   mr.nombre_marca_rueda, mr.precio_unitario,
                    (SELECT rf.id_rf FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS id_rf,
                    (SELECT rf.placa FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS placa,
                    (SELECT rf.estado FROM rueda_flota rf WHERE rf.id_rd = rd.id_rd ORDER BY rf.id_rf DESC LIMIT 1) AS estado_flota

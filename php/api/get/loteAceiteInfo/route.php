@@ -9,7 +9,7 @@ try {
     }
     $id_lote = $_GET['id_lote'];
 
-    $sqlLote = "SELECT al.id_al, al.precio_total, al.cantidad, al.stock_total, al.fecha_compra,
+    $sqlLote = "SELECT al.id_al, al.precio_total, al.precio_estimado, al.precio_real, al.estado_precio, al.cantidad, al.stock_total, al.fecha_compra,
                        (SELECT GROUP_CONCAT(DISTINCT ma.nombre_marca_aceite ORDER BY ma.nombre_marca_aceite SEPARATOR ', ')
                         FROM aceite_detalle ad
                         INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
@@ -39,7 +39,7 @@ try {
     $stmt->close();
 
     $sqlDetalle = "SELECT ad.id_ad, ad.id_marca_aceite, ad.precio_ingresado, ad.stock, ad.estado,
-                          ma.nombre_marca_aceite, ua.id_ua, ua.unidad_aceite, ua.conversion,
+                          ma.nombre_marca_aceite, ma.precio, ua.id_ua, ua.unidad_aceite, ua.conversion,
                           (SELECT COALESCE(SUM(af.cantidad),0) FROM aceite_flota af WHERE af.id_ad = ad.id_ad) AS asignado
                    FROM aceite_detalle ad
                    INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite

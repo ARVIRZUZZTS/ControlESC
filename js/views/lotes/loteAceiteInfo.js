@@ -29,6 +29,30 @@ export async function loteAceiteInfo(id_lote) {
         const lote = loteResponse.data;
         const detalles = loteResponse.detalles || [];
 
+        function resumenPrecioHtml(estimado, real, estado) {
+            const diff = (parseFloat(real) || 0) - (parseFloat(estimado) || 0);
+            if (estado === "Subio") {
+                return `<div class="precioEstado precio-subio"><img src="img/up.svg" class="flechaPrecio" alt="Subio"><span class="montoReal">${real}</span><span class="diferenciaPrecio">+${diff.toFixed(2)}</span></div>`;
+            }
+            if (estado === "Bajo") {
+                return `<div class="precioEstado precio-bajo"><img src="img/down.svg" class="flechaPrecio" alt="Bajo"><span class="montoReal">${real}</span><span class="diferenciaPrecio">${diff.toFixed(2)}</span></div>`;
+            }
+            return `<div class="precioEstado"><span class="montoReal">${real}</span></div>`;
+        }
+
+        function detallePrecioClase(real, actual) {
+            if (real > actual) return "precio-subio";
+            if (real < actual) return "precio-bajo";
+            return "";
+        }
+
+        function detallePrecioHtml(real, actual) {
+            const diff = (parseFloat(real) || 0) - (parseFloat(actual) || 0);
+            if (diff > 0) return `${real}<span class="diferenciaPrecio">  +${diff.toFixed(2)}</span>`;
+            if (diff < 0) return `${real}<span class="diferenciaPrecio">  ${diff.toFixed(2)}</span>`;
+            return `${real}`;
+        }
+
         let html = `
             <table id="tbResumenLote">
                 <thead>
@@ -36,7 +60,7 @@ export async function loteAceiteInfo(id_lote) {
                         <th class="thl t5">ID</th>
                         <th class="th t10">Marca</th>
                         <th class="th t10">Fecha Compra</th>
-                        <th class="th t10">Precio Total</th>
+                        <th class="th t10">Precio Total Bs.</th>
                         <th class="th t8">Cantidad</th>
                         <th class="th t8">Stock</th>
                         <th class="thr t3">Eliminar</th>
@@ -47,7 +71,7 @@ export async function loteAceiteInfo(id_lote) {
                         <td class="pb pm t5">${lote.id_al}</td>
                         <td class="pb pm t10">${lote.marcas || "-"}</td>
                         <td class="pb pm t10">${lote.fecha_compra}</td>
-                        <td class="pb pm t10">${lote.precio_total} Bs.</td>
+                        <td class="pb pm t10">${resumenPrecioHtml(lote.precio_estimado || lote.precio_total, lote.precio_real || lote.precio_total, lote.estado_precio || "Mantuvo")}</td>
                         <td class="pb pm t8">${lote.cantidad}</td>
                         <td class="pb pm t8">${lote.stock_total}</td>
                         <td class="pb t3">
@@ -68,7 +92,7 @@ export async function loteAceiteInfo(id_lote) {
                     <tr>
                         <th class="thl t10">Marca</th>
                         <th class="th t8">Unidad</th>
-                        <th class="th t8">Precio Ingresado</th>
+                        <th class="th t8">Precio Ingresado Bs.</th>
                         <th class="th t8">Stock</th>
                         <th class="th t8">Asignado</th>
                         <th class="th t8">Disponible</th>
@@ -84,7 +108,7 @@ export async function loteAceiteInfo(id_lote) {
                 <tr data-id_ad="${rd.id_ad}">
                     <td class="pb t10">${rd.nombre_marca_aceite}</td>
                     <td class="pb pm t8">${rd.unidad_aceite}</td>
-                    <td class="pb pm t8">${rd.precio_ingresado} Bs.</td>
+                    <td class="pb pm t8 ${detallePrecioClase(parseFloat(rd.precio_ingresado) || 0, (parseFloat(rd.stock) || 0) * (parseFloat(rd.precio) || 0))}">${detallePrecioHtml(rd.precio_ingresado, (parseFloat(rd.stock) || 0) * (parseFloat(rd.precio) || 0))}</td>
                     <td class="pb pm t8">${rd.stock}</td>
                     <td class="pb pm t8">${rd.asignado}</td>
                     <td class="pb pm t8">${rd.disponible}</td>

@@ -32,6 +32,30 @@ export async function loteRuedaInfo(id_lote) {
         const placas = placasResponse.data || placasResponse;
         const placasOptions = placas.map(p => ({ id: p.placa, label: p.placa }));
 
+        function resumenPrecioHtml(estimado, real, estado) {
+            const diff = (parseFloat(real) || 0) - (parseFloat(estimado) || 0);
+            if (estado === "Subio") {
+                return `<div class="precioEstado precio-subio"><img src="img/up.svg" class="flechaPrecio" alt="Subio"><span class="montoReal">${real}</span><span class="diferenciaPrecio">+${diff.toFixed(2)}</span></div>`;
+            }
+            if (estado === "Bajo") {
+                return `<div class="precioEstado precio-bajo"><img src="img/down.svg" class="flechaPrecio" alt="Bajo"><span class="montoReal">${real}</span><span class="diferenciaPrecio">${diff.toFixed(2)}</span></div>`;
+            }
+            return `<div class="precioEstado"><span class="montoReal">${real}</span></div>`;
+        }
+
+        function detallePrecioClase(real, actual) {
+            if (real > actual) return "precio-subio";
+            if (real < actual) return "precio-bajo";
+            return "";
+        }
+
+        function detallePrecioHtml(real, actual) {
+            const diff = (parseFloat(real) || 0) - (parseFloat(actual) || 0);
+            if (diff > 0) return `${real}<span class="diferenciaPrecio">  +${diff.toFixed(2)}</span>`;
+            if (diff < 0) return `${real}<span class="diferenciaPrecio">  ${diff.toFixed(2)}</span>`;
+            return `${real}`;
+        }
+
         let html = `
             <table id="tbResumenLote">
                 <thead>
@@ -39,7 +63,7 @@ export async function loteRuedaInfo(id_lote) {
                         <th class="thl t5">ID</th>
                         <th class="th t10">Marca</th>
                         <th class="th t8">Fecha Compra</th>
-                        <th class="th t8">Precio Total</th>
+                        <th class="th t8">Precio Total Bs.</th>
                         <th class="th t5">Cantidad</th>
                         <th class="th t5">Stock</th>
                         <th class="thr t3">Eliminar</th>
@@ -50,7 +74,7 @@ export async function loteRuedaInfo(id_lote) {
                         <td class="pb pm t5">${data_info_rueda.id_rl}</td>
                         <td class="pb pm t10">${data_info_rueda.marcas || "-"}</td>
                         <td class="pb pm t8">${data_info_rueda.fecha_compra}</td>
-                        <td id="precioDinamicoRuedas" class="pb pm t8">${data_info_rueda.precio_total} Bs.</td>
+                        <td id="precioDinamicoRuedas" class="pb pm t8">${resumenPrecioHtml(data_info_rueda.precio_estimado || data_info_rueda.precio_total, data_info_rueda.precio_real || data_info_rueda.precio_total, data_info_rueda.estado_precio || "Mantuvo")}</td>
                         <td class="pb pm t5">${data_info_rueda.cantidad}</td>
                         <td class="pb pm t5">${data_info_rueda.stock}</td>
                         <td class="pb t3">
@@ -72,7 +96,7 @@ export async function loteRuedaInfo(id_lote) {
                         <th class="thl t8">Placa</th>
                         <th class="th t15">Codigo</th>
                         <th class="th t10">Marca</th>
-                        <th class="th t10">Precio Rueda</th>
+                        <th class="th t10">Precio Rueda Bs.</th>
                         <th class="th t8">Viajes Hechos</th>
                         <th class="th t8">Estado</th>
                         <th class="thr t5">Info</th>
@@ -96,7 +120,7 @@ export async function loteRuedaInfo(id_lote) {
                     </td>
                     <td class="pb pm t15">${rd.codigo}</td>
                     <td class="pb pm t10">${rd.nombre_marca_rueda}</td>
-                    <td class="pb pm t10">${rd.precio_rueda} Bs.</td>
+                    <td class="pb pm t10 ${detallePrecioClase(parseFloat(rd.precio_rueda) || 0, parseFloat(rd.precio_unitario) || 0)}">${detallePrecioHtml(rd.precio_rueda, rd.precio_unitario)}</td>
                     <td class="pb pm t8">${rd.viajes_hechos}</td>
                     <td class="pb pm t8">${rd.estado}</td>
                     <td class="pb t5">

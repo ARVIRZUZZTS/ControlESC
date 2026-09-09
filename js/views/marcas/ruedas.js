@@ -35,7 +35,7 @@ export async function marcasRuedasView() {
                 <thead>
                     <tr>
                         <th class="thl t10">Nombre</th>
-                        <th class="t8">Precio U.</th>
+                        <th class="t8">Precio U. Bs.</th>
                         <th class="t10">Medida</th>
                         <th class="t5">Serie</th>
                         <th class="t5">Trilla</th>

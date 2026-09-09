@@ -26,17 +26,21 @@ export async function newAceiteView() {
                     <label>Fecha Compra:</label>
                     <input type="date" name="fecha_compra" value="${fechaDef}" required>
                 </div>
-                <div class="modal-fila">
+                <div class="modal-fila modal-fila-aviso">
                     <label>Detalles:</label>
-                    <span>Elija las marcas y su stock. Una fila por marca.</span>
+                    <span class="avisoDetalles">Elija las marcas y su stock. Una fila por marca.</span>
                 </div>
                 <div id="loteAceiteDetalles"></div>
                 <div class="modal-fila">
                     <button type="button" id="addDetalleAceite">+ Agregar Marca</button>
                 </div>
                 <div class="modal-fila">
-                    <label>Precio Total (Bs.):</label>
-                    <input type="number" id="precioTotalAceite" name="precio_total" step="0.01" placeholder="0.00" readonly>
+                    <label>Precio Estimado (Bs.):</label>
+                    <span id="precioEstimadoText">0.00</span>
+                </div>
+                <div class="modal-fila">
+                    <label>Precio Real (Bs.):</label>
+                    <input type="number" id="precioTotalAceite" name="precio_total" step="0.01" placeholder="0.00">
                 </div>
             </form>
         `;
@@ -54,13 +58,39 @@ export async function newAceiteView() {
 
         const overlay = resultado.overlay;
         const contDetalles = overlay.querySelector("#loteAceiteDetalles");
+        const inpEstimado = overlay.querySelector("#precioEstimadoText");
         const inpPrecioTot = overlay.querySelector("#precioTotalAceite");
 
         let filas = [];
+        let realTocado = false;
+        let realOverride = 0;
+
+        function marcaPrecio(select) {
+            const opt = select.selectedOptions[0];
+            return opt && opt.dataset.precio ? parseFloat(opt.dataset.precio) : 0;
+        }
+
+        function cantidadFila(f) {
+            return parseFloat(f.stock.value) || 0;
+        }
+
+        function valorFila(f) {
+            const typed = parseFloat(f.precio.value) || 0;
+            if (typed > 0) return typed;
+            return cantidadFila(f) * marcaPrecio(f.marca);
+        }
+
+        function actualizarEstimado() {
+            const est = filas.reduce((s, f) => s + cantidadFila(f) * marcaPrecio(f.marca), 0);
+            inpEstimado.textContent = est.toFixed(2);
+        }
 
         function actualizarTotal() {
-            const total = filas.reduce((s, f) => s + (parseFloat(f.precio.value) || 0), 0);
-            inpPrecioTot.value = total.toFixed(2);
+            actualizarEstimado();
+            if (realTocado) return;
+            const real = filas.reduce((s, f) => s + valorFila(f), 0);
+            inpPrecioTot.value = real.toFixed(2);
+            inpPrecioTot.placeholder = real.toFixed(2);
         }
 
         function renumFila() {
@@ -95,7 +125,6 @@ export async function newAceiteView() {
                     <div class="lotegenerativoMarca">
                         <input type="number" step="0.001" name="stock_al[]" placeholder="Cantidad" min="0">
                         <input type="number" step="0.01" name="precio_al[]" placeholder="0.00" min="0">
-                        <span class="asUnidad"></span>
                     </div>
                 </div>
             `;
@@ -104,21 +133,28 @@ export async function newAceiteView() {
             const select = fila.querySelector("select");
             const stock = fila.querySelector('input[name="stock_al[]"]');
             const precio = fila.querySelector('input[name="precio_al[]"]');
-            const unidadSpan = fila.querySelector(".asUnidad");
 
-            filas.push({ fila, marca: select, stock, precio, unidadSpan });
+            filas.push({ fila, marca: select, stock, precio });
+
+            function placeholderFila() {
+                const c = cantidadFila(objeto);
+                const pMar = marcaPrecio(select);
+                const ph = (c > 0 && pMar > 0) ? (c * pMar) : (pMar > 0 ? pMar : 0);
+                precio.placeholder = ph.toFixed(2);
+            }
+            const objeto = { fila, marca: select, stock, precio };
+            placeholderFila();
 
             stock.addEventListener("keydown", decimalFilter);
             precio.addEventListener("keydown", decimalFilter);
-            stock.addEventListener("input", actualizarTotal);
+            stock.addEventListener("input", () => {
+                placeholderFila();
+                actualizarTotal();
+            });
             precio.addEventListener("input", actualizarTotal);
 
             select.addEventListener("change", () => {
-                const opt = select.selectedOptions[0];
-                const pMar = opt.dataset.precio ? parseFloat(opt.dataset.precio) : 0;
-                const unidad = opt.dataset.unidad || "";
-                unidadSpan.textContent = unidad;
-                precio.placeholder = pMar > 0 ? pMar.toFixed(2) : "0.00";
+                placeholderFila();
                 if (precio.value === "" || parseFloat(precio.value) === 0) {
                     precio.value = "";
                 }
@@ -129,6 +165,11 @@ export async function newAceiteView() {
                 fila.querySelector(".btnQuitarFila").addEventListener("click", () => quitarFila(fila));
             }
         }
+
+        inpPrecioTot.addEventListener("input", () => {
+            realTocado = inpPrecioTot.value.trim() !== "";
+            realOverride = parseFloat(inpPrecioTot.value) || 0;
+        });
 
         overlay.querySelector("#addDetalleAceite").addEventListener("click", agregarFila);
 
@@ -157,11 +198,14 @@ export async function newAceiteView() {
             const detalles = filas.map(f => ({
                 id_marca_aceite: parseInt(f.marca.value),
                 stock: parseFloat(f.stock.value),
-                precio_ingresado: parseFloat(f.precio.value) || 0
+                precio_ingresado: valorFila(f)
             }));
+
+            const totalReal = realTocado ? realOverride : detalles.reduce((s, d) => s + d.precio_ingresado, 0);
 
             const payload = {
                 fecha_compra: overlay.querySelector('input[name="fecha_compra"]').value,
+                precio_total: totalReal,
                 detalles
             };
 

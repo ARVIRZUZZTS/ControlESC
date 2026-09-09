@@ -33,8 +33,12 @@ export async function newLoteRuedaView() {
                 </div>
                 <div id="loteRuedas"></div>
                 <div class="modal-fila">
-                    <label>Precio Total (Bs.):</label>
-                    <input type="number" id="precioTotal" name="precio_total" step="0.01" placeholder="0.00" readonly>
+                    <label>Precio Estimado (Bs.):</label>
+                    <span id="precioEstimadoRuedas">0.00</span>
+                </div>
+                <div class="modal-fila">
+                    <label>Precio Real (Bs.):</label>
+                    <input type="number" id="precioTotal" name="precio_total" step="0.01" placeholder="0.00">
                 </div>
             </form>
         `;
@@ -52,9 +56,12 @@ export async function newLoteRuedaView() {
         const overlay = resultado.overlay;
         const inpCantidad = overlay.querySelector("#cantidad");
         const contRuedas = overlay.querySelector("#loteRuedas");
+        const inpEstimado = overlay.querySelector("#precioEstimadoRuedas");
         const inpPrecioTot = overlay.querySelector("#precioTotal");
 
         let filas = [];
+        let realTocado = false;
+        let realOverride = 0;
 
         if (inpCantidad) inpCantidad.addEventListener("keydown", hardFilter);
 
@@ -69,9 +76,17 @@ export async function newLoteRuedaView() {
             return precioDeMarca(fila.marca);
         }
 
+        function actualizarEstimado() {
+            const est = filas.reduce((sum, f) => sum + precioDeMarca(f.marca), 0);
+            inpEstimado.textContent = est.toFixed(2);
+        }
+
         function calcularTotal() {
+            actualizarEstimado();
+            if (realTocado) return;
             const total = filas.reduce((sum, f) => sum + valorFila(f), 0);
             inpPrecioTot.value = total.toFixed(2);
+            inpPrecioTot.placeholder = total.toFixed(2);
         }
 
         function renumFilas() {
@@ -139,6 +154,11 @@ export async function newLoteRuedaView() {
             generarFilas(n);
         });
 
+        inpPrecioTot.addEventListener("input", () => {
+            realTocado = inpPrecioTot.value.trim() !== "";
+            realOverride = parseFloat(inpPrecioTot.value) || 0;
+        });
+
         const form = overlay.querySelector("#formNuevoLote");
 
         form.addEventListener("submit", async (e) => {
@@ -160,10 +180,12 @@ export async function newLoteRuedaView() {
                 precio_rueda: valorFila(f)
             }));
 
+            const totalReal = realTocado ? realOverride : ruedas.reduce((s, r) => s + r.precio_rueda, 0);
+
             const payload = {
                 fecha_compra: overlay.querySelector('input[name="fecha_compra"]').value,
                 cantidad: n,
-                precio_total: ruedas.reduce((s, r) => s + r.precio_rueda, 0),
+                precio_total: totalReal,
                 ruedas
             };
 

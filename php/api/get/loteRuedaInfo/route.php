@@ -9,7 +9,7 @@ try {
     }
     $id_lote = $_GET['id_lote'];
 
-    $sqlLote = "SELECT rl.id_rl, rl.precio_total, rl.cantidad, rl.stock, rl.fecha_compra,
+    $sqlLote = "SELECT rl.id_rl, rl.precio_total, rl.precio_estimado, rl.precio_real, rl.estado_precio, rl.cantidad, rl.stock, rl.fecha_compra,
                        (SELECT GROUP_CONCAT(DISTINCT mr.nombre_marca_rueda ORDER BY mr.nombre_marca_rueda SEPARATOR ', ')
                         FROM rueda_detalle rd
                         INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
@@ -40,7 +40,7 @@ try {
     $lote = $result->fetch_assoc();
     $stmt->close();
 
-    $sqlDetalle = "SELECT rd.id_rd, rd.precio_rueda, mr.id_marca_rueda, mr.nombre_marca_rueda
+    $sqlDetalle = "SELECT rd.id_rd, rd.precio_rueda, mr.id_marca_rueda, mr.nombre_marca_rueda, mr.precio_unitario
                    FROM rueda_detalle rd
                    INNER JOIN marca_rueda mr ON rd.id_marca_rueda = mr.id_marca_rueda
                    WHERE rd.id_rl = ?

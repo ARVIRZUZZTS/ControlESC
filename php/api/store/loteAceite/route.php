@@ -17,21 +17,40 @@ try {
 
     $fecha_compra = isset($data['fecha_compra']) ? $data['fecha_compra'] : null;
 
-    $precio_total = 0;
+    $precio_real = isset($data['precio_total']) ? floatval($data['precio_total']) : 0;
+
+    $precio_estimado = 0;
     $stock_total = 0;
-    foreach ($data['detalles'] as $d) {
-        $precio_total += floatval($d['precio_ingresado']);
-        $stock_total += floatval($d['stock']);
+    $sqlPrecioMarca = "SELECT precio FROM marca_aceite WHERE id_marca_aceite = ?";
+    $stmtPrecioMarca = $conexion->prepare($sqlPrecioMarca);
+    if (!$stmtPrecioMarca) {
+        throw new Exception("Error en la preparacion del precio de marca: " . $conexion->error);
     }
+    foreach ($data['detalles'] as $d) {
+        $id_marca = intval($d['id_marca_aceite']);
+        $stock = floatval($d['stock']);
+        $stock_total += $stock;
+        $stmtPrecioMarca->bind_param("i", $id_marca);
+        $stmtPrecioMarca->execute();
+        $resPrecio = $stmtPrecioMarca->get_result();
+        $filaPrecio = $resPrecio->fetch_assoc();
+        $precio_estimado += $filaPrecio ? $stock * floatval($filaPrecio['precio']) : 0;
+    }
+    $stmtPrecioMarca->close();
+
+    if ($precio_real <= 0) {
+        $precio_real = $precio_estimado;
+    }
+    $estado_precio = $precio_real > $precio_estimado ? "Subio" : ($precio_real < $precio_estimado ? "Bajo" : "Mantuvo");
 
     $conexion->autocommit(false);
 
-    $sqlLote = "INSERT INTO aceite_lote (precio_total, cantidad, stock_total, estado, fecha_compra) VALUES (?,?,?, 'Operativo', ?)";
+    $sqlLote = "INSERT INTO aceite_lote (precio_total, precio_estimado, precio_real, estado_precio, cantidad, stock_total, estado, fecha_compra) VALUES (?,?,?,?,?,?, 'Operativo', ?)";
     $stmtLote = $conexion->prepare($sqlLote);
     if (!$stmtLote) {
         throw new Exception("Error en la preparacion del lote: " . $conexion->error);
     }
-    $stmtLote->bind_param("ddis", $precio_total, $stock_total, $stock_total, $fecha_compra);
+    $stmtLote->bind_param("dddsdds", $precio_real, $precio_estimado, $precio_real, $estado_precio, $stock_total, $stock_total, $fecha_compra);
     if (!$stmtLote->execute()) {
         throw new Exception("Error al ejecutar el lote: " . $stmtLote->error);
     }
@@ -61,7 +80,9 @@ try {
     echo json_encode([
         "status" => "success",
         "message" => "Lote de aceite guardado correctamente",
-        "id" => $id_al
+        "id" => $id_al,
+        "precio_estimado" => $precio_estimado,
+        "precio_real" => $precio_real
     ]);
 
 } catch (Exception $e) {

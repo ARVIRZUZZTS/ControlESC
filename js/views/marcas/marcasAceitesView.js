@@ -36,7 +36,7 @@ export async function marcasAceitesView() {
                     <tr>
                         <th class="thl t10">Nombre</th>
                         <th class="t10">Unidad</th>
-                        <th class="t8">Precio</th>
+                        <th class="t8">Precio Bs.</th>
                         <th class="t5">Viajes</th>
                         <th class="t3">Editar</th>
                         <th class="thr t3">Eliminar</th>
@@ -50,7 +50,7 @@ export async function marcasAceitesView() {
                 <tr>
                     <td class="pb t10">${marcAceite.nombre_marca_aceite}</td>
                     <td class="pb pm t10">${marcAceite.unidad_aceite}</td>
-                    <td class="pb pm t8">${marcAceite.precio} Bs.</td>
+                    <td class="pb pm t8">${marcAceite.precio}</td>
                     <td class="pb pm t10">${marcAceite.media_viajes}</td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${marcAceite.id_marca_aceite}"><img src="img/edit.svg" alt="reporte"></button></td>
                     <td class="pb t3"><button class="btnEliminar listBtn" data-id="${marcAceite.id_marca_aceite}"><img src="img/trash.svg" alt="reporte"></button></td>

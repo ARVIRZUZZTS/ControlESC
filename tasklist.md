@@ -11,7 +11,7 @@
     - [ ] Nuevo Reporte
 - ### Flotas
     - [/] Vista de Flotas en Menu
-    - [ ] Nueva Flota
+    - [/] Nueva Flota
     - [ ] Editar Flota
     - [ ] Eliminar Flota
 - ### Ruedas
@@ -20,13 +20,13 @@
     - [/] Nueva Rueda
     - [-] Info Rueda
     - [/] Nueva Marca Rueda
-    - [ ] Editar Rueda
-    - [ ] Eliminar Rueda
+    - [ ] Editar Rueda codigo
+    - [/] Eliminar Lote Rueda
     - [ ] Ordenar Rueda x Placa
     - [ ] Ordenar Rueda x Condicion
 - ### Aceite
-    - [ ] Vista de Aceite en Menu
-    - [ ] Nueva Aceite
+    - [/] Vista de Aceite en Menu
+    - [/] Nueva Lote Aceite
     - [/] Vista de Marcas de Aceite
     - [/] Nueva Marcas de Aceite
     - [ ] Editar Aceite
@@ -42,3 +42,10 @@
 [ ] Agregar la validacion del input type Date (lote rueda)
 [ ] Agregar los placeholders de loteRueda desde la marca y el autocompletado
 [ ] Al hacer un reporte no olvidar colocar los viajes a Ruedas_Individuales
+
+
+
+ahora en el stock de lotes de ruedas que seria de rueda_lote pues el stock cada vez que se asigna a una flota disminuye, y tambien puedes agregar un modal informativo sobre la rueda_detalle de una rueda de .btnInfo, un reporte de todo lo guardado en rueda_flota, 
+
+
+corregir los inputs data list, ya que si le doy no le doy a aceptar en el cambio de una placa se debe quitar lo que tenga escrito

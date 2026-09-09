@@ -38,7 +38,7 @@ export async function aceitesListView() {
                         <th class="thl t5">ID</th>
                         <th class="th t10">Marca</th>
                         <th class="th t10">Fecha Compra</th>
-                        <th class="th t10">Precio Total</th>
+                        <th class="th t10">Precio Total Bs.</th>
                         <th class="th t8">Cantidad</th>
                         <th class="th t8">Stock</th>
                         <th class="thr t3">Info.</th>
