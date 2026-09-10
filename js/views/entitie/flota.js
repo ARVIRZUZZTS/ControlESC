@@ -2,6 +2,7 @@ import { flotasListView } from "../flotasListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { validarPlaca, validarPropietario, placaFilter } from "../../utils.js";
+import { cargarSeccionRuedasFlota } from "./ruedasFlota.js";
 
 export async function flota(placa) {
 
@@ -59,8 +60,12 @@ export async function flota(placa) {
                 <p>Aceite:</p>
                 <label id="estadoAceite">${dt.aceite}</label>
             </div>
+            <hr>
+            <div id="seccionRuedasFlota"></div>
         `;
         cont.innerHTML = html;
+
+        cargarSeccionRuedasFlota(placa);
 
         document.querySelector("#tbFlotaEnt .btnEditar").addEventListener("click", function() {
             editarFlota(this.dataset.id);

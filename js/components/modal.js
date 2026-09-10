@@ -1,9 +1,13 @@
-export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR", generativo = false } = {}) {
+export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR", generativo = false, panelClase = "" } = {}) {
 
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay";
-    overlay.id = "modalOverlay";    const html = `
-        <div class="modal-panel${generativo ? " modal-panel-generativo" : ""}" role="dialog" aria-modal="true">
+    overlay.id = "modalOverlay";
+    const clasePanel = ["modal-panel"];
+    if (generativo) clasePanel.push("modal-panel-generativo");
+    if (panelClase) clasePanel.push(panelClase);
+    const html = `
+        <div class="${clasePanel.join(" ")}" role="dialog" aria-modal="true">
             <div class="modal-header">
                 <h3>${titulo}</h3>
                 <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
@@ -114,7 +118,7 @@ export function abrirAlert({ mensaje = "", titulo = "Aviso" } = {}) {
     };
 }
 
-export function abrirConfirmation({ titulo = "Confirmacion", mensaje = "", onAceptar = null, onCancelar = null, botonAceptar = "ACEPTAR" } = {}) {
+export function abrirConfirmation({ titulo = "Confirmacion", mensaje = "", contenidoHTML = "", onAceptar = null, onCancelar = null, botonAceptar = "ACEPTAR" } = {}) {
 
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay modal-alert-overlay modal-confirm-overlay";
@@ -127,6 +131,7 @@ export function abrirConfirmation({ titulo = "Confirmacion", mensaje = "", onAce
             </div>
             <div class="modal-body modal-alert-body modal-confirm-body">
                 <p>${mensaje}</p>
+                ${contenidoHTML || ""}
             </div>
             <div class="modal-footer modal-confirm-footer">
                 <button type="button" class="modal-cancel">CANCELAR</button>
@@ -153,7 +158,10 @@ export function abrirConfirmation({ titulo = "Confirmacion", mensaje = "", onAce
 
     const aceptar = () => {
         if (cerrado) return;
-        if (onAceptar) onAceptar();
+        if (onAceptar) {
+            const res = onAceptar();
+            if (res === false) return;
+        }
         cerrar();
     };
 

@@ -245,3 +245,91 @@
     flex: 1;
     min-width: 0;
 }
+/*------------MODAL DIAGRAMA------------*/
+.modal-panel-diagrama {
+    background: #ffffff;
+    color: var(--text-primary);
+    max-width: 960px;
+}
+.modal-panel-diagrama .modal-header,
+.modal-panel-diagrama .modal-footer {
+    border-color: var(--accent);
+}
+.diagramaBody {
+    display: flex;
+    gap: 2vh;
+    align-items: flex-start;
+}
+.diagrama-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+    flex-shrink: 0;
+    width: 16vh;
+}
+.diagModoBtn {
+    width: 100%;
+    min-height: 5vh;
+}
+.diagModoBtn.diagModoActivo {
+    background: var(--bg-selected);
+    color: #fff;
+}
+.diagModoAccion {
+    margin-top: auto;
+}
+.diagrama-img-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    cursor: crosshair;
+}
+.diagrama-img-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+}
+#diagramaImgWrap {
+    display: inline-block;
+    flex: 0 0 auto;
+    max-height: 68vh;
+}
+#diagramaImgWrap > img {
+    width: auto;
+    max-width: 100%;
+    max-height: 68vh;
+}
+.rueda-btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    min-height: auto;
+    padding: 0.5vh;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+.rueda-btn img {
+    height: 3vh;
+    width: auto;
+    border: none;
+}
+.rueda-btn:hover {
+    box-shadow: 0px 0px 10px 3px var(--shadow);
+}
+.confNomRow {
+    width: 100%;
+    max-width: 42vh;
+    margin: 2.5vh auto 0 auto;
+}
+.confNomRow input {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+}

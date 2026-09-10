@@ -1,4 +1,4 @@
--- phpMyAdmin SQL Dump
+﻿-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
@@ -129,14 +129,14 @@ CREATE TABLE `empleado` (
 
 INSERT INTO `empleado` (`id_empleado`, `empleado`, `mensual`, `total`, `id_te`, `fecha_contrato`) VALUES
 (1, 'ERICK MENDOZA MONTESINOS', 1500.00, 0.00, 1, '2026-04-10'),
-(2, 'WILSON LAZARTE MONTAÑO', 1500.00, 0.00, 1, '2026-04-10'),
+(2, 'WILSON LAZARTE MONTAÃ‘O', 1500.00, 0.00, 1, '2026-04-10'),
 (3, 'JUAN QUISPE LLAMPAS', 1500.00, 0.00, 1, '2026-04-10'),
 (4, 'MARIO CRUZ LACATO', 1500.00, 0.00, 1, '2026-04-10'),
 (5, '-', 1500.00, 0.00, 1, '2026-04-10'),
 (6, 'JHONNY VARGAS', 1500.00, 0.00, 1, '2026-04-10'),
 (7, 'ALEX SANDRO VILLARROEL ROMERO', 1500.00, 0.00, 1, '2026-04-10'),
 (8, 'VICTOR HUGO VELARSCO CAERO', 1500.00, 0.00, 1, '2026-04-10'),
-(9, 'ELOY TERCEROS MONTAÑO', 1500.00, 0.00, 1, '2026-04-10'),
+(9, 'ELOY TERCEROS MONTAÃ‘O', 1500.00, 0.00, 1, '2026-04-10'),
 (10, 'RICHAR IRUSTA JIMENEZ', 1500.00, 0.00, 1, '2026-04-10'),
 (11, 'CALIXTO ANDIA QUINTEROS', 1500.00, 0.00, 1, '2026-04-10'),
 (12, 'REINALDO JORGE OCZACHOQUE', 1500.00, 0.00, 1, '2026-04-10'),
@@ -293,7 +293,10 @@ INSERT INTO `marca_rueda` (`id_marca_rueda`, `nombre_marca_rueda`, `precio_unita
 CREATE TABLE `posicion_rueda` (
   `id_pr` int(11) NOT NULL,
   `nombre_posicion` varchar(50) NOT NULL DEFAULT '-',
-  `placa` varchar(10) NOT NULL
+  `placa` varchar(10) NOT NULL,
+  `posicion_x` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `posicion_y` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `tipo` enum('doble','simple') NOT NULL DEFAULT 'simple'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -329,7 +332,7 @@ CREATE TABLE `rueda_detalle` (
   `codigo` varchar(20) DEFAULT '-',
   `precio_rueda` decimal(10,2) NOT NULL,
   `viajes_hechos` int(11) NOT NULL,
-  `estado` enum('Operativo','Inactivo','Baja') NOT NULL DEFAULT 'Inactivo'
+  `estado` enum('Disponible','Operativo','Baja') NOT NULL DEFAULT 'Disponible'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -337,31 +340,31 @@ CREATE TABLE `rueda_detalle` (
 --
 
 INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `precio_rueda`, `viajes_hechos`, `estado`) VALUES
-(1, 1, 1, '-', 50.00, 0, 'Inactivo'),
-(2, 1, 1, '-', 50.00, 0, 'Inactivo'),
-(5, 2, 1, '-', 150.00, 0, 'Inactivo'),
-(6, 2, 1, '-', 150.00, 0, 'Inactivo'),
+(1, 1, 1, '-', 50.00, 0, 'Disponible'),
+(2, 1, 1, '-', 50.00, 0, 'Disponible'),
+(5, 2, 1, '-', 150.00, 0, 'Disponible'),
+(6, 2, 1, '-', 150.00, 0, 'Disponible'),
 (7, 3, 4, '-', 200.00, 0, 'Operativo'),
-(8, 3, 1, '-', 150.00, 0, 'Inactivo'),
+(8, 3, 1, '-', 150.00, 0, 'Disponible'),
 (9, 3, 4, '-', 200.00, 0, 'Operativo'),
-(10, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(10, 3, 4, '-', 200.00, 0, 'Disponible'),
 (11, 3, 1, '-', 150.00, 0, 'Operativo'),
-(12, 3, 1, '-', 150.00, 0, 'Inactivo'),
-(13, 3, 4, '-', 200.00, 0, 'Inactivo'),
+(12, 3, 1, '-', 150.00, 0, 'Disponible'),
+(13, 3, 4, '-', 200.00, 0, 'Disponible'),
 (16, 4, 4, '-', 200.00, 0, 'Operativo'),
-(17, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(18, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(19, 4, 1, '-', 150.00, 0, 'Inactivo'),
-(20, 4, 1, '-', 150.00, 0, 'Inactivo'),
-(21, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(22, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(23, 4, 1, '-', 150.00, 0, 'Inactivo'),
-(24, 4, 1, '-', 150.00, 0, 'Inactivo'),
-(25, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(26, 4, 4, '-', 200.00, 0, 'Inactivo'),
-(27, 4, 1, '-', 150.00, 0, 'Inactivo'),
+(17, 4, 4, '-', 200.00, 0, 'Disponible'),
+(18, 4, 4, '-', 200.00, 0, 'Disponible'),
+(19, 4, 1, '-', 150.00, 0, 'Disponible'),
+(20, 4, 1, '-', 150.00, 0, 'Disponible'),
+(21, 4, 4, '-', 200.00, 0, 'Disponible'),
+(22, 4, 4, '-', 200.00, 0, 'Disponible'),
+(23, 4, 1, '-', 150.00, 0, 'Disponible'),
+(24, 4, 1, '-', 150.00, 0, 'Disponible'),
+(25, 4, 4, '-', 200.00, 0, 'Disponible'),
+(26, 4, 4, '-', 200.00, 0, 'Disponible'),
+(27, 4, 1, '-', 150.00, 0, 'Disponible'),
 (28, 5, 4, '-', 200.00, 0, 'Operativo'),
-(29, 6, 1, '-', 150.00, 0, 'Inactivo');
+(29, 6, 1, '-', 150.00, 0, 'Disponible');
 
 -- --------------------------------------------------------
 
@@ -372,7 +375,8 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `prec
 CREATE TABLE `rueda_flota` (
   `id_rf` int(11) NOT NULL,
   `id_rd` int(11) DEFAULT NULL,
-  `placa` varchar(10) NOT NULL DEFAULT '-',
+`placa` varchar(10) NOT NULL DEFAULT '-',
+  `id_pr` int(11) DEFAULT NULL,
   `viajes_hechos` int(11) DEFAULT 0,
   `estado` enum('Operativo','Baja') DEFAULT NULL,
   `fecha_instalacion` date DEFAULT NULL
@@ -716,3 +720,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
