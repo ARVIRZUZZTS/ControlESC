@@ -42,10 +42,3 @@
 [ ] Agregar la validacion del input type Date (lote rueda)
 [ ] Agregar los placeholders de loteRueda desde la marca y el autocompletado
 [ ] Al hacer un reporte no olvidar colocar los viajes a Ruedas_Individuales
-
-
-
-ahora en el stock de lotes de ruedas que seria de rueda_lote pues el stock cada vez que se asigna a una flota disminuye, y tambien puedes agregar un modal informativo sobre la rueda_detalle de una rueda de .btnInfo, un reporte de todo lo guardado en rueda_flota, 
-
-
-corregir los inputs data list, ya que si le doy no le doy a aceptar en el cambio de una placa se debe quitar lo que tenga escrito

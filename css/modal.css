@@ -333,3 +333,6 @@
     min-width: 0;
     text-align: center;
 }
+.modal-panel-ruedasinstalar {
+    max-width: 900px;
+}

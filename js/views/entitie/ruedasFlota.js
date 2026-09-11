@@ -4,7 +4,6 @@ import { autocompleteSeleccion } from "../../components/autocomplete.js";
 const IMG_FLOTA = "img/flotaPloteada.png";
 const IMG_SOLO = "img/w_solo.svg";
 const IMG_DOBLE = "img/w_doble.svg";
-const QUITAR_LABEL = "-- Quitar de Flota --";
 const OFFSET_DOBLE_X = 5;
 
 function nombreBase(nombre) {
@@ -20,15 +19,6 @@ function ladoRueda(nombre) {
 function labelPosicion(nombre) {
     const lado = ladoRueda(nombre);
     return lado ? `${nombreBase(nombre)} (${lado})` : nombreBase(nombre);
-}
-
-function labelRueda(r) {
-    const loteTxt = `Lote de Ruedas: ${r.id_rl} ${r.fecha_compra}`;
-    const ruedaTxt = `Rueda: ${r.id_rd} - ${r.codigo}`;
-    if (r.estado_rd === "Disponible") {
-        return `${loteTxt}, ${ruedaTxt}, Disponible`;
-    }
-    return `${loteTxt}, ${ruedaTxt}, Operativa en ${r.placa_op || "-"}`;
 }
 
 export async function cargarSeccionRuedasFlota(placa) {
@@ -78,7 +68,7 @@ function renderSeccion(placa, data, seccion) {
                 <table id="tbRuedasFlota">
                     <thead>
                         <tr>
-                            <th class="thl t15">Posicion</th>
+                            <th class="thl t10">Posicion</th>
                             <th class="t10">Rueda</th>
                             <th class="t8">Viajes Hechos</th>
                             <th class="t8">Viajes Totales</th>
@@ -100,21 +90,12 @@ function renderSeccion(placa, data, seccion) {
 
     data.posiciones.forEach(p => {
         const hayRueda = p.id_rd != null;
-        const opciones = data.ruedas.map(r => ({ id: r.id_rd, label: labelRueda(r) }));
-        if (hayRueda) {
-            opciones.push({ id: null, label: QUITAR_LABEL });
-        }
-        const actualLabel = hayRueda
-            ? (p.estado_rd === "Disponible"
-                ? `Lote de Ruedas: ${p.id_rl} ${p.fecha_compra}, Rueda: ${p.id_rd} - ${p.codigo}, Disponible`
-                : `Lote de Ruedas: ${p.id_rl} ${p.fecha_compra}, Rueda: ${p.id_rd} - ${p.codigo}, Operativa en ${placa}`)
-            : "";
 
         const tr = document.createElement("tr");
         tr.dataset.idPr = p.id_pr;
 
         const tdNombre = document.createElement("td");
-        tdNombre.className = "pb pm t15";
+        tdNombre.className = "pb pm t10";
         tdNombre.textContent = nombreBase(p.nombre_posicion);
         if (p.tipo === "doble") {
             const badge = document.createElement("span");
@@ -124,9 +105,19 @@ function renderSeccion(placa, data, seccion) {
             tdNombre.appendChild(badge);
         }
 
+        const actualLabel = hayRueda ? `Lote: ${p.id_rl}; Cod: ${p.codigo}` : "";
+
         const tdRueda = document.createElement("td");
         tdRueda.className = "pb pm t10";
-        tdRueda.innerHTML = `<input type="text" class="inputRuedaPosicion" maxlength="120" autocomplete="off">`;
+        tdRueda.innerHTML = `
+            <div class="accionesRuedaPos">
+                <div class="rdActualLabel">${hayRueda ? actualLabel : "Sin rueda asignada"}</div>
+                <div class="accionesRuedaBtns">
+                    <button type="button" class="btnInstalarRueda listBtn" title="Instalar rueda"><img src="img/instalar.svg" alt="instalar"></button>
+                    ${hayRueda ? `<button type="button" class="btnQuitarRueda listBtn" title="Quitar rueda"><img src="img/trash.svg" alt="quitar"></button>` : ""}
+                </div>
+            </div>
+        `;
 
         const tdVf = document.createElement("td");
         tdVf.className = "pb pm t8";
@@ -151,58 +142,32 @@ function renderSeccion(placa, data, seccion) {
         tr.appendChild(tdInfo);
         tbody.appendChild(tr);
 
-        const input = tdRueda.querySelector(".inputRuedaPosicion");
-        const idActual = hayRueda ? Number(p.id_rd) : null;
+        const bInstalar = tdRueda.querySelector(".btnInstalarRueda");
+        bInstalar.addEventListener("click", () => {
+            abrirSeleccionRueda({
+                placa,
+                id_pr: Number(p.id_pr),
+                nombrePosicion: labelPosicion(p.nombre_posicion),
+                idRuedaActual: hayRueda ? Number(p.id_rd) : null
+            });
+        });
 
-        const ac = autocompleteSeleccion({
-            input,
-            opciones,
-            valorActual: actualLabel,
-            placeholderSiempre: true,
-            onCambio: ({ id, label, tocado }) => {
-                if (!tocado) return;
-                if (label === QUITAR_LABEL) {
-                    if (!hayRueda || !placa) return;
-                    abrirConfirmation({
-                        titulo: `Posicion ${labelPosicion(p.nombre_posicion)}`,
-                        mensaje: `Esta seguro de quitar la rueda "Rueda: ${p.id_rd} - ${p.codigo}" de la posicion ${labelPosicion(p.nombre_posicion)} y dejarla en almacen?`,
-                        botonAceptar: "SI",
-                        onAceptar: () => ejecutarCambio({
-                            accion: "quitar",
-                            id_rd: Number(p.id_rd),
-                            placa,
-                            id_pr: Number(p.id_pr)
-                        })
-                    });
-                    return;
-                }
-                if (!id) {
-                    input.value = "";
-                    cargarSeccionRuedasFlota(placa);
-                    return;
-                }
-                const idSel = Number(id);
-                if (idSel === idActual) return;
-
-                const op = data.ruedas.find(r => Number(r.id_rd) === idSel);
-                const esOperativa = op && op.estado_rd === "Operativo";
-                const mensaje = esOperativa
-                    ? `Esta seguro de mover la rueda "${labelRueda(op)}" a la posicion ${labelPosicion(p.nombre_posicion)}?`
-                    : `Esta seguro de instalar la rueda "${labelRueda(op)}" en la posicion ${labelPosicion(p.nombre_posicion)}?`;
-
+        const bQuitar = tdRueda.querySelector(".btnQuitarRueda");
+        if (bQuitar) {
+            bQuitar.addEventListener("click", () => {
                 abrirConfirmation({
                     titulo: `Posicion ${labelPosicion(p.nombre_posicion)}`,
-                    mensaje,
+                    mensaje: `Esta seguro de quitar la rueda "Rueda: ${p.id_rd} - ${p.codigo}" de la posicion ${labelPosicion(p.nombre_posicion)} y dejarla en almacen?`,
                     botonAceptar: "SI",
                     onAceptar: () => ejecutarCambio({
-                        accion: "instalar",
-                        id_rd: idSel,
+                        accion: "quitar",
+                        id_rd: Number(p.id_rd),
                         placa,
                         id_pr: Number(p.id_pr)
                     })
                 });
-            }
-        });
+            });
+        }
 
         bInfo.addEventListener("click", () => {
             abrirAlert({
@@ -274,6 +239,121 @@ async function ejecutarCambio(payload) {
     } catch (error) {
         abrirAlert({ mensaje: "Error de conexion: " + error.message });
     }
+}
+
+let catalogoRuedas = null;
+
+async function obtenerCatalogoRuedas() {
+    if (catalogoRuedas) return catalogoRuedas;
+    const res = await fetch("php/api/get/ruedasInstalacion/route.php");
+    const data = await res.json();
+    if (data.status === "error") throw new Error(data.message);
+    catalogoRuedas = data.data;
+    return catalogoRuedas;
+}
+
+function abrirSeleccionRueda({ placa, id_pr, nombrePosicion, idRuedaActual }) {
+    const resultado = abrirModal({
+        titulo: "Seleccione rueda a Instalar",
+        headerDerechaHTML: `
+            <div id="filtrosRuedasModal">
+                <button type="button" class="btnFiltroRueda activo" data-filtro="Disponible">Disponible</button>
+                <button type="button" class="btnFiltroRueda" data-filtro="Operativa">Operativa</button>
+                <button type="button" class="btnFiltroRueda" data-filtro="Baja">Baja</button>
+            </div>
+        `,
+        sinFooter: true,
+        panelClase: "modal-panel-ruedasinstalar",
+        contenidoHTML: `
+            <table id="tbDetalleLote">
+                <thead>
+                    <tr>
+                        <th class="thl t8">Placa</th>
+                        <th class="th t15">Codigo</th>
+                        <th class="th t10">Marca</th>
+                        <th class="th t10">Precio Rueda Bs.</th>
+                        <th class="th t8">Viajes Hechos</th>
+                        <th class="th t8">Estado</th>
+                        <th class="thr t5">Instalar</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        `
+    });
+    const overlay = resultado.overlay;
+    const tbody = overlay.querySelector("#tbDetalleLote tbody");
+
+    function renderFiltradas() {
+        const activo = overlay.querySelector(".btnFiltroRueda.activo");
+        const filtro = activo ? activo.dataset.filtro : "Disponible";
+        const filtradas = catalogoRuedas.filter(r => r.estado === filtro && Number(r.id_rd) !== idRuedaActual);
+        tbody.innerHTML = "";
+        filtradas.forEach(r => {
+            const tr = document.createElement("tr");
+            const celdas = [
+                r.placa_op || "-",
+                r.codigo,
+                r.nombre_marca_rueda,
+                (r.precio_rueda ?? 0) + " Bs.",
+                r.viajes_hechos ?? 0,
+                r.estado
+            ];
+            celdas.forEach(texto => {
+                const td = document.createElement("td");
+                td.className = "pb pm";
+                td.textContent = texto;
+                tr.appendChild(td);
+            });
+            const tdInst = document.createElement("td");
+            tdInst.className = "pb pm";
+            const bInst = document.createElement("button");
+            bInst.className = "btnInstalarRueda listBtn";
+            bInst.title = "Instalar en la posicion seleccionada";
+            bInst.innerHTML = `<img src="img/instalar.svg" alt="instalar">`;
+            bInst.addEventListener("click", () => confirmarInstalacion(r));
+            tdInst.appendChild(bInst);
+            tr.appendChild(tdInst);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function confirmarInstalacion(r) {
+        let mensaje;
+        if (r.estado === "Operativa") {
+            mensaje = `Esta seguro de Instalar esta Rueda ${r.id_rd} de codigo ${r.codigo}, este pertenece a ${r.placa_op} en la posicion ${r.posicion_op || "-"}, si lo cambia esta rueda ya no figurara en la flota ${r.placa_op}`;
+        } else if (r.estado === "Baja") {
+            mensaje = "Esta seguro de querer instalar una rueda que fue dada de baja? Esta Rueda se instalara en la flota pero seguira de baja en almacen.";
+        } else {
+            mensaje = `Esta seguro de Instalar esta Rueda ${r.id_rd} de codigo ${r.codigo} en la posicion ${nombrePosicion}?`;
+        }
+        abrirConfirmation({
+            titulo: `Posicion ${nombrePosicion}`,
+            mensaje,
+            botonAceptar: "SI",
+            onAceptar: () => ejecutarCambio({
+                accion: "instalar",
+                id_rd: Number(r.id_rd),
+                placa,
+                id_pr
+            })
+        });
+    }
+
+    overlay.querySelectorAll(".btnFiltroRueda").forEach(btn => {
+        btn.addEventListener("click", () => {
+            overlay.querySelectorAll(".btnFiltroRueda").forEach(b => b.classList.remove("activo"));
+            btn.classList.add("activo");
+            renderFiltradas();
+        });
+    });
+
+    obtenerCatalogoRuedas()
+        .then(() => renderFiltradas())
+        .catch(err => {
+            abrirAlert({ mensaje: "Error cargando ruedas: " + err.message });
+            resultado.cerrar();
+        });
 }
 
 export async function configurarRuedasFlota(placa, data) {

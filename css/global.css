@@ -336,10 +336,10 @@ textarea {
     align-items: flex-start;
 }
 #diagrama {
-    width: 39%;
+    width: 19%;
 }
 #informacionFLotaRuedas {
-    width: 59%;
+    width: 79%;
 }
 .diagrama-static .rueda-btn {
     background: none;
@@ -367,4 +367,53 @@ textarea {
     font-size: 2vh;
     font-weight: bold;
     vertical-align: middle;
+}
+#filtrosRuedasModal {
+    display: flex;
+    gap: 1vh;
+    margin-left: auto;
+}
+.btnFiltroRueda {
+    min-height: auto;
+    padding: 0.6vh 1.4vh;
+    font-size: 1.7vh;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+.btnFiltroRueda:hover {
+    background: rgba(40, 140, 240, 0.25);
+}
+.btnFiltroRueda.activo {
+    background: var(--accent);
+    color: #fff;
+}
+.accionesRuedaPos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1vh;
+    padding: 0vh 1vh;
+}
+.accionesRuedaBtns {
+    display: flex;
+    gap: 1vh;
+}
+.rdActualLabel {
+}
+.btnInstalarRueda, .btnQuitarRueda {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6vh;
+    min-height: auto;
+    line-height: 1;
+    padding: 0.6vh 1.2vh;
+    font-size: 1.7vh;
+}
+.btnInstalarRueda img, .btnQuitarRueda img {
+    height: 2.4vh;
+    width: auto;
+    border: none;
 }

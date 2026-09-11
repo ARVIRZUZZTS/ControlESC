@@ -44,9 +44,6 @@ try {
         if ($placa === "") {
             throw new Exception("Falta la placa.");
         }
-        if ($rueda['estado'] === 'Baja') {
-            throw new Exception("No se puede instalar una rueda dada de baja.");
-        }
 
         $sql = "SELECT placa FROM flota WHERE placa = ?";
         $stmt = $conexion->prepare($sql);
@@ -71,7 +68,7 @@ try {
             }
             $stmt->close();
 
-            $sql = "SELECT rf.id_rd FROM rueda_flota rf WHERE rf.id_pr = ? AND rf.placa = ? AND rf.estado = 'Operativo'";
+            $sql = "SELECT rf.id_rd FROM rueda_flota rf WHERE rf.id_pr = ? AND rf.placa = ? AND rf.estado = 'Operativa'";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("is", $id_pr, $placa);
             $stmt->execute();
@@ -93,13 +90,21 @@ try {
         }
     }
 
-    $wasOperativo = $rueda['estado'] === 'Operativo';
+    $wasOperativa = $rueda['estado'] === 'Operativa';
 
     $conexion->autocommit(false);
 
     if ($accion === "instalar" || $accion === "mover") {
-        if (!$wasOperativo) {
-            $sql = "UPDATE rueda_detalle SET estado = 'Operativo' WHERE id_rd = ?";
+        if ($wasOperativa) {
+            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_rd = ? AND estado = 'Operativa'";
+            $stmt = $conexion->prepare($sql);
+            $stmt->bind_param("i", $id_rd);
+            if (!$stmt->execute()) {
+                throw new Exception("Error al actualizar rueda_flota: " . $stmt->error);
+            }
+            $stmt->close();
+        } elseif ($rueda['estado'] === 'Disponible') {
+            $sql = "UPDATE rueda_detalle SET estado = 'Operativa' WHERE id_rd = ?";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("i", $id_rd);
             if (!$stmt->execute()) {
@@ -114,14 +119,6 @@ try {
                 throw new Exception("Error al actualizar el stock del lote: " . $stmt->error);
             }
             $stmt->close();
-        } else {
-            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_rd = ? AND estado = 'Operativo'";
-            $stmt = $conexion->prepare($sql);
-            $stmt->bind_param("i", $id_rd);
-            if (!$stmt->execute()) {
-                throw new Exception("Error al actualizar rueda_flota: " . $stmt->error);
-            }
-            $stmt->close();
         }
 
         if ($id_pr && $reemplazada !== null) {
@@ -133,7 +130,7 @@ try {
             $detRep = $resRep->fetch_assoc();
             $stmt->close();
 
-            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_pr = ? AND placa = ? AND estado = 'Operativo'";
+            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_pr = ? AND placa = ? AND estado = 'Operativa'";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("is", $id_pr, $placa);
             if (!$stmt->execute()) {
@@ -160,7 +157,7 @@ try {
             }
         }
 
-        $sql = "INSERT INTO rueda_flota (id_rd, placa, id_pr, viajes_hechos, estado, fecha_instalacion) VALUES (?,?,?,0,'Operativo',NOW())";
+        $sql = "INSERT INTO rueda_flota (id_rd, placa, id_pr, viajes_hechos, estado, fecha_instalacion) VALUES (?,?,?,0,'Operativa',NOW())";
         $stmt = $conexion->prepare($sql);
         if (!$stmt) {
             throw new Exception("Error al preparar la insercion: " . $conexion->error);
@@ -178,7 +175,7 @@ try {
         if ($id_pr) {
             $sql = "SELECT rf.id_rd, rd.id_rl FROM rueda_flota rf
                     INNER JOIN rueda_detalle rd ON rd.id_rd = rf.id_rd
-                    WHERE rf.id_pr = ? AND rf.placa = ? AND rf.estado = 'Operativo'";
+                    WHERE rf.id_pr = ? AND rf.placa = ? AND rf.estado = 'Operativa'";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("is", $id_pr, $placa);
             $stmt->execute();
@@ -192,11 +189,11 @@ try {
             $idAfectado = intval($fila['id_rd']);
             $loteAfectado = $fila['id_rl'];
 
-            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_pr = ? AND placa = ? AND estado = 'Operativo'";
+            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_pr = ? AND placa = ? AND estado = 'Operativa'";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("is", $id_pr, $placa);
         } else {
-            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_rd = ? AND estado = 'Operativo'";
+            $sql = "UPDATE rueda_flota SET estado = 'Baja' WHERE id_rd = ? AND estado = 'Operativa'";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("i", $id_rd);
         }
@@ -214,7 +211,7 @@ try {
         $detAfectado = $res->fetch_assoc();
         $stmt->close();
 
-        if ($detAfectado && $detAfectado['estado'] === 'Operativo') {
+        if ($detAfectado && $detAfectado['estado'] === 'Operativa') {
             $sql = "UPDATE rueda_detalle SET estado = 'Disponible' WHERE id_rd = ?";
             $stmt = $conexion->prepare($sql);
             $stmt->bind_param("i", $idAfectado);

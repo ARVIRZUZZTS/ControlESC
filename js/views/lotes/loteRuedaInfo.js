@@ -107,7 +107,7 @@ export async function loteRuedaInfo(id_lote) {
 
         data_ruedas_individuales.forEach(rd => {
             const baja = rd.estado === "Baja";
-            const operativa = rd.estado === "Operativo";
+            const operativa = rd.estado === "Operativa";
             const placaClass = baja ? " placa-baja" : "";
             const valorPlaca = baja ? "BAJA" : (operativa ? (rd.placa || "") : "");
 
@@ -170,7 +170,7 @@ export async function loteRuedaInfo(id_lote) {
             const input = fila.querySelector(".inputPlacaRueda");
             const rd_estado = rd.estado;
             const baja = rd_estado === "Baja";
-            const operativa = rd_estado === "Operativo";
+            const operativa = rd_estado === "Operativa";
             const placaActual = baja ? "" : (operativa ? (rd.placa || "") : "");
 
             const opciones = operativa

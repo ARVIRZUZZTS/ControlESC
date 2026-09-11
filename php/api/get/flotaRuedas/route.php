@@ -15,7 +15,7 @@ try {
                       rd.id_rd, rd.codigo, rd.viajes_hechos AS viajes_total, rd.estado AS estado_rd,
                       rl.id_rl, rl.fecha_compra
                FROM posicion_rueda p
-               LEFT JOIN rueda_flota rf ON rf.id_pr = p.id_pr AND rf.placa = p.placa AND rf.estado = 'Operativo'
+               LEFT JOIN rueda_flota rf ON rf.id_pr = p.id_pr AND rf.placa = p.placa AND rf.estado = 'Operativa'
                LEFT JOIN rueda_detalle rd ON rd.id_rd = rf.id_rd
                LEFT JOIN rueda_lote rl ON rl.id_rl = rd.id_rl
                WHERE p.placa = ?
@@ -40,7 +40,7 @@ try {
                          rf.placa AS placa_op, rf.id_pr AS id_pr_op
                   FROM rueda_detalle rd
                   INNER JOIN rueda_lote rl ON rl.id_rl = rd.id_rl
-                  LEFT JOIN rueda_flota rf ON rf.id_rd = rd.id_rd AND rf.estado = 'Operativo'
+                  LEFT JOIN rueda_flota rf ON rf.id_rd = rd.id_rd AND rf.estado = 'Operativa'
                   WHERE rd.estado <> 'Baja'
                   ORDER BY (rd.estado = 'Disponible') DESC, rl.fecha_compra DESC, rd.id_rd ASC";
 

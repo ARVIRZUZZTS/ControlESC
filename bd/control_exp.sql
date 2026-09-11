@@ -332,7 +332,7 @@ CREATE TABLE `rueda_detalle` (
   `codigo` varchar(20) DEFAULT '-',
   `precio_rueda` decimal(10,2) NOT NULL,
   `viajes_hechos` int(11) NOT NULL,
-  `estado` enum('Disponible','Operativo','Baja') NOT NULL DEFAULT 'Disponible'
+`estado` enum('Disponible','Operativa','Baja') NOT NULL DEFAULT 'Disponible'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -344,14 +344,14 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `prec
 (2, 1, 1, '-', 50.00, 0, 'Disponible'),
 (5, 2, 1, '-', 150.00, 0, 'Disponible'),
 (6, 2, 1, '-', 150.00, 0, 'Disponible'),
-(7, 3, 4, '-', 200.00, 0, 'Operativo'),
+(7, 3, 4, '-', 200.00, 0, 'Operativa'),
 (8, 3, 1, '-', 150.00, 0, 'Disponible'),
-(9, 3, 4, '-', 200.00, 0, 'Operativo'),
+(9, 3, 4, '-', 200.00, 0, 'Operativa'),
 (10, 3, 4, '-', 200.00, 0, 'Disponible'),
-(11, 3, 1, '-', 150.00, 0, 'Operativo'),
+(11, 3, 1, '-', 150.00, 0, 'Operativa'),
 (12, 3, 1, '-', 150.00, 0, 'Disponible'),
 (13, 3, 4, '-', 200.00, 0, 'Disponible'),
-(16, 4, 4, '-', 200.00, 0, 'Operativo'),
+(16, 4, 4, '-', 200.00, 0, 'Operativa'),
 (17, 4, 4, '-', 200.00, 0, 'Disponible'),
 (18, 4, 4, '-', 200.00, 0, 'Disponible'),
 (19, 4, 1, '-', 150.00, 0, 'Disponible'),
@@ -363,7 +363,7 @@ INSERT INTO `rueda_detalle` (`id_rd`, `id_rl`, `id_marca_rueda`, `codigo`, `prec
 (25, 4, 4, '-', 200.00, 0, 'Disponible'),
 (26, 4, 4, '-', 200.00, 0, 'Disponible'),
 (27, 4, 1, '-', 150.00, 0, 'Disponible'),
-(28, 5, 4, '-', 200.00, 0, 'Operativo'),
+(28, 5, 4, '-', 200.00, 0, 'Operativa'),
 (29, 6, 1, '-', 150.00, 0, 'Disponible');
 
 -- --------------------------------------------------------
@@ -378,8 +378,8 @@ CREATE TABLE `rueda_flota` (
 `placa` varchar(10) NOT NULL DEFAULT '-',
   `id_pr` int(11) DEFAULT NULL,
   `viajes_hechos` int(11) DEFAULT 0,
-  `estado` enum('Operativo','Baja') DEFAULT NULL,
-  `fecha_instalacion` date DEFAULT NULL
+`estado` enum('Operativa','Baja') DEFAULT NULL,
+`fecha_instalacion` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -388,12 +388,12 @@ CREATE TABLE `rueda_flota` (
 
 INSERT INTO `rueda_flota` (`id_rf`, `id_rd`, `placa`, `viajes_hechos`, `estado`, `fecha_instalacion`) VALUES
 (1, 7, '1803-BNE', 0, 'Baja', '2026-09-02'),
-(2, 9, '1803-BNE', 0, 'Operativo', '2026-09-02'),
-(3, 7, '2447-CPE', 0, 'Operativo', '2026-09-02'),
-(4, 11, '1803-BNE', 0, 'Operativo', '2026-09-02'),
+(2, 9, '1803-BNE', 0, 'Operativa', '2026-09-02'),
+(3, 7, '2447-CPE', 0, 'Operativa', '2026-09-02'),
+(4, 11, '1803-BNE', 0, 'Operativa', '2026-09-02'),
 (5, 28, '1803-BNE', 0, 'Baja', '2026-09-02'),
-(6, 28, '2447-CPE', 0, 'Operativo', '2026-09-02'),
-(7, 16, '2550-TFU', 0, 'Operativo', '2026-09-05');
+(6, 28, '2447-CPE', 0, 'Operativa', '2026-09-02'),
+(7, 16, '2550-TFU', 0, 'Operativa', '2026-09-05');
 
 -- --------------------------------------------------------
 

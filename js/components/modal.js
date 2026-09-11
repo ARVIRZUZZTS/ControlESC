@@ -1,4 +1,4 @@
-export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR", generativo = false, panelClase = "" } = {}) {
+export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = null, onCancel = null, botonGuardar = "GUARDAR", generativo = false, panelClase = "", headerDerechaHTML = "", sinFooter = false } = {}) {
 
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay";
@@ -10,15 +10,18 @@ export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = nu
         <div class="${clasePanel.join(" ")}" role="dialog" aria-modal="true">
             <div class="modal-header">
                 <h3>${titulo}</h3>
+                ${headerDerechaHTML}
                 <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
             </div>
             <div class="modal-body">
                 ${contenidoHTML}
             </div>
+            ${sinFooter ? "" : `
             <div class="modal-footer">
                 <button type="button" class="modal-cancel">CANCELAR</button>
                 <button type="button" class="modal-accept"><img src="img/save.svg" alt="Guardar">${botonGuardar}</button>
             </div>
+            `}
         </div>
     `;
 
@@ -44,7 +47,7 @@ export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = nu
     };
 
     overlay.querySelector(".modal-close").addEventListener("click", cerrar);
-    overlay.querySelector(".modal-cancel").addEventListener("click", cerrar);
+    overlay.querySelector(".modal-cancel")?.addEventListener("click", cerrar);
 
     overlay.addEventListener("mousedown", (e) => {
         if (e.target === overlay) cerrar();
@@ -54,7 +57,8 @@ export function abrirModal({ titulo = "Modal", contenidoHTML = "", onSubmit = nu
 
     function panelGuardar() {
         const panel = overlay.querySelector(".modal-panel");
-        panel.querySelector(".modal-accept").addEventListener("click", () => {
+        const btnAc = panel.querySelector(".modal-accept");
+        if (btnAc) btnAc.addEventListener("click", () => {
             if (onSubmit) onSubmit(cerrar);
         });
     }
