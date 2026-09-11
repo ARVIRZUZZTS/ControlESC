@@ -48,33 +48,86 @@ try {
 
     $conexion->autocommit(false);
 
-    $sqlDel = "DELETE FROM posicion_rueda WHERE placa = ?";
-    $stmt = $conexion->prepare($sqlDel);
+    $sqlSel = "SELECT id_pr, nombre_posicion FROM posicion_rueda WHERE placa = ?";
+    $stmt = $conexion->prepare($sqlSel);
     $stmt->bind_param("s", $placa);
-    if (!$stmt->execute()) {
-        throw new Exception("Error al limpiar posiciones anteriores: " . $stmt->error);
+    $stmt->execute();
+    $resSel = $stmt->get_result();
+    $existentes = [];
+    while ($fila = $resSel->fetch_assoc()) {
+        $existentes[$fila['nombre_posicion']] = intval($fila['id_pr']);
     }
     $stmt->close();
 
-    $sqlIns = "INSERT INTO posicion_rueda (nombre_posicion, placa, posicion_x, posicion_y, tipo) VALUES (?,?,?,?,?)";
-    $stmt = $conexion->prepare($sqlIns);
-    if (!$stmt) {
+    $idsConservados = [];
+
+    $sqlUpd = "UPDATE posicion_rueda SET posicion_x = ?, posicion_y = ?, tipo = ? WHERE id_pr = ?";
+    $stmtUpd = $conexion->prepare($sqlUpd);
+    if (!$stmtUpd) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
+    $stmtUpd->bind_param("ddsi", $xUpd, $yUpd, $tipoUpd, $idPrUpd);
 
-    $tipo = "simple";
-    $stmt->bind_param("ssdds", $nombre, $placa, $x, $y, $tipo);
+    $sqlIns = "INSERT INTO posicion_rueda (nombre_posicion, placa, posicion_x, posicion_y, tipo) VALUES (?,?,?,?,?)";
+    $stmtIns = $conexion->prepare($sqlIns);
+    if (!$stmtIns) {
+        throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+    }
+    $tipoIns = "simple";
+    $stmtIns->bind_param("ssdds", $nombre, $placa, $x, $y, $tipoIns);
 
     foreach ($posiciones as $p) {
         $nombre = trim($p['nombre_posicion']);
         $x = floatval($p['posicion_x']);
         $y = floatval($p['posicion_y']);
         $tipo = $p['tipo'] === "doble" ? "doble" : "simple";
-        if (!$stmt->execute()) {
-            throw new Exception("Error al guardar una posicion: " . $stmt->error);
+
+        if (isset($existentes[$nombre])) {
+            $idPrUpd = $existentes[$nombre];
+            $xUpd = $x;
+            $yUpd = $y;
+            $tipoUpd = $tipo;
+            if (!$stmtUpd->execute()) {
+                throw new Exception("Error al actualizar una posicion: " . $stmtUpd->error);
+            }
+            $idsConservados[] = $idPrUpd;
+        } else {
+            $tipoIns = $tipo;
+            if (!$stmtIns->execute()) {
+                throw new Exception("Error al guardar una posicion: " . $stmtIns->error);
+            }
+            $idsConservados[] = $conexion->insert_id;
         }
     }
-    $stmt->close();
+    $stmtUpd->close();
+    $stmtIns->close();
+
+    if (count($idsConservados) > 0) {
+        $placeholders = implode(",", array_fill(0, count($idsConservados), "?"));
+        $sqlDel = "DELETE FROM posicion_rueda WHERE placa = ? AND id_pr NOT IN ($placeholders)";
+        $stmt = $conexion->prepare($sqlDel);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $types = "s" . str_repeat("i", count($idsConservados));
+        $params = array_merge([$placa], $idsConservados);
+        $stmt->bind_param($types, ...$params);
+        if (!$stmt->execute()) {
+            throw new Exception("Error al limpiar posiciones anteriores: " . $stmt->error);
+        }
+        $stmt->close();
+    } else {
+        $sqlDel = "DELETE FROM posicion_rueda WHERE placa = ?";
+        $stmt = $conexion->prepare($sqlDel);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $stmt->bind_param("s", $placa);
+        if (!$stmt->execute()) {
+            throw new Exception("Error al limpiar posiciones anteriores: " . $stmt->error);
+        }
+        $stmt->close();
+    }
 
     $conexion->commit();
     $conexion->autocommit(true);

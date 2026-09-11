@@ -5,6 +5,22 @@ const IMG_FLOTA = "img/flotaPloteada.png";
 const IMG_SOLO = "img/w_solo.svg";
 const IMG_DOBLE = "img/w_doble.svg";
 const QUITAR_LABEL = "-- Quitar de Flota --";
+const OFFSET_DOBLE_X = 5;
+
+function nombreBase(nombre) {
+    return String(nombre || "").replace(/\s(D\.[EI]|Ex|In)$/, "");
+}
+function ladoRueda(nombre) {
+    const m = /^(.*)\s(D\.[EI]|Ex|In)$/.exec(String(nombre || ""));
+    if (!m) return "";
+    if (m[2] === "D.E") return "Ex";
+    if (m[2] === "D.I") return "In";
+    return m[2];
+}
+function labelPosicion(nombre) {
+    const lado = ladoRueda(nombre);
+    return lado ? `${nombreBase(nombre)} (${lado})` : nombreBase(nombre);
+}
 
 function labelRueda(r) {
     const loteTxt = `Lote de Ruedas: ${r.id_rl} ${r.fecha_compra}`;
@@ -83,18 +99,6 @@ function renderSeccion(placa, data, seccion) {
     const tbody = document.querySelector("#tbRuedasFlota tbody");
 
     data.posiciones.forEach(p => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "rueda-btn";
-        btn.dataset.idPr = p.id_pr;
-        btn.setAttribute("aria-label", p.nombre_posicion);
-        btn.style.left = p.posicion_x + "%";
-        btn.style.top = p.posicion_y + "%";
-        const imgW = document.createElement("img");
-        imgW.src = p.tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
-        btn.appendChild(imgW);
-        wrap.appendChild(btn);
-
         const hayRueda = p.id_rd != null;
         const opciones = data.ruedas.map(r => ({ id: r.id_rd, label: labelRueda(r) }));
         if (hayRueda) {
@@ -111,11 +115,11 @@ function renderSeccion(placa, data, seccion) {
 
         const tdNombre = document.createElement("td");
         tdNombre.className = "pb pm t15";
-        tdNombre.textContent = p.nombre_posicion;
+        tdNombre.textContent = nombreBase(p.nombre_posicion);
         if (p.tipo === "doble") {
             const badge = document.createElement("span");
             badge.className = "badgeDoble";
-            badge.textContent = "D";
+            badge.textContent = ladoRueda(p.nombre_posicion) || "D";
             badge.title = "Rueda doble";
             tdNombre.appendChild(badge);
         }
@@ -160,8 +164,8 @@ function renderSeccion(placa, data, seccion) {
                 if (label === QUITAR_LABEL) {
                     if (!hayRueda || !placa) return;
                     abrirConfirmation({
-                        titulo: `Posicion ${p.nombre_posicion}`,
-                        mensaje: `Esta seguro de quitar la rueda "Rueda: ${p.id_rd} - ${p.codigo}" de la posicion ${p.nombre_posicion} y dejarla en almacen?`,
+                        titulo: `Posicion ${labelPosicion(p.nombre_posicion)}`,
+                        mensaje: `Esta seguro de quitar la rueda "Rueda: ${p.id_rd} - ${p.codigo}" de la posicion ${labelPosicion(p.nombre_posicion)} y dejarla en almacen?`,
                         botonAceptar: "SI",
                         onAceptar: () => ejecutarCambio({
                             accion: "quitar",
@@ -183,11 +187,11 @@ function renderSeccion(placa, data, seccion) {
                 const op = data.ruedas.find(r => Number(r.id_rd) === idSel);
                 const esOperativa = op && op.estado_rd === "Operativo";
                 const mensaje = esOperativa
-                    ? `Esta seguro de mover la rueda "${labelRueda(op)}" a la posicion ${p.nombre_posicion}?`
-                    : `Esta seguro de instalar la rueda "${labelRueda(op)}" en la posicion ${p.nombre_posicion}?`;
+                    ? `Esta seguro de mover la rueda "${labelRueda(op)}" a la posicion ${labelPosicion(p.nombre_posicion)}?`
+                    : `Esta seguro de instalar la rueda "${labelRueda(op)}" en la posicion ${labelPosicion(p.nombre_posicion)}?`;
 
                 abrirConfirmation({
-                    titulo: `Posicion ${p.nombre_posicion}`,
+                    titulo: `Posicion ${labelPosicion(p.nombre_posicion)}`,
                     mensaje,
                     botonAceptar: "SI",
                     onAceptar: () => ejecutarCambio({
@@ -208,13 +212,47 @@ function renderSeccion(placa, data, seccion) {
         });
     });
 
+    const grupos = [];
+    const indice = new Map();
+    data.posiciones.forEach(p => {
+        const m = /^(.*)\s(D\.[EI]|Ex|In)$/.exec(p.nombre_posicion || "");
+        if (p.tipo === "doble" && m) {
+            const base = m[1];
+            if (!indice.has(base)) {
+                indice.set(base, grupos.length);
+                grupos.push([]);
+            }
+            grupos[indice.get(base)].push(p);
+        } else {
+            grupos.push([p]);
+        }
+    });
+
+    grupos.forEach(items => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "rueda-btn";
+        const xs = items.map(p => parseFloat(p.posicion_x));
+        btn.style.left = (items.length > 1 ? xs.reduce((a, b) => a + b, 0) / items.length : xs[0]) + "%";
+        btn.style.top = items[0].posicion_y + "%";
+        btn.dataset.idPrs = items.map(p => p.id_pr).join(",");
+        btn.setAttribute("aria-label", items.map(p => labelPosicion(p.nombre_posicion)).join(", "));
+        const imgW = document.createElement("img");
+        imgW.src = items[0].tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
+        btn.appendChild(imgW);
+        wrap.appendChild(btn);
+    });
+
     wrap.querySelectorAll(".rueda-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            const tr = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${btn.dataset.idPr}"]`);
-            if (!tr) return;
+            const ids = btn.dataset.idPrs.split(",");
             tbody.querySelectorAll("tr").forEach(r => r.classList.remove("fila-resaltada"));
-            tr.classList.add("fila-resaltada");
-            tr.scrollIntoView({ behavior: "smooth", block: "center" });
+            ids.forEach(id => {
+                const tr = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${id}"]`);
+                if (tr) tr.classList.add("fila-resaltada");
+            });
+            const primera = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${ids[0]}"]`);
+            if (primera) primera.scrollIntoView({ behavior: "smooth", block: "center" });
         });
     });
 }
@@ -239,12 +277,16 @@ async function ejecutarCambio(payload) {
 }
 
 export async function configurarRuedasFlota(placa, data) {
-    const puestos = (data.posiciones || []).map(p => ({
-        x: parseFloat(p.posicion_x),
-        y: parseFloat(p.posicion_y),
-        tipo: p.tipo,
-        nombre: p.nombre_posicion
-    }));
+    const puestos = (data.posiciones || []).map(p => {
+        const m = String(p.nombre_posicion).match(/^(.*)\s(D\.[EI]|Ex|In)$/);
+        return {
+            x: parseFloat(p.posicion_x),
+            y: parseFloat(p.posicion_y),
+            tipo: p.tipo,
+            nombre: p.nombre_posicion,
+            grupo: m ? m[1] : undefined
+        };
+    });
     let modo = null;
 
     const nombresOptions = (data.nombres || []).map(n => ({
@@ -301,14 +343,30 @@ export async function configurarRuedasFlota(placa, data) {
 
     function dibujar() {
         wrap.querySelectorAll(".rueda-btn").forEach(b => b.remove());
+        const grupos = [];
+        const indice = new Map();
         puestos.forEach(p => {
+            const m = /^(.*)\s(D\.[EI]|Ex|In)$/.exec(p.nombre || "");
+            if (p.tipo === "doble" && (p.grupo || m)) {
+                const base = p.grupo || m[1];
+                if (!indice.has(base)) {
+                    indice.set(base, grupos.length);
+                    grupos.push([]);
+                }
+                grupos[indice.get(base)].push(p);
+            } else {
+                grupos.push([p]);
+            }
+        });
+        grupos.forEach(items => {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.className = "rueda-btn";
-            btn.style.left = p.x + "%";
-            btn.style.top = p.y + "%";
+            const xs = items.map(p => p.x);
+            btn.style.left = (items.length > 1 ? xs.reduce((a, b) => a + b, 0) / items.length : xs[0]) + "%";
+            btn.style.top = items[0].y + "%";
             const imgW = document.createElement("img");
-            imgW.src = p.tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
+            imgW.src = items[0].tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
             btn.appendChild(imgW);
             wrap.appendChild(btn);
         });
@@ -327,7 +385,13 @@ export async function configurarRuedasFlota(placa, data) {
         marcarModo(e.currentTarget, "doble");
     });
     resultado.overlay.querySelector("#diagDeshacer").addEventListener("click", () => {
-        puestos.pop();
+        const ultimo = puestos[puestos.length - 1];
+        if (!ultimo) return;
+        if (ultimo.grupo) {
+            while (puestos.length && puestos[puestos.length - 1].grupo === ultimo.grupo) puestos.pop();
+        } else {
+            puestos.pop();
+        }
         dibujar();
     });
 
@@ -365,7 +429,12 @@ export async function configurarRuedasFlota(placa, data) {
                     abrirAlert({ mensaje: "El nombre de la posicion no puede estar vacio." });
                     return false;
                 }
-                puestos.push({ x, y, tipo, nombre });
+                if (tipo === "doble") {
+                    puestos.push({ x: x + OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} Ex`, grupo: nombre });
+                    puestos.push({ x: x - OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} In`, grupo: nombre });
+                } else {
+                    puestos.push({ x, y, tipo, nombre });
+                }
                 dibujar();
             }
         });
