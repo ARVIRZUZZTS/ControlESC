@@ -1,6 +1,7 @@
 import { ruedasListView } from "../list/ruedas.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { abrirAlert, abrirConfirmation, abrirEliminar } from "../../components/modal.js";
+import { abrirInfoRueda } from "../entitie/ruedaInfo.js";
 
 export async function loteRuedaInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -97,7 +98,7 @@ export async function loteRuedaInfo(id_lote) {
                         <th class="th t15">Codigo</th>
                         <th class="th t10">Marca</th>
                         <th class="th t10">Precio Rueda Bs.</th>
-                        <th class="th t8">Viajes Hechos</th>
+                        <th class="th t8">Viajes Totales</th>
                         <th class="th t8">Estado</th>
                         <th class="thr t5">Info</th>
                     </tr>
@@ -138,6 +139,10 @@ export async function loteRuedaInfo(id_lote) {
         `;
 
         cont.innerHTML = html;
+
+        document.querySelectorAll("#tbDetalleLote .btnInfo").forEach(btn => {
+            btn.addEventListener("click", () => abrirInfoRueda(btn.dataset.id));
+        });
 
         document.querySelector(".btnEliminarLote").addEventListener("click", function () {
             const id = this.dataset.id;

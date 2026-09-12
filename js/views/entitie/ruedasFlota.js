@@ -1,5 +1,6 @@
 import { abrirModal, abrirAlert, abrirConfirmation } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
+import { abrirInfoRueda } from "./ruedaInfo.js";
 
 const IMG_FLOTA = "img/flotaPloteada.png";
 const IMG_SOLO = "img/w_solo.svg";
@@ -170,10 +171,7 @@ function renderSeccion(placa, data, seccion) {
         }
 
         bInfo.addEventListener("click", () => {
-            abrirAlert({
-                titulo: "Info. Rueda",
-                mensaje: `El detalle de la rueda ${p.id_rd} esta pendiente de implementacion.`
-            });
+            if (p.id_rd != null) abrirInfoRueda(p.id_rd);
         });
     });
 
