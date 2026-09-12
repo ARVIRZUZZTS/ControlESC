@@ -2,6 +2,7 @@ import { ruedasListView } from "../list/ruedas.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { abrirAlert, abrirConfirmation, abrirEliminar } from "../../components/modal.js";
 import { abrirInfoRueda } from "../entitie/ruedaInfo.js";
+import { asignarRuedaAFlota } from "../entitie/asignarRuedaFlota.js";
 
 export async function loteRuedaInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -194,45 +195,48 @@ export async function loteRuedaInfo(id_lote) {
                     const previa = placaActual === "BAJA" ? "" : placaActual;
                     if (nueva === placaActual || nueva === previa) return;
 
-                    const ejecutar = (accion) =>
-                        fetch("php/api/features/ruedaFlota/route.php", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ accion, id_rd: parseInt(id_rd), placa: nueva })
-                        })
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data.status === "success") {
-                                loteRuedaInfo(id_lote);
-                            } else {
-                                abrirAlert({ mensaje: "Error: " + data.message });
+                    if (operativa && nueva === "-- Quitar de Flota --") {
+                        abrirConfirmation({
+                            titulo: "Confirmar",
+                            mensaje: "Esta seguro de quitar la rueda de la flota y dejarla en almacen?",
+                            onAceptar: () => {
+                                fetch("php/api/features/ruedaFlota/route.php", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ accion: "quitar", id_rd: parseInt(id_rd), placa: placaActual })
+                                })
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (data.status === "success") {
+                                        loteRuedaInfo(id_lote);
+                                    } else {
+                                        abrirAlert({ mensaje: "Error: " + data.message });
+                                    }
+                                });
                             }
                         });
+                        return;
+                    }
+
+                    const continuar = () => asignarRuedaAFlota({
+                        placa: nueva,
+                        id_rd: parseInt(id_rd),
+                        codigo: rd.codigo,
+                        estado: rd.estado,
+                        onSuccess: () => loteRuedaInfo(id_lote)
+                    });
 
                     if (baja) {
-                        const mensaje = `Esta seguro de que quiere Instalar una Rueda que fue dada de Baja? tiene ${rd.viajes_hechos} viajes hechos.`;
                         abrirConfirmation({
                             titulo: "Confirmar Instalacion",
-                            mensaje,
-                            onAceptar: () => ejecutar("instalar")
+                            mensaje: `Esta seguro de que quiere Instalar una Rueda que fue dada de Baja? tiene ${rd.viajes_hechos} viajes hechos.`,
+                            onAceptar: continuar
                         });
-                    } else if (operativa && nueva && nueva !== placaActual) {
-                        if (nueva === "-- Quitar de Flota --") {
-                            abrirConfirmation({
-                                titulo: "Confirmar",
-                                mensaje: "Esta seguro de quitar la rueda de la flota y dejarla en almacen?",
-                                onAceptar: () => ejecutar("quitar")
-                            });
-                        } else {
-                            abrirConfirmation({
-                                titulo: "Confirmar Traslado",
-                                mensaje: `Esta seguro de mover la rueda de la placa ${placaActual} a la placa ${nueva}?`,
-                                onAceptar: () => ejecutar("mover")
-                            });
-                        }
-                    } else if (!operativa && nueva) {
-                        ejecutar("instalar");
+                        return;
                     }
+
+                    if (!nueva) return;
+                    continuar();
                 }
             });
         });

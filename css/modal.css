@@ -316,7 +316,7 @@
     box-shadow: 0 0 8px 3px rgba(40, 140, 240, 0.85);
 }
 .rueda-btn img {
-    height: 3vh;
+    height: 5vh;
     width: auto;
     border: none;
 }
@@ -338,4 +338,26 @@
 }
 .modal-panel-ruedaDetalle {
     max-width: 900px;
+}
+.modal-panel-selecPos {
+    max-width: 900px;
+}
+.modal-panel-selecPos .modal-body {
+    display: flex;
+    gap: 6vh;
+    align-items: flex-start;
+}
+.posCol {
+    flex: 1;
+    min-width: 0;
+}
+#diagramaSelPos {
+    display: inline-block;
+    flex: 0 0 auto;
+    max-height: 68vh;
+}
+#diagramaSelPos > img {
+    width: auto;
+    max-width: 100%;
+    max-height: 68vh;
 }
