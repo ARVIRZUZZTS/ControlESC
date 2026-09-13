@@ -35,9 +35,8 @@ export async function marcasAceitesView() {
                 <thead>
                     <tr>
                         <th class="thl t10">Nombre</th>
-                        <th class="t10">Unidad</th>
+                        <th class="t10">Cantidad Lt.</th>
                         <th class="t8">Precio Bs.</th>
-                        <th class="t5">Viajes</th>
                         <th class="t3">Editar</th>
                         <th class="thr t3">Eliminar</th>
                     </tr>
@@ -49,9 +48,8 @@ export async function marcasAceitesView() {
             html += `
                 <tr>
                     <td class="pb t10">${marcAceite.nombre_marca_aceite}</td>
-                    <td class="pb pm t10">${marcAceite.unidad_aceite}</td>
+                    <td class="pb pm t10">${marcAceite.cantidad}</td>
                     <td class="pb pm t8">${marcAceite.precio}</td>
-                    <td class="pb pm t10">${marcAceite.media_viajes}</td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${marcAceite.id_marca_aceite}"><img src="img/edit.svg" alt="reporte"></button></td>
                     <td class="pb t3"><button class="btnEliminar listBtn" data-id="${marcAceite.id_marca_aceite}"><img src="img/trash.svg" alt="reporte"></button></td>
                 </tr>
@@ -64,6 +62,16 @@ export async function marcasAceitesView() {
         `;
 
         cont.innerHTML = html;
+
+        const marcasAccion = new Map();
+        data.forEach(m => marcasAccion.set(String(m.id_marca_aceite), m));
+
+        document.querySelectorAll(".btnEditar").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const m = marcasAccion.get(this.dataset.id);
+                if (m) newMarcaAceiteView(m);
+            });
+        });
 
     } catch (error) {
         cont.innerHTML = "<p>Error cargando Marcas de Aceites</p>";

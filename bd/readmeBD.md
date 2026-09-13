@@ -3,7 +3,6 @@
 - marca_aceite : datos crud, de aceite
 - aceite_reporte : compra de aceite reporte
 - aceite_flota : flota tiene aceite
-- unidad_aceite : unidades de medicion del aceite
 ## Rueda
 - marca_rueda : datos crud, de ruedas
 - reporte_rueda : compra de ruedas reporte

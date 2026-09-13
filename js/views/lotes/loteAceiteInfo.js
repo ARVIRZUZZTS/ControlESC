@@ -61,8 +61,8 @@ export async function loteAceiteInfo(id_lote) {
                         <th class="th t10">Marca</th>
                         <th class="th t10">Fecha Compra</th>
                         <th class="th t10">Precio Total Bs.</th>
+                        <th class="th t8">Unidades</th>
                         <th class="th t8">Cantidad</th>
-                        <th class="th t8">Stock</th>
                         <th class="thr t3">Eliminar</th>
                     </tr>
                 </thead>
@@ -73,7 +73,7 @@ export async function loteAceiteInfo(id_lote) {
                         <td class="pb pm t10">${lote.fecha_compra}</td>
                         <td class="pb pm t10">${resumenPrecioHtml(lote.precio_estimado || lote.precio_total, lote.precio_real || lote.precio_total, lote.estado_precio || "Mantuvo")}</td>
                         <td class="pb pm t8">${lote.cantidad}</td>
-                        <td class="pb pm t8">${lote.stock_total}</td>
+                        <td class="pb pm t8">${Number(lote.cantidad_lt || 0).toFixed(3)}</td>
                         <td class="pb t3">
                             <button class="btnInfo listBtn btnEliminarLote" data-id="${lote.id_al}">
                                 <img src="img/trash.svg" alt="Eliminar">
@@ -91,9 +91,8 @@ export async function loteAceiteInfo(id_lote) {
                 <thead>
                     <tr>
                         <th class="thl t10">Marca</th>
-                        <th class="th t8">Unidad</th>
                         <th class="th t8">Precio Ingresado Bs.</th>
-                        <th class="th t8">Stock</th>
+                        <th class="th t8">Cantidad</th>
                         <th class="th t8">Asignado</th>
                         <th class="th t8">Disponible</th>
                         <th class="th t8">Estado</th>
@@ -107,14 +106,13 @@ export async function loteAceiteInfo(id_lote) {
             html += `
                 <tr data-id_ad="${rd.id_ad}">
                     <td class="pb t10">${rd.nombre_marca_aceite}</td>
-                    <td class="pb pm t8">${rd.unidad_aceite}</td>
                     <td class="pb pm t8 ${detallePrecioClase(parseFloat(rd.precio_ingresado) || 0, (parseFloat(rd.stock) || 0) * (parseFloat(rd.precio) || 0))}">${detallePrecioHtml(rd.precio_ingresado, (parseFloat(rd.stock) || 0) * (parseFloat(rd.precio) || 0))}</td>
-                    <td class="pb pm t8">${rd.stock}</td>
-                    <td class="pb pm t8">${rd.asignado}</td>
-                    <td class="pb pm t8">${rd.disponible}</td>
+                    <td class="pb pm t8">${((parseFloat(rd.stock) || 0) * (parseFloat(rd.cantidad) || 0)).toFixed(3)}</td>
+                    <td class="pb pm t8">${(parseFloat(rd.asignado) || 0).toFixed(3)}</td>
+                    <td class="pb pm t8">${(parseFloat(rd.disponible) || 0).toFixed(3)}</td>
                     <td class="pb pm t8">${rd.estado}</td>
                     <td class="pb t5">
-                        <button class="btnAsignar listBtn" data-id="${rd.id_ad}" data-unidad="${rd.unidad_aceite}" data-conversion="${rd.conversion}" data-disponible="${rd.disponible}">
+                        <button class="btnAsignar listBtn" data-id="${rd.id_ad}" data-disponible="${rd.disponible}">
                             Asignar
                         </button>
                     </td>
@@ -155,10 +153,8 @@ export async function loteAceiteInfo(id_lote) {
         document.querySelectorAll(".btnAsignar").forEach(btn => {
             btn.addEventListener("click", function () {
                 const id_ad = this.dataset.id;
-                const unidad = this.dataset.unidad;
-                const conversion = parseFloat(this.dataset.conversion);
                 const disponible = parseFloat(this.dataset.disponible);
-                asignarAceiteModal({ id_ad, unidad, conversion, disponible, onSuccess: () => loteAceiteInfo(id_lote) });
+                asignarAceiteModal({ id_ad, disponible, onSuccess: () => loteAceiteInfo(id_lote) });
             });
         });
 

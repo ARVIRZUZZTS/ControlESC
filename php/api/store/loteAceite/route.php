@@ -50,7 +50,8 @@ try {
     if (!$stmtLote) {
         throw new Exception("Error en la preparacion del lote: " . $conexion->error);
     }
-    $stmtLote->bind_param("dddsdds", $precio_real, $precio_estimado, $precio_real, $estado_precio, $stock_total, $stock_total, $fecha_compra);
+    $cantidad_int = intval($stock_total);
+    $stmtLote->bind_param("dddsids", $precio_real, $precio_estimado, $precio_real, $estado_precio, $cantidad_int, $stock_total, $fecha_compra);
     if (!$stmtLote->execute()) {
         throw new Exception("Error al ejecutar el lote: " . $stmtLote->error);
     }

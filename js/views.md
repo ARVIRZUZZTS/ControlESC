@@ -6,7 +6,6 @@
     - Vista de flotas aceite y ver mas detalles de la flota
 - [2] marca_aceite : Marca de Aceite
 - [3] aceite_reporte : 
-- [4] unidad_aceite : unidades de medicion del aceite
 ## Rueda
 - [1] rueda_flota : flota tiene a rueda
     - Vista de flotas ruedas y ver mas detalles de la flota

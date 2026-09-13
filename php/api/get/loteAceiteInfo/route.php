@@ -13,7 +13,11 @@ try {
                        (SELECT GROUP_CONCAT(DISTINCT ma.nombre_marca_aceite ORDER BY ma.nombre_marca_aceite SEPARATOR ', ')
                         FROM aceite_detalle ad
                         INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
-                        WHERE ad.id_al = al.id_al) AS marcas
+                        WHERE ad.id_al = al.id_al) AS marcas,
+                       (SELECT COALESCE(SUM(ad.stock * ma.cantidad), 0)
+                        FROM aceite_detalle ad
+                        INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
+                        WHERE ad.id_al = al.id_al) AS cantidad_lt
                 FROM aceite_lote al
                 WHERE al.id_al = ?";
 
@@ -39,11 +43,10 @@ try {
     $stmt->close();
 
     $sqlDetalle = "SELECT ad.id_ad, ad.id_marca_aceite, ad.precio_ingresado, ad.stock, ad.estado,
-                          ma.nombre_marca_aceite, ma.precio, ua.id_ua, ua.unidad_aceite, ua.conversion,
+                          ma.nombre_marca_aceite, ma.cantidad, ma.precio,
                           (SELECT COALESCE(SUM(af.cantidad),0) FROM aceite_flota af WHERE af.id_ad = ad.id_ad) AS asignado
                    FROM aceite_detalle ad
                    INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
-                   INNER JOIN unidad_aceite ua ON ua.id_ua = ma.id_ua
                    WHERE ad.id_al = ?
                    ORDER BY ad.id_ad ASC";
 
@@ -58,7 +61,7 @@ try {
     $detalles = [];
     while ($row = $resultDetalle->fetch_assoc()) {
         $row['asignado'] = floatval($row['asignado']);
-        $row['disponible'] = floatval($row['stock']) - $row['asignado'];
+        $row['disponible'] = (floatval($row['stock']) * floatval($row['cantidad'])) - $row['asignado'];
         $detalles[] = $row;
     }
     $stmtDetalle->close();

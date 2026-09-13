@@ -4,10 +4,9 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT ma.id_marca_aceite, ma.nombre_marca_aceite, ma.precio, ma.id_ua, ua.unidad_aceite, ua.conversion
-            FROM marca_aceite ma
-            INNER JOIN unidad_aceite ua ON ua.id_ua = ma.id_ua
-            ORDER BY ma.nombre_marca_aceite ASC";
+    $sql = "SELECT id_marca_aceite, nombre_marca_aceite, cantidad, precio
+            FROM marca_aceite
+            ORDER BY nombre_marca_aceite ASC";
 
     $stmt = $conexion->prepare($sql);
 

@@ -5,9 +5,8 @@ header('Content-Type: application/json');
 
 try {
     $sql = "SELECT *
-            FROM marca_aceite ma
-            INNER JOIN unidad_aceite ua ON ua.id_ua = ma.id_ua
-            ORDER BY ma.nombre_marca_aceite DESC";
+            FROM marca_aceite
+            ORDER BY nombre_marca_aceite DESC";
 
     $stmt = $conexion->prepare($sql);
     $stmt->execute();

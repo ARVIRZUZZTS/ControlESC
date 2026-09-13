@@ -39,8 +39,8 @@ export async function aceitesListView() {
                         <th class="th t10">Marca</th>
                         <th class="th t10">Fecha Compra</th>
                         <th class="th t10">Precio Total Bs.</th>
+                        <th class="th t8">Unidades</th>
                         <th class="th t8">Cantidad</th>
-                        <th class="th t8">Stock</th>
                         <th class="thr t3">Info.</th>
                     </tr>
                 </thead>
@@ -55,7 +55,7 @@ export async function aceitesListView() {
                     <td class="pb pm t10">${aceite.fecha_compra}</td>
                     <td class="pb pm t10">${aceite.precio_total}</td>
                     <td class="pb pm t8">${aceite.cantidad}</td>
-                    <td class="pb pm t8">${aceite.stock_total}</td>
+                    <td class="pb pm t8">${Number(aceite.cantidad_lt || 0).toFixed(2)}</td>
                     <td class="pb t3">
                         <button class="btnInfo listBtn" data-id="${aceite.id_al}">
                             <img src="img/info.svg" alt="reporte">

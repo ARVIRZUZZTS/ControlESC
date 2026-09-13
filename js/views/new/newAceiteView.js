@@ -17,7 +17,7 @@ export async function newAceiteView() {
         const marcas = marcasResponse.data || marcasResponse;
 
         const optMarcas = marcas.map(m =>
-            `<option value="${m.id_marca_aceite}" data-precio="${m.precio}" data-unidad="${m.unidad_aceite}">${m.nombre_marca_aceite} (${m.unidad_aceite})</option>`
+            `<option value="${m.id_marca_aceite}" data-precio="${m.precio}" data-cantidad="${m.cantidad}">${m.nombre_marca_aceite} (${parseFloat(m.cantidad)} Lt)</option>`
         ).join("");
 
         const contenidoHTML = `
@@ -28,7 +28,7 @@ export async function newAceiteView() {
                 </div>
                 <div class="modal-fila modal-fila-aviso">
                     <label>Detalles:</label>
-                    <span class="avisoDetalles">Elija las marcas y su stock. Una fila por marca.</span>
+                    <span class="avisoDetalles">Elija las marcas y sus unidades. Una fila por marca.</span>
                 </div>
                 <div id="loteAceiteDetalles"></div>
                 <div class="modal-fila">
@@ -119,11 +119,11 @@ export async function newAceiteView() {
                 </div>
                 <div class="loteGenerativoCol">
                     <select name="marca_al[]">
-                        <option value="" data-precio="" data-unidad="">-- Elija Marca --</option>
+                        <option value="" data-precio="">-- Elija Marca --</option>
                         ${optMarcas}
                     </select>
                     <div class="lotegenerativoMarca">
-                        <input type="number" step="0.001" name="stock_al[]" placeholder="Cantidad" min="0">
+                        <input type="number" step="1" name="stock_al[]" placeholder="Unidades" min="0">
                         <input type="number" step="0.01" name="precio_al[]" placeholder="0.00" min="0">
                     </div>
                 </div>
@@ -145,7 +145,7 @@ export async function newAceiteView() {
             const objeto = { fila, marca: select, stock, precio };
             placeholderFila();
 
-            stock.addEventListener("keydown", decimalFilter);
+            stock.addEventListener("keydown", hardFilter);
             precio.addEventListener("keydown", decimalFilter);
             stock.addEventListener("input", () => {
                 placeholderFila();
@@ -191,7 +191,7 @@ export async function newAceiteView() {
             }
             const sinStock = filas.filter(f => parseFloat(f.stock.value) <= 0);
             if (sinStock.length > 0) {
-                abrirAlert({ mensaje: "Debes colocar el stock de cada detalle." });
+                abrirAlert({ mensaje: "Debes colocar las unidades de cada detalle." });
                 return;
             }
 

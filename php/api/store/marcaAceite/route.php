@@ -11,17 +11,21 @@ try {
         throw new Exception("No se recibieron datos validos.");
     }
 
-    $sql = "INSERT INTO marca_aceite (nombre_marca_aceite, precio, id_ua) 
+    if (!isset($data['cantidad']) || $data['cantidad'] === '') {
+        throw new Exception("La cantidad es obligatoria.");
+    }
+
+    $sql = "INSERT INTO marca_aceite (nombre_marca_aceite, cantidad, precio) 
     VALUES (?,?,?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
-    $stmt->bind_param("sdi",
+    $stmt->bind_param("sdd",
         $data['nombre_marca_aceite'],
-        $data['precio'],
-        $data['id_ua']
+        $data['cantidad'],
+        $data['precio']
     );
 
     if ($stmt->execute()) {

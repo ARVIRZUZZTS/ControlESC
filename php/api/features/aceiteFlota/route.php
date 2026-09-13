@@ -27,10 +27,9 @@ try {
 
     $conexion->autocommit(false);
 
-    $sqlDet = "SELECT ad.id_ad, ad.stock, ma.id_marca_aceite, ua.unidad_aceite, ua.conversion
+    $sqlDet = "SELECT ad.id_ad, ad.stock, ma.id_marca_aceite, ma.cantidad
                FROM aceite_detalle ad
                INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
-               INNER JOIN unidad_aceite ua ON ua.id_ua = ma.id_ua
                WHERE ad.id_ad = ?
                FOR UPDATE";
     $stmtDet = $conexion->prepare($sqlDet);
@@ -47,9 +46,7 @@ try {
         throw new Exception("Detalle de aceite no encontrado.");
     }
 
-    $unidad = $det['unidad_aceite'];
-    $conversion = floatval($det['conversion']);
-    $litros = $cantidad * $conversion;
+    $litros = $cantidad;
 
     $sqlAsig = "SELECT COALESCE(SUM(af.cantidad),0) AS asignado FROM aceite_flota af WHERE af.id_ad = ?";
     $stmtAsig = $conexion->prepare($sqlAsig);
@@ -60,9 +57,10 @@ try {
     $stmtAsig->close();
     $asignado = floatval($asig['asignado']);
 
-    $disponible_tabla = floatval($det['stock']) - $asignado;
+    $stock_litros = floatval($det['stock']) * floatval($det['cantidad']);
+    $disponible_tabla = $stock_litros - $asignado;
     if ($cantidad > $disponible_tabla + 0.0001) {
-        throw new Exception("Cantidad supera el stock disponible de esta marca (disponible: " . $disponible_tabla . ").");
+        throw new Exception("Cantidad supera el stock disponible de esta marca (disponible: " . $disponible_tabla . " litros).");
     }
 
     $sqlFlota = "SELECT placa, capacidad_aceite, aceite_actual FROM flota WHERE placa = ? FOR UPDATE";
@@ -83,7 +81,7 @@ try {
     $capacidad = floatval($flota['capacidad_aceite']);
     $actual = floatval($flota['aceite_actual']);
 
-    $sqlOcupado = "SELECT COALESCE(SUM(af.litros),0) AS ocupado FROM aceite_flota af WHERE af.placa = ?";
+    $sqlOcupado = "SELECT COALESCE(SUM(af.cantidad),0) AS ocupado FROM aceite_flota af WHERE af.placa = ?";
     $stmtOcupado = $conexion->prepare($sqlOcupado);
     if (!$stmtOcupado) {
         throw new Exception("Error en la preparacion del calculo de ocupado: " . $conexion->error);
@@ -104,12 +102,12 @@ try {
 
     $fecha_uso = date('Y-m-d');
 
-    $sqlInsert = "INSERT INTO aceite_flota (id_ad, placa, cantidad, unidad_aceite, litros, estado, fecha_uso) VALUES (?,?,?,?,?, 'En Uso', ?)";
+    $sqlInsert = "INSERT INTO aceite_flota (id_ad, placa, cantidad, estado, fecha_uso) VALUES (?,?,?, 'En Uso', ?)";
     $stmtInsert = $conexion->prepare($sqlInsert);
     if (!$stmtInsert) {
         throw new Exception("Error en la preparacion del insert: " . $conexion->error);
     }
-    $stmtInsert->bind_param("issdss", $id_ad, $placa, $cantidad, $unidad, $litros, $fecha_uso);
+    $stmtInsert->bind_param("issd", $id_ad, $placa, $cantidad, $fecha_uso);
     if (!$stmtInsert->execute()) {
         throw new Exception("Error al asignar el aceite: " . $stmtInsert->error);
     }
@@ -122,7 +120,6 @@ try {
         "status" => "success",
         "message" => "Aceite asignado correctamente a la flota " . $placa,
         "asignado" => $cantidad,
-        "unidad" => $unidad,
         "litros" => $litros
     ]);
 

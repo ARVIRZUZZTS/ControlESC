@@ -1,7 +1,7 @@
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 
-export async function asignarAceiteModal({ id_ad, unidad, conversion, disponible, onSuccess = null } = {}) {
+export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null } = {}) {
 
     const placasRes = await fetch("php/api/get/placasList/route.php");
     const placasResponse = await placasRes.json();
@@ -26,9 +26,8 @@ export async function asignarAceiteModal({ id_ad, unidad, conversion, disponible
             </div>
         </div>
         <div class="modal-fila">
-            <label>Cantidad:</label>
-            <input type="number" id="asCantidad" step="0.001" min="0" placeholder="0" autocomplete="off">
-            <label class="asUnidad">${unidad}</label>
+            <label>Cantidad (Lt.):</label>
+            <input type="number" id="asCantidad" step="0.001" min="0" placeholder="0.000" autocomplete="off">
         </div>
     `;
 

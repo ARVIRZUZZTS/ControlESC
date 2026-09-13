@@ -8,7 +8,11 @@ try {
                    (SELECT GROUP_CONCAT(DISTINCT ma.nombre_marca_aceite ORDER BY ma.nombre_marca_aceite SEPARATOR ', ')
                     FROM aceite_detalle ad
                     INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
-                    WHERE ad.id_al = al.id_al) AS marcas
+                    WHERE ad.id_al = al.id_al) AS marcas,
+                   (SELECT COALESCE(SUM(ad.stock * ma.cantidad), 0)
+                    FROM aceite_detalle ad
+                    INNER JOIN marca_aceite ma ON ad.id_marca_aceite = ma.id_marca_aceite
+                    WHERE ad.id_al = al.id_al) AS cantidad_lt
             FROM aceite_lote al
             WHERE al.estado = 'Operativo'
             ORDER BY al.fecha_compra DESC";
