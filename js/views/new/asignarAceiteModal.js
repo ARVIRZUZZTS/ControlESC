@@ -9,6 +9,8 @@ export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null }
     const placasOptions = placas.map(p => ({ id: p.placa, label: p.placa }));
 
     const porc = [0.25, 0.5, 0.75, 1];
+    const disponibleLote = parseFloat(disponible) || 0;
+    let espacioLibre = disponibleLote;
 
     const contenido = `
         <div class="modal-fila">
@@ -24,6 +26,10 @@ export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null }
             <div class="asPorc">
                 ${porc.map(p => `<button type="button" class="btnAsPorc" data-p="${p}">${Math.round(p * 100)}%</button>`).join("")}
             </div>
+        </div>
+        <div class="modal-fila">
+            <label>Espacio:</label>
+            <input type="range" id="asRange" min="0" step="0.001" value="0">
         </div>
         <div class="modal-fila">
             <label>Cantidad (Lt.):</label>
@@ -65,7 +71,20 @@ export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null }
 
     const inpPlaca = resultado.overlay.querySelector("#asPlaca");
     const inpCantidad = resultado.overlay.querySelector("#asCantidad");
+    const inpRange = resultado.overlay.querySelector("#asRange");
     const capSpan = resultado.overlay.querySelector("#asCapacidad");
+
+    const maxActual = () => Math.min(disponibleLote, espacioLibre);
+
+    inpRange.max = maxActual();
+
+    function setCantidad(valor) {
+        const max = maxActual();
+        const v = Math.max(0, Math.min(max, parseFloat(valor) || 0));
+        const v3 = Math.round(v * 1000) / 1000;
+        inpRange.value = v3;
+        inpCantidad.value = v3.toString();
+    }
 
     const ac = autocompleteSeleccion({
         input: inpPlaca,
@@ -78,6 +97,9 @@ export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null }
             const res = await fetch(`php/api/get/flotaCapacidad/route.php?placa=${encodeURIComponent(placa)}`);
             const data = await res.json();
             if (data.status === "success") {
+                espacioLibre = parseFloat(data.data.disponible_aceite) || 0;
+                inpRange.max = maxActual();
+                setCantidad(0);
                 capSpan.textContent = `${data.data.disponible_aceite} litros disponibles de ${data.data.capacidad_aceite}`;
             } else {
                 capSpan.textContent = "--";
@@ -88,9 +110,16 @@ export async function asignarAceiteModal({ id_ad, disponible, onSuccess = null }
     resultado.overlay.querySelectorAll(".btnAsPorc").forEach(btn => {
         btn.addEventListener("click", () => {
             const p = parseFloat(btn.dataset.p);
-            const cantidad = disponible * p;
-            inpCantidad.value = (Math.round(cantidad * 1000) / 1000).toString();
+            setCantidad(Math.min(disponibleLote * p, espacioLibre));
         });
+    });
+
+    inpRange.addEventListener("input", () => {
+        setCantidad(inpRange.value);
+    });
+
+    inpCantidad.addEventListener("input", () => {
+        setCantidad(inpCantidad.value);
     });
 
     return { resultado, ac };

@@ -186,11 +186,10 @@
     min-height: 4.5vh;
     padding: 0 1vh;
 }
-.asUnidad {
-    width: auto !important;
-    text-align: left !important;
-    font-size: 2.3vh;
-    font-weight: bold;
+#asRange {
+    flex: 1;
+    min-width: 0;
+    accent-color: rgb(0, 100, 130);
 }
 /*------------MODAL GENERATIVO------------*/
 .modal-panel-generativo .modal-header h3 {

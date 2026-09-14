@@ -218,6 +218,15 @@ textarea {
     padding: 0px 5vh;
     align-items: center;
 }
+#estadoAceite {
+    border-radius: 15px;
+    padding: 0.5vh 2vh;
+    font-weight: bold;
+}
+.estadoAceite-normal { background: rgba(0, 150, 80, 0.85); }
+.estadoAceite-regular { background: rgba(220, 170, 0, 0.9); color: #000 !important; }
+.estadoAceite-cambio { background: rgba(255, 140, 0, 0.9); }
+.estadoAceite-critico { background: rgba(200, 0, 0, 0.9); }
 /*------------AUTOCOMPLETE------------*/
 .ac-wrap {
     position: relative;

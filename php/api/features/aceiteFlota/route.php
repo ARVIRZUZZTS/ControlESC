@@ -81,23 +81,11 @@ try {
     $capacidad = floatval($flota['capacidad_aceite']);
     $actual = floatval($flota['aceite_actual']);
 
-    $sqlOcupado = "SELECT COALESCE(SUM(af.cantidad),0) AS ocupado FROM aceite_flota af WHERE af.placa = ?";
-    $stmtOcupado = $conexion->prepare($sqlOcupado);
-    if (!$stmtOcupado) {
-        throw new Exception("Error en la preparacion del calculo de ocupado: " . $conexion->error);
-    }
-    $stmtOcupado->bind_param("s", $placa);
-    $stmtOcupado->execute();
-    $resOcupado = $stmtOcupado->get_result();
-    $ocup = $resOcupado->fetch_assoc();
-    $stmtOcupado->close();
-    $ocupado = floatval($ocup['ocupado']);
-
-    $nuevo_total = $actual + $ocupado + $litros;
+    $nuevo_total = $actual + $litros;
 
     if ($nuevo_total > $capacidad + 0.0001) {
-        $disponible = $capacidad - $actual - $ocupado;
-        throw new Exception("La flota " . $placa . " no tiene suficiente capacidad. Le caben " . $disponible . " litros y quieres asignar " . $litros . " litros.");
+        $disponible = $capacidad - $actual;
+        throw new Exception("La flota " . $placa . " no tiene suficiente capacidad. Espacio libre: " . $disponible . " litros y quieres asignar " . $litros . " litros.");
     }
 
     $fecha_uso = date('Y-m-d');
@@ -113,6 +101,17 @@ try {
     }
     $stmtInsert->close();
 
+    $sqlUpd = "UPDATE flota SET aceite_actual = aceite_actual + ? WHERE placa = ?";
+    $stmtUpd = $conexion->prepare($sqlUpd);
+    if (!$stmtUpd) {
+        throw new Exception("Error en la preparacion del update de flota: " . $conexion->error);
+    }
+    $stmtUpd->bind_param("ds", $cantidad, $placa);
+    if (!$stmtUpd->execute()) {
+        throw new Exception("Error al actualizar el aceite actual de la flota: " . $stmtUpd->error);
+    }
+    $stmtUpd->close();
+
     $conexion->commit();
     $conexion->autocommit(true);
 
@@ -120,7 +119,8 @@ try {
         "status" => "success",
         "message" => "Aceite asignado correctamente a la flota " . $placa,
         "asignado" => $cantidad,
-        "litros" => $litros
+        "litros" => $litros,
+        "aceite_actual" => $actual + $cantidad
     ]);
 
 } catch (Exception $e) {

@@ -4,6 +4,14 @@ import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { validarPlaca, validarPropietario, placaFilter } from "../../utils.js";
 import { cargarSeccionRuedasFlota } from "./ruedasFlota.js";
 
+function estadoAceiteClase(viajes) {
+    const v = parseInt(viajes) || 0;
+    if (v >= 17) return "estadoAceite-critico";
+    if (v >= 14) return "estadoAceite-cambio";
+    if (v >= 8) return "estadoAceite-regular";
+    return "estadoAceite-normal";
+}
+
 export async function flota(placa) {
 
     const cont = document.getElementById("contDin");
@@ -57,8 +65,10 @@ export async function flota(placa) {
             </table>
             <hr>
             <div class="highlight">
-                <p>Aceite:</p>
-                <label id="estadoAceite">${dt.aceite}</label>
+                <p>ACEITE:</p>
+                <p>Capacidad Maxima: ${dt.capacidad_aceite} lt</p>
+                <p>Aceite Actual ${dt.aceite_actual} lt</p>
+                <label id="estadoAceite" class="${estadoAceiteClase(dt.viajes_aceite)}">${dt.viajes_aceite}v.</label>
             </div>
             <hr>
             <div id="seccionRuedasFlota"></div>

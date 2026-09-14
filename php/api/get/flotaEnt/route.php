@@ -9,6 +9,7 @@ try {
     }
     
     $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_u, f.viajes,
+                   f.capacidad_aceite, f.aceite_actual, f.viajes_aceite,
                    COALESCE(e1.empleado, 'Sin Asignar') AS chofer1_nombre,
                    COALESCE(e2.empleado, 'Sin Asignar') AS chofer2_nombre,
                    COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,

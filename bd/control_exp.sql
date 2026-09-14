@@ -30,7 +30,7 @@ CREATE TABLE `aceite_detalle` (
   `stock` decimal(10,3) DEFAULT NULL,
   `estado` enum('Agotado','En Uso','Almacen') DEFAULT NULL,
   PRIMARY KEY (`id_ad`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `aceite_detalle` (
 
 LOCK TABLES `aceite_detalle` WRITE;
 /*!40000 ALTER TABLE `aceite_detalle` DISABLE KEYS */;
-INSERT INTO `aceite_detalle` VALUES (4,14,1,0.00,3.000,'Almacen'),(5,15,1,0.00,3.000,'Almacen'),(6,15,2,0.00,2.000,'Almacen'),(9,17,1,300.00,2.000,'Almacen'),(10,17,2,1000.00,3.000,'Almacen'),(11,18,1,150.00,1.000,'Almacen');
+INSERT INTO `aceite_detalle` VALUES (4,14,1,0.00,3.000,'Almacen'),(5,15,1,0.00,3.000,'Almacen'),(6,15,2,0.00,2.000,'Almacen'),(9,17,1,300.00,2.000,'Almacen'),(10,17,2,1000.00,3.000,'Almacen'),(11,18,1,150.00,1.000,'Almacen'),(13,20,2,600.00,2.000,'Almacen');
 /*!40000 ALTER TABLE `aceite_detalle` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,7 +58,7 @@ CREATE TABLE `aceite_flota` (
   `estado` enum('En Uso','Agotado') DEFAULT 'En Uso',
   `fecha_uso` date DEFAULT NULL,
   PRIMARY KEY (`id_af`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,7 +89,7 @@ CREATE TABLE `aceite_lote` (
   `estado` enum('Operativo','Eliminado') NOT NULL DEFAULT 'Operativo',
   `fecha_compra` date DEFAULT NULL,
   PRIMARY KEY (`id_al`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +98,7 @@ CREATE TABLE `aceite_lote` (
 
 LOCK TABLES `aceite_lote` WRITE;
 /*!40000 ALTER TABLE `aceite_lote` DISABLE KEYS */;
-INSERT INTO `aceite_lote` VALUES (1,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-04-03'),(2,300.00,0.00,300.00,'Subio',1,1.000,'Eliminado','2026-04-02'),(3,300.00,0.00,300.00,'Subio',3,3.000,'Eliminado','2026-04-01'),(4,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-04-01'),(5,300.00,0.00,300.00,'Subio',4,4.000,'Eliminado','2026-03-07'),(6,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-07'),(7,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-07'),(8,300.00,0.00,300.00,'Subio',3,3.000,'Eliminado','2026-03-02'),(9,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-02'),(10,300.00,0.00,300.00,'Subio',1,1.000,'Eliminado','2026-03-01'),(11,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-03'),(14,0.00,450.00,0.00,'Bajo',3,3.000,'Eliminado','2026-09-06'),(15,0.00,1050.00,0.00,'Bajo',5,5.000,'Eliminado','2026-09-06'),(17,1300.00,1200.00,1300.00,'Subio',5,5.000,'Eliminado','2026-09-09'),(18,150.00,150.00,150.00,'Mantuvo',1,1.000,'Eliminado','2026-09-09');
+INSERT INTO `aceite_lote` VALUES (1,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-04-03'),(2,300.00,0.00,300.00,'Subio',1,1.000,'Eliminado','2026-04-02'),(3,300.00,0.00,300.00,'Subio',3,3.000,'Eliminado','2026-04-01'),(4,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-04-01'),(5,300.00,0.00,300.00,'Subio',4,4.000,'Eliminado','2026-03-07'),(6,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-07'),(7,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-07'),(8,300.00,0.00,300.00,'Subio',3,3.000,'Eliminado','2026-03-02'),(9,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-02'),(10,300.00,0.00,300.00,'Subio',1,1.000,'Eliminado','2026-03-01'),(11,300.00,0.00,300.00,'Subio',2,2.000,'Eliminado','2026-03-03'),(14,0.00,450.00,0.00,'Bajo',3,3.000,'Eliminado','2026-09-06'),(15,0.00,1050.00,0.00,'Bajo',5,5.000,'Eliminado','2026-09-06'),(17,1300.00,1200.00,1300.00,'Subio',5,5.000,'Eliminado','2026-09-09'),(18,150.00,150.00,150.00,'Mantuvo',1,1.000,'Eliminado','2026-09-09'),(20,660.00,600.00,660.00,'Subio',2,2.000,'Operativo','2026-09-12');
 /*!40000 ALTER TABLE `aceite_lote` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +234,7 @@ CREATE TABLE `flota` (
 
 LOCK TABLES `flota` WRITE;
 /*!40000 ALTER TABLE `flota` DISABLE KEYS */;
-INSERT INTO `flota` VALUES ('1194-UKE','ERICK MENDOZA',1,0,1,1,0,0,30.000,0.000),('1234-ABC','David Chavez',15,0,1,2,0,0,30.000,0.000),('1461-KUX','VIVIAN CABALLERO',2,0,1,1,0,0,30.000,0.000),('1580-EYR','JUAN QUISPE LLAMPA',3,0,1,1,0,0,30.000,0.000),('1800-FIU','MIGUELINA PEREDO',4,0,1,1,0,0,30.000,0.000),('1803-BNE','CARMEN VELASCO',5,0,1,1,0,0,30.000,0.000),('2130-YXG','JHONNY VARGAS',6,0,1,1,0,0,30.000,0.000),('2218-PCT','-',7,0,1,1,0,0,30.000,0.000),('2264-KGD','VICTOR HUGO VELASCO',8,0,1,1,0,0,30.000,0.000),('2447-CPE','ELOY TERCEROS',9,0,1,1,0,0,30.000,0.000),('2447-DKT','RICHAR IRUSTA',10,0,1,1,0,0,30.000,0.000),('2494-RXU','JHONNY CABALLERO',11,0,1,1,0,0,30.000,0.000),('2537-DER','REINALDO ALBERTO',12,0,1,1,0,0,30.000,0.000),('2550-TFU','RUTH CABALLERO',13,0,1,1,0,0,30.000,0.000),('2701-YNF','JHONNY CABALLERO',14,0,1,1,0,0,30.000,0.000),('2830-UTA','JHONNY CABALLERO',15,0,1,1,0,0,30.000,0.000),('2996-UKF','JHONNY CABALLERO',16,0,1,1,0,0,30.000,0.000),('3056-EAY','JHONNY CABALLERO',17,0,1,1,0,0,30.000,0.000);
+INSERT INTO `flota` VALUES ('1194-UKE','ERICK MENDOZA',1,0,1,1,0,0,30.000,0.000),('1234-ABC','David Chavez',15,0,1,2,0,0,30.000,2.688),('1461-KUX','VIVIAN CABALLERO',2,0,1,1,0,0,30.000,0.000),('1580-EYR','JUAN QUISPE LLAMPA',3,0,1,1,0,0,30.000,0.000),('1800-FIU','MIGUELINA PEREDO',4,0,1,1,0,0,30.000,0.000),('1803-BNE','CARMEN VELASCO',5,0,1,1,0,0,30.000,11.626),('2130-YXG','JHONNY VARGAS',6,0,1,1,0,0,30.000,0.000),('2218-PCT','-',7,0,1,1,0,0,30.000,0.000),('2264-KGD','VICTOR HUGO VELASCO',8,0,1,1,0,0,30.000,0.000),('2447-CPE','ELOY TERCEROS',9,0,1,1,0,0,30.000,0.000),('2447-DKT','RICHAR IRUSTA',10,0,1,1,0,0,30.000,0.000),('2494-RXU','JHONNY CABALLERO',11,0,1,1,0,0,30.000,0.000),('2537-DER','REINALDO ALBERTO',12,0,1,1,0,0,30.000,0.000),('2550-TFU','RUTH CABALLERO',13,0,1,1,0,0,30.000,0.000),('2701-YNF','JHONNY CABALLERO',14,0,1,1,0,0,30.000,0.000),('2830-UTA','JHONNY CABALLERO',15,0,1,1,0,0,30.000,0.000),('2996-UKF','JHONNY CABALLERO',16,0,1,1,0,0,30.000,0.000),('3056-EAY','JHONNY CABALLERO',17,0,1,1,0,0,30.000,0.000);
 /*!40000 ALTER TABLE `flota` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -300,7 +300,7 @@ CREATE TABLE `marca_aceite` (
   `cantidad` decimal(10,3) NOT NULL DEFAULT 0.000,
   `precio` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id_marca_aceite`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -550,4 +550,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-12 20:25:50
+-- Dump completed on 2026-09-13 18:52:10
