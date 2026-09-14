@@ -22,6 +22,51 @@ function labelPosicion(nombre) {
     return lado ? `${nombreBase(nombre)} (${lado})` : nombreBase(nombre);
 }
 
+function hacerArrastrable(wrap, { obtenerGrupo, aplicar, alSoltar }) {
+    let drag = null;
+
+    wrap.addEventListener("pointerdown", (e) => {
+        const btn = e.target.closest(".rueda-btn");
+        if (!btn) return;
+        e.preventDefault();
+        const grupo = obtenerGrupo(btn);
+        if (!grupo) return;
+        drag = {
+            btn,
+            grupo,
+            movido: false,
+            prevX: e.clientX,
+            prevY: e.clientY
+        };
+        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+        btn.classList.add("dragging");
+        wrap.classList.add("dragging");
+    });
+
+    wrap.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        if (Math.abs(e.clientX - drag.prevX) > 2 || Math.abs(e.clientY - drag.prevY) > 2) drag.movido = true;
+        drag.prevX = e.clientX;
+        drag.prevY = e.clientY;
+        const rect = wrap.getBoundingClientRect();
+        const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+        aplicar(drag, x, y);
+    });
+
+    function fin() {
+        if (!drag) return;
+        drag.btn.classList.remove("dragging");
+        wrap.classList.remove("dragging");
+        const movido = drag.movido;
+        drag = null;
+        if (alSoltar) alSoltar(movido);
+    }
+
+    wrap.addEventListener("pointerup", fin);
+    wrap.addEventListener("pointercancel", fin);
+}
+
 export async function cargarSeccionRuedasFlota(placa) {
     const seccion = document.getElementById("seccionRuedasFlota");
     if (!seccion) return;
@@ -191,6 +236,8 @@ function renderSeccion(placa, data, seccion) {
         }
     });
 
+    const gruposPuestos = [];
+
     grupos.forEach(items => {
         const btn = document.createElement("button");
         btn.type = "button";
@@ -199,15 +246,23 @@ function renderSeccion(placa, data, seccion) {
         btn.style.left = (items.length > 1 ? xs.reduce((a, b) => a + b, 0) / items.length : xs[0]) + "%";
         btn.style.top = items[0].posicion_y + "%";
         btn.dataset.idPrs = items.map(p => p.id_pr).join(",");
+        btn.dataset.grupoIdx = gruposPuestos.length;
         btn.setAttribute("aria-label", items.map(p => labelPosicion(p.nombre_posicion)).join(", "));
         const imgW = document.createElement("img");
         imgW.src = items[0].tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
         btn.appendChild(imgW);
         wrap.appendChild(btn);
+        gruposPuestos.push(items);
     });
+
+    let suprimirClick = false;
 
     wrap.querySelectorAll(".rueda-btn").forEach(btn => {
         btn.addEventListener("click", () => {
+            if (suprimirClick) {
+                suprimirClick = false;
+                return;
+            }
             const ids = btn.dataset.idPrs.split(",");
             tbody.querySelectorAll("tr").forEach(r => r.classList.remove("fila-resaltada"));
             ids.forEach(id => {
@@ -217,6 +272,52 @@ function renderSeccion(placa, data, seccion) {
             const primera = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${ids[0]}"]`);
             if (primera) primera.scrollIntoView({ behavior: "smooth", block: "center" });
         });
+    });
+
+    hacerArrastrable(wrap, {
+        obtenerGrupo(btn) {
+            return gruposPuestos[Number(btn.dataset.grupoIdx)] || null;
+        },
+        aplicar(drag, x, y) {
+            const items = drag.grupo;
+            if (items.length > 1) {
+                items.forEach((p, i) => {
+                    p.posicion_x = i === 0 ? x + OFFSET_DOBLE_X : x - OFFSET_DOBLE_X;
+                    p.posicion_y = y;
+                });
+            } else {
+                items[0].posicion_x = x;
+                items[0].posicion_y = y;
+            }
+            drag.btn.style.left = x + "%";
+            drag.btn.style.top = y + "%";
+        },
+        alSoltar(movido) {
+            if (!movido) return;
+            suprimirClick = true;
+            const posiciones = data.posiciones.map(p => ({
+                nombre_posicion: p.nombre_posicion,
+                posicion_x: Math.round(parseFloat(p.posicion_x) * 100) / 100,
+                posicion_y: Math.round(parseFloat(p.posicion_y) * 100) / 100,
+                tipo: p.tipo
+            }));
+            fetch("php/api/store/ruedaPosicion/route.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ placa, posiciones })
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.status !== "success") {
+                    abrirAlert({ mensaje: "Error al guardar posicion: " + result.message });
+                }
+                cargarSeccionRuedasFlota(placa);
+            })
+            .catch(err => {
+                abrirAlert({ mensaje: "Error de conexion: " + err.message });
+                cargarSeccionRuedasFlota(placa);
+            });
+        }
     });
 }
 
@@ -362,10 +463,12 @@ export async function configurarRuedasFlota(placa, data) {
             y: parseFloat(p.posicion_y),
             tipo: p.tipo,
             nombre: p.nombre_posicion,
-            grupo: m ? m[1] : undefined
+            grupo: m ? m[1] : undefined,
+            saved: true
         };
     });
     let modo = null;
+    const gruposPuestos = [];
 
     const nombresOptions = (data.nombres || []).map(n => ({
         id: null,
@@ -421,6 +524,7 @@ export async function configurarRuedasFlota(placa, data) {
 
     function dibujar() {
         wrap.querySelectorAll(".rueda-btn").forEach(b => b.remove());
+        gruposPuestos.length = 0;
         const grupos = [];
         const indice = new Map();
         puestos.forEach(p => {
@@ -443,10 +547,12 @@ export async function configurarRuedasFlota(placa, data) {
             const xs = items.map(p => p.x);
             btn.style.left = (items.length > 1 ? xs.reduce((a, b) => a + b, 0) / items.length : xs[0]) + "%";
             btn.style.top = items[0].y + "%";
+            btn.dataset.grupoIdx = gruposPuestos.length;
             const imgW = document.createElement("img");
             imgW.src = items[0].tipo === "doble" ? IMG_DOBLE : IMG_SOLO;
             btn.appendChild(imgW);
             wrap.appendChild(btn);
+            gruposPuestos.push(items);
         });
     }
 
@@ -465,12 +571,26 @@ export async function configurarRuedasFlota(placa, data) {
     resultado.overlay.querySelector("#diagDeshacer").addEventListener("click", () => {
         const ultimo = puestos[puestos.length - 1];
         if (!ultimo) return;
-        if (ultimo.grupo) {
-            while (puestos.length && puestos[puestos.length - 1].grupo === ultimo.grupo) puestos.pop();
+        const remover = () => {
+            if (ultimo.grupo) {
+                while (puestos.length && puestos[puestos.length - 1].grupo === ultimo.grupo) puestos.pop();
+            } else {
+                puestos.pop();
+            }
+            dibujar();
+        };
+        const grupoItems = ultimo.grupo ? puestos.filter(p => p.grupo === ultimo.grupo) : [ultimo];
+        if (grupoItems.some(p => p.saved)) {
+            const nombreMostrar = ultimo.grupo || ultimo.nombre;
+            abrirConfirmation({
+                titulo: `Posicion ${nombreMostrar}`,
+                mensaje: `Esta seguro de Quitar este elemento ${nombreMostrar}?`,
+                botonAceptar: "SI",
+                onAceptar: remover
+            });
         } else {
-            puestos.pop();
+            remover();
         }
-        dibujar();
     });
 
     wrap.addEventListener("click", (e) => {
@@ -508,10 +628,10 @@ export async function configurarRuedasFlota(placa, data) {
                     return false;
                 }
                 if (tipo === "doble") {
-                    puestos.push({ x: x + OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} Ex`, grupo: nombre });
-                    puestos.push({ x: x - OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} In`, grupo: nombre });
+                    puestos.push({ x: x + OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} Ex`, grupo: nombre, saved: false });
+                    puestos.push({ x: x - OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} In`, grupo: nombre, saved: false });
                 } else {
-                    puestos.push({ x, y, tipo, nombre });
+                    puestos.push({ x, y, tipo, nombre, saved: false });
                 }
                 dibujar();
             }
@@ -530,4 +650,25 @@ export async function configurarRuedasFlota(placa, data) {
     }
 
     dibujar();
+
+    hacerArrastrable(wrap, {
+        obtenerGrupo(btn) {
+            return gruposPuestos[Number(btn.dataset.grupoIdx)] || null;
+        },
+        aplicar(drag, x, y) {
+            const items = drag.grupo;
+            if (items.length > 1) {
+                items.forEach((p, i) => {
+                    p.x = i === 0 ? x + OFFSET_DOBLE_X : x - OFFSET_DOBLE_X;
+                    p.y = y;
+                });
+            } else {
+                items[0].x = x;
+                items[0].y = y;
+            }
+            drag.btn.style.left = x + "%";
+            drag.btn.style.top = y + "%";
+        },
+        alSoltar: null
+    });
 }

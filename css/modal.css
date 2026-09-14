@@ -313,6 +313,7 @@
     justify-content: center;
     z-index: 5;
     box-shadow: 0 0 8px 3px rgba(40, 140, 240, 0.85);
+    cursor: grab;
 }
 .rueda-btn img {
     height: 5vh;
@@ -321,6 +322,12 @@
 }
 .rueda-btn:hover {
     box-shadow: 0 0 14px 6px rgba(60, 150, 220, 1);
+}
+.rueda-btn.dragging {
+    cursor: grabbing;
+}
+.diagrama-img-wrap.dragging {
+    user-select: none;
 }
 .confNomRow {
     width: 100%;
