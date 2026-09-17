@@ -290,6 +290,17 @@
     border: 2px solid var(--accent);
     border-radius: 5px;
 }
+.diagrama-static {
+    cursor: default;
+}
+.diagrama-static .rueda-btn {
+    cursor: pointer;
+    box-shadow: 0 0 6px 2px rgba(40, 140, 240, 0.7);
+}
+.diagrama-static .rueda-btn:hover {
+    box-shadow: 0 0 12px 5px rgba(60, 150, 220, 1);
+    transform: none;
+}
 #diagramaImgWrap {
     display: inline-block;
     flex: 0 0 auto;
@@ -314,6 +325,7 @@
     z-index: 5;
     box-shadow: 0 0 8px 3px rgba(40, 140, 240, 0.85);
     cursor: grab;
+    transition: none;
 }
 .rueda-btn img {
     height: 5vh;
@@ -322,6 +334,7 @@
 }
 .rueda-btn:hover {
     box-shadow: 0 0 14px 6px rgba(60, 150, 220, 1);
+    transform: none;
 }
 .rueda-btn.dragging {
     cursor: grabbing;

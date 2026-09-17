@@ -255,69 +255,15 @@ function renderSeccion(placa, data, seccion) {
         gruposPuestos.push(items);
     });
 
-    let suprimirClick = false;
-
     wrap.querySelectorAll(".rueda-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            if (suprimirClick) {
-                suprimirClick = false;
-                return;
-            }
             const ids = btn.dataset.idPrs.split(",");
             tbody.querySelectorAll("tr").forEach(r => r.classList.remove("fila-resaltada"));
             ids.forEach(id => {
                 const tr = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${id}"]`);
                 if (tr) tr.classList.add("fila-resaltada");
             });
-            const primera = document.querySelector(`#tbRuedasFlota tbody tr[data-id-pr="${ids[0]}"]`);
-            if (primera) primera.scrollIntoView({ behavior: "smooth", block: "center" });
         });
-    });
-
-    hacerArrastrable(wrap, {
-        obtenerGrupo(btn) {
-            return gruposPuestos[Number(btn.dataset.grupoIdx)] || null;
-        },
-        aplicar(drag, x, y) {
-            const items = drag.grupo;
-            if (items.length > 1) {
-                items.forEach((p, i) => {
-                    p.posicion_x = i === 0 ? x + OFFSET_DOBLE_X : x - OFFSET_DOBLE_X;
-                    p.posicion_y = y;
-                });
-            } else {
-                items[0].posicion_x = x;
-                items[0].posicion_y = y;
-            }
-            drag.btn.style.left = x + "%";
-            drag.btn.style.top = y + "%";
-        },
-        alSoltar(movido) {
-            if (!movido) return;
-            suprimirClick = true;
-            const posiciones = data.posiciones.map(p => ({
-                nombre_posicion: p.nombre_posicion,
-                posicion_x: Math.round(parseFloat(p.posicion_x) * 100) / 100,
-                posicion_y: Math.round(parseFloat(p.posicion_y) * 100) / 100,
-                tipo: p.tipo
-            }));
-            fetch("php/api/store/ruedaPosicion/route.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ placa, posiciones })
-            })
-            .then(r => r.json())
-            .then(result => {
-                if (result.status !== "success") {
-                    abrirAlert({ mensaje: "Error al guardar posicion: " + result.message });
-                }
-                cargarSeccionRuedasFlota(placa);
-            })
-            .catch(err => {
-                abrirAlert({ mensaje: "Error de conexion: " + err.message });
-                cargarSeccionRuedasFlota(placa);
-            });
-        }
     });
 }
 
@@ -500,8 +446,8 @@ export async function configurarRuedasFlota(placa, data) {
             }
             const posiciones = puestos.map(p => ({
                 nombre_posicion: p.nombre,
-                posicion_x: Math.round(p.x * 100) / 100,
-                posicion_y: Math.round(p.y * 100) / 100,
+                posicion_x: Math.min(100, Math.max(0, Math.round(p.x * 100) / 100)),
+                posicion_y: Math.min(100, Math.max(0, Math.round(p.y * 100) / 100)),
                 tipo: p.tipo
             }));
 
@@ -594,14 +540,11 @@ export async function configurarRuedasFlota(placa, data) {
     });
 
     wrap.addEventListener("click", (e) => {
-        if (!modo) {
-            abrirAlert({ mensaje: "Seleccione primero '1 Rueda' o '2 Ruedas'." });
-            return;
-        }
+        if (!modo) return;
         if (e.target.closest(".rueda-btn")) return;
         const rect = wrap.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
         pedirNombre(x, y);
     });
 
@@ -628,8 +571,10 @@ export async function configurarRuedasFlota(placa, data) {
                     return false;
                 }
                 if (tipo === "doble") {
-                    puestos.push({ x: x + OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} Ex`, grupo: nombre, saved: false });
-                    puestos.push({ x: x - OFFSET_DOBLE_X, y, tipo, nombre: `${nombre} In`, grupo: nombre, saved: false });
+                    const ex = Math.min(100, Math.max(0, x + OFFSET_DOBLE_X));
+                    const inside = Math.min(100, Math.max(0, x - OFFSET_DOBLE_X));
+                    puestos.push({ x: ex, y, tipo, nombre: `${nombre} Ex`, grupo: nombre, saved: false });
+                    puestos.push({ x: inside, y, tipo, nombre: `${nombre} In`, grupo: nombre, saved: false });
                 } else {
                     puestos.push({ x, y, tipo, nombre, saved: false });
                 }
@@ -657,17 +602,18 @@ export async function configurarRuedasFlota(placa, data) {
         },
         aplicar(drag, x, y) {
             const items = drag.grupo;
+            const cy = Math.min(100, Math.max(0, y));
             if (items.length > 1) {
                 items.forEach((p, i) => {
-                    p.x = i === 0 ? x + OFFSET_DOBLE_X : x - OFFSET_DOBLE_X;
-                    p.y = y;
+                    p.x = i === 0 ? Math.min(100, Math.max(0, x + OFFSET_DOBLE_X)) : Math.min(100, Math.max(0, x - OFFSET_DOBLE_X));
+                    p.y = cy;
                 });
             } else {
-                items[0].x = x;
-                items[0].y = y;
+                items[0].x = Math.min(100, Math.max(0, x));
+                items[0].y = cy;
             }
-            drag.btn.style.left = x + "%";
-            drag.btn.style.top = y + "%";
+            drag.btn.style.left = Math.min(100, Math.max(0, x)) + "%";
+            drag.btn.style.top = cy + "%";
         },
         alSoltar: null
     });

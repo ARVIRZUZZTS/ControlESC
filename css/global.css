@@ -345,7 +345,7 @@ textarea {
     align-items: flex-start;
 }
 #diagrama {
-    width: 19%;
+    width: 30%;
 }
 #informacionFLotaRuedas {
     width: 79%;
@@ -437,6 +437,9 @@ textarea {
 }
 .posSelBtn {
     width: 60%;
+}
+.posSelBtn:hover {
+    transform: none;
 }
 .posSelBtn.ocupada {
     background: rgba(120, 130, 145, 0.45);

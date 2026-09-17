@@ -11,7 +11,7 @@ try {
         throw new Exception("No se recibieron empleados para registrar.");
     }
 
-    $sql = "INSERT INTO empleado (empleado, id_te) VALUES (?, ?)";
+    $sql = "INSERT INTO empleado (empleado, id_te, mensual, total, fecha_contrato, estado) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
@@ -29,7 +29,16 @@ try {
             throw new Exception("El tipo de empleado es obligatorio.");
         }
 
-        $stmt->bind_param("si", $nombre, $id_te);
+        $mensual = isset($emp['mensual']) && is_numeric($emp['mensual']) ? (float)$emp['mensual'] : 0.00;
+        $total = isset($emp['total']) && is_numeric($emp['total']) ? (float)$emp['total'] : 0.00;
+        $fecha_contrato = isset($emp['fecha_contrato']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $emp['fecha_contrato'])
+            ? $emp['fecha_contrato']
+            : null;
+        $estado = isset($emp['estado']) && in_array($emp['estado'], ['Activo', 'Baja'], true)
+            ? $emp['estado']
+            : 'Activo';
+
+        $stmt->bind_param("siddss", $nombre, $id_te, $mensual, $total, $fecha_contrato, $estado);
         if (!$stmt->execute()) {
             throw new Exception("Error al registrar el empleado: " . $stmt->error);
         }
