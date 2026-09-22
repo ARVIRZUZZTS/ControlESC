@@ -4,12 +4,12 @@ require_once("../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT f.placa, f.propietario, IFNULL(e1.empleado, 'Sin Asignar') AS chofer1, IFNULL(e2.empleado, 'Sin Asignar') AS chofer2, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado, IFNULL(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion, f.viajes
+    $sql = "SELECT f.placa, f.propietario, IFNULL(p1.nombre_apellido, 'Sin Asignar') AS chofer1, IFNULL(p2.nombre_apellido, 'Sin Asignar') AS chofer2, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado, IFNULL(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion, f.viajes
             FROM flota f
-            LEFT JOIN empleado e1 ON e1.id_empleado = f.chofer1
-            LEFT JOIN empleado e2 ON e2.id_empleado = f.chofer2
+            LEFT JOIN personal p1 ON p1.id_personal = f.chofer1
+            LEFT JOIN personal p2 ON p2.id_personal = f.chofer2
             LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
-            LEFT JOIN ubicacion u ON u.id_u = f.id_u
+            LEFT JOIN ubicacion u ON u.id_ubicacion = f.id_ubicacion
             ORDER BY SUBSTRING_INDEX(placa, '-', -1)";
 
     $stmt = $conexion->prepare($sql);

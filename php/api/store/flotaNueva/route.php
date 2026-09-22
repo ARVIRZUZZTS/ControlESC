@@ -32,7 +32,7 @@ try {
     }
     $stmt->close();
 
-    $sql = "INSERT INTO flota (placa, propietario, chofer1, chofer2, id_fe, id_u, viajes) VALUES (?,?,?,?,?,?,0)";
+    $sql = "INSERT INTO flota (placa, propietario, chofer1, chofer2, id_fe, id_ubicacion, viajes) VALUES (?,?,?,?,?,?,0)";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);

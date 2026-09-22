@@ -1,7 +1,7 @@
 import { ruedasListView } from "../list/ruedas.js";
 import { newMarcaRuedaView } from "../new/marcaRueda.js";
 
-export async function marcasRuedasView() {
+export async function marcasRuedasView({ onBack = ruedasListView } = {}) {
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
     cont.innerHTML = `<p>Cargando Marcas de Ruedas...</p>`;
@@ -17,7 +17,7 @@ export async function marcasRuedasView() {
     title.innerHTML = titleHtml;
 
     document.getElementById("newMarcaRuedaBtn").addEventListener("click", newMarcaRuedaView);
-    document.getElementById("backBtn").addEventListener("click", ruedasListView);
+    document.getElementById("backBtn").addEventListener("click", onBack);
     
     try {
 

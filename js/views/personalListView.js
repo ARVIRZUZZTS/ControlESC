@@ -1,5 +1,5 @@
-import { empleado } from "./entitie/empleado.js";
-import { newEmpleadoView } from "./new/newEmpleadoView.js";
+import { personal } from "./entitie/personal.js";
+import { newPersonalView } from "./new/newPersonalView.js";
 
 function moneda(valor) {
     const n = parseFloat(valor);
@@ -7,22 +7,22 @@ function moneda(valor) {
     return n.toFixed(2);
 }
 
-export async function empleadosListView() {
+export async function personalListView() {
 
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
     title.innerHTML = ``;
     let titleHtml = `
         <h2>PERSONAL</h2>
-        <button id="newEmpleadoBtn"><img src="img/newEmpleado.svg" alt="nuevo"></button>
+        <button id="newPersonalBtn"><img src="img/newPersonal.svg" alt="nuevo"></button>
     `;
     title.innerHTML = titleHtml;
 
-    document.getElementById("newEmpleadoBtn").addEventListener("click", newEmpleadoView);
+    document.getElementById("newPersonalBtn").addEventListener("click", newPersonalView);
 
     try {
 
-        const res = await fetch("php/views/empleados.php");
+        const res = await fetch("php/views/personal.php");
         const data = await res.json();
 
         if (data.status === "error") {
@@ -32,11 +32,11 @@ export async function empleadosListView() {
         }
 
         let html = `
-            <table id="tbEmpleados">
+            <table id="tbPersonal">
                 <thead>
                     <tr>
                         <th class="thl t5">ID</th>
-                        <th class="t10">Empleado</th>
+                        <th class="t10">Personal</th>
                         <th class="t8">Tipo</th>
                         <th class="t5">Mensual Bs.</th>
                         <th class="t5">Total Pagado Bs.</th>
@@ -47,17 +47,17 @@ export async function empleadosListView() {
                 </thead>
                 <tbody>
         `;
-        data.forEach(emp => {
+        data.forEach(per => {
             html += `
                 <tr>
-                    <td class="pb t5">${emp.id_empleado}</td>
-                    <td class="pb pm t10">${emp.empleado}</td>
-                    <td class="pb pm t8">${emp.tipo_empleado}</td>
-                    <td class="pb pm t5">${moneda(emp.mensual)}</td>
-                    <td class="pb pm t5">${moneda(emp.total)}</td>
-                    <td class="pb pm t5">${emp.fecha_contrato || "-"}</td>
-                    <td class="pb pm t5">${emp.estado || "Activo"}</td>
-                    <td class="pb t3"><button class="btnInfo listBtn" data-id="${emp.id_empleado}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
+                    <td class="pb t5">${per.id_personal}</td>
+                    <td class="pb pm t10">${per.nombre_apellido}</td>
+                    <td class="pb pm t8">${per.tipo_personal}</td>
+                    <td class="pb pm t5">${moneda(per.mensual)}</td>
+                    <td class="pb pm t5">${moneda(per.total)}</td>
+                    <td class="pb pm t5">${per.fecha_contrato || "-"}</td>
+                    <td class="pb pm t5">${per.estado || "Activo"}</td>
+                    <td class="pb t3"><button class="btnInfo listBtn" data-id="${per.id_personal}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
                 </tr>
             `;
         });
@@ -69,14 +69,14 @@ export async function empleadosListView() {
 
         cont.innerHTML = html;
 
-        document.querySelectorAll("#tbEmpleados .btnInfo").forEach(btn => {
+        document.querySelectorAll("#tbPersonal .btnInfo").forEach(btn => {
             btn.addEventListener("click", function() {
-                empleado(this.dataset.id);
+                personal(this.dataset.id);
             });
         });
 
     } catch (error) {
-        cont.innerHTML = "<p>Error cargando empleados</p>";
+        cont.innerHTML = "<p>Error cargando personal</p>";
         console.error(error);
     }
 

@@ -1,21 +1,21 @@
-import { empleado } from "../entitie/empleado.js";
+import { personal } from "../entitie/personal.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { decimalFilter, comillasFilter } from "../../utils.js";
 import { strFecha } from "../../utils.js";
 
-export async function editarEmpleado(id_empleado) {
+export async function editarPersonal(id_personal) {
 
-    const resEnt = await fetch(`php/api/get/empleadoEnt/route.php?id_empleado=${encodeURIComponent(id_empleado)}`);
+    const resEnt = await fetch(`php/api/get/personalEnt/route.php?id_personal=${encodeURIComponent(id_personal)}`);
     const ent = await resEnt.json();
     const dt = ent.data;
 
     if (ent.status === "error" || !dt) {
-        abrirAlert({ mensaje: ent.message || "No se encontro el empleado." });
+        abrirAlert({ mensaje: ent.message || "No se encontro el personal." });
         return;
     }
 
-    const resTipos = await fetch("php/api/get/tipoEmpleado/route.php");
+    const resTipos = await fetch("php/api/get/tipoPersonal/route.php");
     const tipos = (await resTipos.json()).data || [];
 
     const hoy = strFecha();
@@ -23,12 +23,12 @@ export async function editarEmpleado(id_empleado) {
 
     const contenido = `
         <div class="modal-fila">
-            <label>Nombre Empleado:</label>
-            <input type="text" id="eeNombre" value="${dt.empleado}" maxlength="150" placeholder="Nombre y Apellido">
+            <label>Nombre Personal:</label>
+            <input type="text" id="eeNombre" value="${dt.nombre_apellido}" maxlength="150" placeholder="Nombre y Apellido">
         </div>
         <div class="modal-fila">
-            <label>Tipo Empleado:</label>
-            <input type="text" id="eeTipo" value="" autocomplete="off" placeholder="${dt.tipo_empleado || 'Seleccione o escriba'}">
+            <label>Tipo Personal:</label>
+            <input type="text" id="eeTipo" value="" autocomplete="off" placeholder="${dt.tipo_personal || 'Seleccione o escriba'}">
         </div>
         <div class="modal-fila">
             <label>Mensual Bs. (opcional):</label>
@@ -50,7 +50,7 @@ export async function editarEmpleado(id_empleado) {
     let acTipo = null;
 
     const resultado = abrirModal({
-        titulo: "EDITAR EMPLEADO",
+        titulo: "EDITAR PERSONAL",
         contenidoHTML: contenido,
         onSubmit: async (cerrar) => {
             const nNombre = document.getElementById("eeNombre").value.trim();
@@ -61,11 +61,11 @@ export async function editarEmpleado(id_empleado) {
             const t = acTipo ? acTipo.obtener() : { id: null, label: "" };
 
             if (!nNombre) {
-                abrirAlert({ mensaje: "El nombre del empleado es obligatorio." });
+                abrirAlert({ mensaje: "El nombre del personal es obligatorio." });
                 return;
             }
             if (!t.id) {
-                abrirAlert({ mensaje: "Seleccione un tipo de empleado valido." });
+                abrirAlert({ mensaje: "Seleccione un tipo de personal valido." });
                 return;
             }
             const mensual = nMensual.trim() === "" ? 0.00 : parseFloat(nMensual);
@@ -75,7 +75,7 @@ export async function editarEmpleado(id_empleado) {
             }
 
             const payload = {
-                id_empleado: Number(id_empleado),
+                id_personal: Number(id_personal),
                 nombre: nNombre,
                 id_te: Number(t.id),
                 mensual,
@@ -84,7 +84,7 @@ export async function editarEmpleado(id_empleado) {
             };
 
             try {
-                const res = await fetch("php/api/store/empleadoEditar/route.php", {
+                const res = await fetch("php/api/store/personalEditar/route.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
@@ -95,17 +95,17 @@ export async function editarEmpleado(id_empleado) {
                     return;
                 }
                 cerrar();
-                empleado(id_empleado);
+                personal(id_personal);
             } catch (error) {
-                abrirAlert({ mensaje: "Error al actualizar el empleado." });
+                abrirAlert({ mensaje: "Error al actualizar el personal." });
             }
         }
     });
 
     acTipo = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#eeTipo"),
-        opciones: tipos.map(t => ({ id: t.id_te, label: t.tipo_empleado })),
-        valorActual: dt.tipo_empleado || "",
+        opciones: tipos.map(t => ({ id: t.id_te, label: t.nombre_tipo_personal })),
+        valorActual: dt.tipo_personal || "",
         onCambio: null
     });
 

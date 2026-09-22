@@ -1,22 +1,22 @@
-import { empleadosListView } from "../empleadosListView.js";
+import { personalListView } from "../personalListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { decimalFilter, comillasFilter } from "../../utils.js";
 
-export async function newEmpleadoView() {
+export async function newPersonalView() {
 
-    const resTipos = await fetch("php/api/get/tipoEmpleado/route.php");
+    const resTipos = await fetch("php/api/get/tipoPersonal/route.php");
     const tipos = (await resTipos.json()).data || [];
 
     const hoy = new Date().toISOString().split("T")[0];
 
     const contenido = `
         <div class="modal-fila">
-            <label>Nombre Empleado:</label>
+            <label>Nombre Personal:</label>
             <input type="text" id="neNombre" value="" maxlength="150" placeholder="Nombre y Apellido">
         </div>
         <div class="modal-fila">
-            <label>Tipo Empleado:</label>
+            <label>Tipo Personal:</label>
             <input type="text" id="neTipo" value="" autocomplete="off" placeholder="Seleccione o escriba">
         </div>
         <div class="modal-fila">
@@ -32,7 +32,7 @@ export async function newEmpleadoView() {
     let acTipo = null;
 
     const resultado = abrirModal({
-        titulo: "NUEVO EMPLEADO",
+        titulo: "NUEVO PERSONAL",
         contenidoHTML: contenido,
         onSubmit: async (cerrar) => {
             const nNombre = document.getElementById("neNombre").value.trim();
@@ -42,11 +42,11 @@ export async function newEmpleadoView() {
             const t = acTipo ? acTipo.obtener() : { id: null, label: "" };
 
             if (!nNombre) {
-                abrirAlert({ mensaje: "El nombre del empleado es obligatorio." });
+                abrirAlert({ mensaje: "El nombre del personal es obligatorio." });
                 return;
             }
             if (!t.id) {
-                abrirAlert({ mensaje: "Seleccione un tipo de empleado valido." });
+                abrirAlert({ mensaje: "Seleccione un tipo de personal valido." });
                 return;
             }
             const mensual = nMensual.trim() === "" ? 0.00 : parseFloat(nMensual);
@@ -56,7 +56,7 @@ export async function newEmpleadoView() {
             }
 
             const payload = {
-                empleados: [{
+                personal: [{
                     nombre: nNombre,
                     id_te: Number(t.id),
                     mensual,
@@ -65,7 +65,7 @@ export async function newEmpleadoView() {
             };
 
             try {
-                const res = await fetch("php/api/store/empleadoNuevo/route.php", {
+                const res = await fetch("php/api/store/personalNuevo/route.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
@@ -76,16 +76,16 @@ export async function newEmpleadoView() {
                     return;
                 }
                 cerrar();
-                empleadosListView();
+                personalListView();
             } catch (error) {
-                abrirAlert({ mensaje: "Error al guardar el empleado." });
+                abrirAlert({ mensaje: "Error al guardar el personal." });
             }
         }
     });
 
     acTipo = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#neTipo"),
-        opciones: tipos.map(t2 => ({ id: t2.id_te, label: t2.tipo_empleado })),
+        opciones: tipos.map(t2 => ({ id: t2.id_te, label: t2.nombre_tipo_personal })),
         valorActual: "",
         onCambio: null
     });

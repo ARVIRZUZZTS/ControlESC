@@ -8,17 +8,17 @@ try {
         throw new Exception("Parámetro 'placa' no proporcionado");
     }
     
-    $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_u, f.viajes,
+    $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_ubicacion AS id_u, f.viajes,
                    f.capacidad_aceite, f.aceite_actual, f.viajes_aceite,
-                   COALESCE(e1.empleado, 'Sin Asignar') AS chofer1_nombre,
-                   COALESCE(e2.empleado, 'Sin Asignar') AS chofer2_nombre,
+                   COALESCE(p1.nombre_apellido, 'Sin Asignar') AS chofer1_nombre,
+                   COALESCE(p2.nombre_apellido, 'Sin Asignar') AS chofer2_nombre,
                    COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
                    COALESCE(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion
             FROM flota f
-            LEFT JOIN empleado e1 ON e1.id_empleado = f.chofer1
-            LEFT JOIN empleado e2 ON e2.id_empleado = f.chofer2
+            LEFT JOIN personal p1 ON p1.id_personal = f.chofer1
+            LEFT JOIN personal p2 ON p2.id_personal = f.chofer2
             LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
-            LEFT JOIN ubicacion u ON u.id_u = f.id_u
+            LEFT JOIN ubicacion u ON u.id_ubicacion = f.id_ubicacion
             WHERE f.placa = ?";
 
     $stmt = $conexion->prepare($sql);

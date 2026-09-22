@@ -91,8 +91,8 @@ async function editarFlota(placa) {
 
     const [resFlota, resEmp1, resEmp2, resUbi, resEst] = await Promise.all([
         fetch(`php/api/get/flotaEnt/route.php?placa=${encodeURIComponent(placa)}`),
-        fetch(`php/api/get/empleadosTipo/route.php?tipo=1`),
-        fetch(`php/api/get/empleadosTipo/route.php?tipo=2`),
+        fetch(`php/api/get/personalTipo/route.php?tipo=1`),
+        fetch(`php/api/get/personalTipo/route.php?tipo=2`),
         fetch(`php/api/get/ubicaciones/route.php`),
         fetch(`php/api/get/flotaEstados/route.php`)
     ]);
@@ -196,21 +196,21 @@ async function editarFlota(placa) {
 
     acChofer1 = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#edChofer1"),
-        opciones: emp1.map(e => ({ id: e.id_empleado, label: e.empleado })),
+        opciones: emp1.map(e => ({ id: e.id_personal, label: e.nombre_apellido })),
         valorActual: dt.chofer1_nombre,
         onCambio: null
     });
 
     acChofer2 = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#edChofer2"),
-        opciones: emp2.map(e => ({ id: e.id_empleado, label: e.empleado })),
+        opciones: emp2.map(e => ({ id: e.id_personal, label: e.nombre_apellido })),
         valorActual: dt.chofer2_nombre === 'Sin Asignar' ? "" : dt.chofer2_nombre,
         onCambio: null
     });
 
     acUbi = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#edUbicacion"),
-        opciones: ubicaciones.map(u => ({ id: u.id_u, label: u.nombre_ubicacion })),
+        opciones: ubicaciones.map(u => ({ id: u.id_ubicacion, label: u.nombre_ubicacion })),
         valorActual: dt.ubicacion === 'Sin ubicacion' ? "" : dt.ubicacion,
         onCambio: null
     });

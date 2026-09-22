@@ -1,7 +1,7 @@
 import { aceitesListView } from "../aceitesListView.js";
 import { newMarcaAceiteView } from "../new/newMarcaAceiteView.js";
 
-export async function marcasAceitesView() {
+export async function marcasAceitesView({ onBack = aceitesListView } = {}) {
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
     cont.innerHTML = `<p>Cargando Marcas de Aceites...</p>`;
@@ -17,7 +17,7 @@ export async function marcasAceitesView() {
     title.innerHTML = titleHtml;
 
     document.getElementById("marcaAceiteBtn").addEventListener("click", newMarcaAceiteView);
-    document.getElementById("backBtn").addEventListener("click", aceitesListView);
+    document.getElementById("backBtn").addEventListener("click", onBack);
     
     try {
 

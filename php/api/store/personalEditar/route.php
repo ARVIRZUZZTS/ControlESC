@@ -7,19 +7,19 @@ try {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
-    if (!$data || !isset($data['id_empleado']) || !is_numeric($data['id_empleado'])) {
-        throw new Exception("No se recibio el empleado a editar.");
+    if (!$data || !isset($data['id_personal']) || !is_numeric($data['id_personal'])) {
+        throw new Exception("No se recibió el personal a editar.");
     }
 
-    $id_empleado = (int)$data['id_empleado'];
+    $id_personal = (int)$data['id_personal'];
     $nombre = isset($data['nombre']) ? trim($data['nombre']) : "";
     $id_te = isset($data['id_te']) ? intval($data['id_te']) : 0;
 
     if ($nombre === "") {
-        throw new Exception("El nombre del empleado es obligatorio.");
+        throw new Exception("El nombre del personal es obligatorio.");
     }
     if (!$id_te) {
-        throw new Exception("El tipo de empleado es obligatorio.");
+        throw new Exception("El tipo de personal es obligatorio.");
     }
 
     $mensual = isset($data['mensual']) && is_numeric($data['mensual']) ? (float)$data['mensual'] : 0.00;
@@ -30,22 +30,22 @@ try {
         ? $data['estado']
         : 'Activo';
 
-    $sql = "UPDATE empleado SET empleado = ?, id_te = ?, mensual = ?, fecha_contrato = ?, estado = ? WHERE id_empleado = ?";
+    $sql = "UPDATE personal SET nombre_apellido = ?, id_te = ?, mensual = ?, fecha_contrato = ?, estado = ? WHERE id_personal = ?";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("sisssi", $nombre, $id_te, $mensual, $fecha_contrato, $estado, $id_empleado);
+    $stmt->bind_param("sisssi", $nombre, $id_te, $mensual, $fecha_contrato, $estado, $id_personal);
     if (!$stmt->execute()) {
-        throw new Exception("Error al actualizar el empleado: " . $stmt->error);
+        throw new Exception("Error al actualizar el personal: " . $stmt->error);
     }
 
     $stmt->close();
 
     echo json_encode([
         "status" => "success",
-        "message" => "Empleado actualizado correctamente"
+        "message" => "Personal actualizado correctamente"
     ]);
 
 } catch (Exception $e) {

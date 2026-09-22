@@ -4,10 +4,10 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT MIN(id_te) AS id_te, tipo_empleado
-            FROM tipo_empleado
-            GROUP BY tipo_empleado
-            ORDER BY tipo_empleado";
+    $sql = "SELECT MIN(id_te) AS id_te, nombre_tipo_personal
+            FROM tipo_personal
+            GROUP BY nombre_tipo_personal
+            ORDER BY nombre_tipo_personal";
 
     $stmt = $conexion->prepare($sql);
     $stmt->execute();
@@ -22,7 +22,7 @@ try {
     $stmt->close();
     echo json_encode([
         "status" => "success",
-        "message" => "Tipos de empleado obtenidos correctamente",
+        "message" => "Tipos de personal obtenidos correctamente",
         "data" => $tipos
     ]);
 } catch (Exception $e) {

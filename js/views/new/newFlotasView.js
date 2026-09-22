@@ -6,8 +6,8 @@ import { validarPlaca, validarPropietario, placaFilter } from "../../utils.js";
 export async function newFlotaView() {
 
     const [resEmp1, resEmp2, resUbi, resEst] = await Promise.all([
-        fetch("php/api/get/empleadosTipo/route.php?tipo=1"),
-        fetch("php/api/get/empleadosTipo/route.php?tipo=2"),
+        fetch("php/api/get/personalTipo/route.php?tipo=1"),
+        fetch("php/api/get/personalTipo/route.php?tipo=2"),
         fetch("php/api/get/ubicaciones/route.php"),
         fetch("php/api/get/flotaEstados/route.php")
     ]);
@@ -114,21 +114,21 @@ export async function newFlotaView() {
 
             try {
                 if (pendientesCrear.length > 0) {
-                    const resEmp = await fetch("php/api/store/empleadoNuevo/route.php", {
+                    const resEmp = await fetch("php/api/store/personalNuevo/route.php", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ empleados: pendientesCrear })
+                        body: JSON.stringify({ personal: pendientesCrear })
                     });
                     const empResult = await resEmp.json();
                     if (empResult.status !== "success") {
-                        abrirAlert({ mensaje: "Error al registrar empleado: " + empResult.message });
+                        abrirAlert({ mensaje: "Error al registrar personal: " + empResult.message });
                         return;
                     }
-                    const idsCreados = empResult.empleados || [];
+                    const idsCreados = empResult.personal || [];
                     let idx = 0;
-                    if (pendientesCrear[0].id_te === 1) chofer1Id = idsCreados[idx++].id_empleado;
+                    if (pendientesCrear[0].id_te === 1) chofer1Id = idsCreados[idx++].id_personal;
                     if (pendientesCrear.length > 1 && pendientesCrear[1].id_te === 2) {
-                        if (idx < idsCreados.length) chofer2Id = idsCreados[idx].id_empleado;
+                        if (idx < idsCreados.length) chofer2Id = idsCreados[idx].id_personal;
                     }
                 }
 
@@ -162,21 +162,21 @@ export async function newFlotaView() {
 
     acChofer1 = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#nuChofer1"),
-        opciones: emp1.map(e => ({ id: e.id_empleado, label: e.empleado })),
+        opciones: emp1.map(e => ({ id: e.id_personal, label: e.nombre_apellido })),
         valorActual: "",
         onCambio: null
     });
 
     acChofer2 = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#nuChofer2"),
-        opciones: emp2.map(e => ({ id: e.id_empleado, label: e.empleado })),
+        opciones: emp2.map(e => ({ id: e.id_personal, label: e.nombre_apellido })),
         valorActual: "",
         onCambio: null
     });
 
     acUbi = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#nuUbicacion"),
-        opciones: ubicaciones.map(u2 => ({ id: u2.id_u, label: u2.nombre_ubicacion })),
+        opciones: ubicaciones.map(u2 => ({ id: u2.id_ubicacion, label: u2.nombre_ubicacion })),
         valorActual: "",
         onCambio: null
     });

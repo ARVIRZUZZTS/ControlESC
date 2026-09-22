@@ -10,7 +10,7 @@ try {
 
     $tipo = (int)$_GET['tipo'];
 
-    $sql = "SELECT id_empleado, empleado FROM empleado WHERE id_te = ? ORDER BY empleado";
+    $sql = "SELECT id_personal, nombre_apellido FROM personal WHERE id_te = ? ORDER BY nombre_apellido";
     $stmt = $conexion->prepare($sql);
 
     if (!$stmt) {
@@ -21,16 +21,16 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $empleados = [];
+    $personal = [];
     while ($row = $result->fetch_assoc()) {
-        $empleados[] = $row;
+        $personal[] = $row;
     }
 
     $stmt->close();
     echo json_encode([
         "status" => "success",
-        "message" => "Empleados obtenidos correctamente",
-        "data" => $empleados
+        "message" => "Personal obtenido correctamente",
+        "data" => $personal
     ]);
 } catch (Exception $e) {
     http_response_code(500);

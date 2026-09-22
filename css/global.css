@@ -449,3 +449,42 @@ textarea {
     background: rgba(40, 140, 240, 0.45);
     box-shadow: 0 0 10px 3px rgba(40, 140, 240, 0.6);
 }
+/*------------AJUSTES------------*/
+.ajustesButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5vh;
+    padding: 3vh 0;
+}
+.ajustesRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 2vh;
+}
+.ajustesRow.center {
+    justify-content: center;
+}
+.ajustesBtn {
+    font-weight: bold;
+    font-size: 3vh;
+    flex: 1;
+    min-height: 9vh;
+    padding: 2.5vh 4vh;
+}
+.ajustesRow.center .ajustesBtn {
+    flex: 0 1 55%;
+}
+#newUbicacionBtn, #newTipoPersonalBtn, #newGastoBtn, #newDieselBtn, #addDetalleGastoFila {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+}
+#newUbicacionBtn img, #newTipoPersonalBtn img, #newGastoBtn img, #newDieselBtn img, #addDetalleGastoFila img {
+    height: 2.6vh;
+    width: auto;
+}
+.btnAddDetalle {
+    font-weight: bold;
+    font-size: 2.5vh;
+    padding: 1.5vh 3vh;
+}

@@ -15,7 +15,7 @@ try {
         throw new Exception("La placa es obligatoria.");
     }
 
-    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_u = ? WHERE placa = ?";
+    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_ubicacion = ? WHERE placa = ?";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);

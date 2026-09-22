@@ -19,7 +19,6 @@ form label {
     gap: 2vh;
 }
 .loteSeparador {
-    width: 95%;
     margin: 2vh auto;
     border: none;
     border-top: 2px solid #ccc;

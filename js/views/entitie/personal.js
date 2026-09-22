@@ -1,13 +1,13 @@
-import { empleadosListView } from "../empleadosListView.js";
-import { editarEmpleado } from "../new/editarEmpleadoView.js";
+import { personalListView } from "../personalListView.js";
+import { editarPersonal } from "../new/editarPersonalView.js";
 
-export async function empleado(id_empleado) {
+export async function personal(id_personal) {
 
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
 
     try {
-        const res = await fetch(`php/api/get/empleadoEnt/route.php?id_empleado=${encodeURIComponent(id_empleado)}`);
+        const res = await fetch(`php/api/get/personalEnt/route.php?id_personal=${encodeURIComponent(id_personal)}`);
         const data = await res.json();
 
         if (data.status === "error") {
@@ -27,14 +27,14 @@ export async function empleado(id_empleado) {
             </div>
         `;
         title.innerHTML = titleHtml;
-        document.getElementById("backBtn").addEventListener("click", empleadosListView);
+        document.getElementById("backBtn").addEventListener("click", personalListView);
 
         let html = `
-            <table id="tbEmpleadoEnt">
+            <table id="tbPersonalEnt">
                 <thead>
                     <tr>
                         <th class="thl t5">ID</th>
-                        <th class="t10">Empleado</th>
+                        <th class="t10">Personal</th>
                         <th class="t8">Tipo</th>
                         <th class="t5">Mensual Bs.</th>
                         <th class="t5">Total Pagado Bs.</th>
@@ -45,14 +45,14 @@ export async function empleado(id_empleado) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="pb t5">${dt.id_empleado}</td>
-                        <td class="pb pm t10">${dt.empleado}</td>
-                        <td class="pb pm t8">${dt.tipo_empleado}</td>
+                        <td class="pb t5">${dt.id_personal}</td>
+                        <td class="pb pm t10">${dt.nombre_apellido}</td>
+                        <td class="pb pm t8">${dt.tipo_personal}</td>
                         <td class="pb pm t5">${Number(dt.mensual).toFixed(2)}</td>
                         <td class="pb pm t5">${Number(dt.total).toFixed(2)}</td>
                         <td class="pb pm t5">${dt.fecha_contrato || "-"}</td>
                         <td class="pb pm t5">${dt.estado || "Activo"}</td>
-                        <td class="pb t3"><button class="btnEditar listBtn" data-id="${dt.id_empleado}"><img src="img/edit.svg" alt="editar"></button></td>
+                        <td class="pb t3"><button class="btnEditar listBtn" data-id="${dt.id_personal}"><img src="img/edit.svg" alt="editar"></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -61,8 +61,8 @@ export async function empleado(id_empleado) {
         `;
         cont.innerHTML = html;
 
-        document.querySelector("#tbEmpleadoEnt .btnEditar").addEventListener("click", function() {
-            editarEmpleado(this.dataset.id);
+        document.querySelector("#tbPersonalEnt .btnEditar").addEventListener("click", function() {
+            editarPersonal(this.dataset.id);
         });
 
     } catch (error) {
