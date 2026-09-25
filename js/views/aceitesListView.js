@@ -1,6 +1,7 @@
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { newAceiteView } from "./new/newAceiteView.js";
 import { loteAceiteInfo } from "./lotes/loteAceiteInfo.js";
+import { fechaISOToDMY } from "../utils.js";
 
 export async function aceitesListView() {
 
@@ -52,7 +53,7 @@ export async function aceitesListView() {
                 <tr data-id_lote="${aceite.id_al}">
                     <td class="pb t5">${aceite.id_al}</td>
                     <td class="pb pm t10">${aceite.marcas || "-"}</td>
-                    <td class="pb pm t10">${aceite.fecha_compra}</td>
+                    <td class="pb pm t10">${fechaISOToDMY(aceite.fecha_compra)}</td>
                     <td class="pb pm t10">${aceite.precio_total}</td>
                     <td class="pb pm t8">${aceite.cantidad}</td>
                     <td class="pb pm t8">${Number(aceite.cantidad_lt || 0).toFixed(2)}</td>

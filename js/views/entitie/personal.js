@@ -1,5 +1,6 @@
 import { personalListView } from "../personalListView.js";
 import { editarPersonal } from "../new/editarPersonalView.js";
+import { fechaISOToDMY } from "../../utils.js";
 
 export async function personal(id_personal) {
 
@@ -50,7 +51,7 @@ export async function personal(id_personal) {
                         <td class="pb pm t8">${dt.tipo_personal}</td>
                         <td class="pb pm t5">${Number(dt.mensual).toFixed(2)}</td>
                         <td class="pb pm t5">${Number(dt.total).toFixed(2)}</td>
-                        <td class="pb pm t5">${dt.fecha_contrato || "-"}</td>
+                        <td class="pb pm t5">${fechaISOToDMY(dt.fecha_contrato) || "-"}</td>
                         <td class="pb pm t5">${dt.estado || "Activo"}</td>
                         <td class="pb t3"><button class="btnEditar listBtn" data-id="${dt.id_personal}"><img src="img/edit.svg" alt="editar"></button></td>
                     </tr>

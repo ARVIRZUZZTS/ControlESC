@@ -1,7 +1,7 @@
 import { marcasRuedasView } from "../marcas/ruedas.js";
 import { newLoteRuedaView } from "../new/loteRueda.js";
 import { loteRuedaInfo } from "../lotes/loteRuedaInfo.js";
-import { autocompleteSeleccion } from "../../components/autocomplete.js";
+import { fechaISOToDMY } from "../../utils.js";
 
 export async function ruedasListView() {
     
@@ -10,42 +10,14 @@ export async function ruedasListView() {
     cont.innerHTML = `<p>Cargando ruedas...</p>`;
     title.innerHTML = ``;
 
-    const placasRes = await fetch("php/api/get/placasList/route.php");
-    const placasResponse = await placasRes.json();
-    const placas = placasResponse.data || placasResponse;
-
     let titleHtml = `
         <h2>LOTES DE RUEDAS</h2>
         <div class="btnsTitle">
-            <div class="ac-wrap">
-                <input id="busquedaPlacaRuedas" 
-                    type="text" 
-                    class="tPlaca"
-                    maxlength="10"
-                    autocomplete="off"
-                    placeholder="Por Placa">
-            </div>
-            <select id="filtroRuedas">
-                <option value="todas">Todas</option>
-                <option value="activas">Activas</option>
-                <option value="almacen">Almacen</option>
-                <option value="baja">Baja</option>
-                <option value="reciente">Reciente</option>
-                <option value="antiguo">Antiguo</option>
-            </select>
             <button id="marcaRuedaBtn"><img src="img/marcas.svg" alt="Marcas"></button>
             <button id="newRuedaBtn"><img src="img/newRueda.svg" alt="Nueva Rueda"></button>
         </div>
     `;
     title.innerHTML = titleHtml;
-
-    autocompleteSeleccion({
-        input: document.getElementById("busquedaPlacaRuedas"),
-        opciones: placas.map(p => ({ id: p.placa, label: p.placa })),
-        valorActual: "",
-        placeholder: "Por Placa",
-        modoBuscador: true
-    });
 
     document.getElementById("marcaRuedaBtn").addEventListener("click", marcasRuedasView);
     document.getElementById("newRuedaBtn").addEventListener("click", newLoteRuedaView);
@@ -60,13 +32,6 @@ export async function ruedasListView() {
             console.error(data.message);
             return;
         }
-
-        const options = placas.map(p => `<option value="${p.placa}"></option>`).join("");
-        const almacen = `<option value="Almacen"></option><option value="Baja"></option>`;
-        const datalistHTML  =   `<datalist id="placasList">
-                                    ${almacen}
-                                    ${options}
-                                </datalist>`;
 
         let html = `
             <table id="tbRuedas">
@@ -95,7 +60,7 @@ export async function ruedasListView() {
                 <tr data-id_rueda="${rueda.id_rl}">
                     <td class="pb t5">${rueda.id_rl}</td>
                     <td class="pb pm t10">${rueda.marcas || "-"}</td>
-                    <td class="pb pm t8">${rueda.fecha_compra}</td>
+                    <td class="pb pm t8">${fechaISOToDMY(rueda.fecha_compra)}</td>
                     <td class="pb pm t8">${rueda.precio_total}</td>
                     <td class="pb pm t5">${rueda.cantidad}</td>
                     <td class="pb pm t5">${rueda.stock}</td>
@@ -111,7 +76,7 @@ export async function ruedasListView() {
                 </tbody>
             </table>
         `;
-        cont.innerHTML = html + datalistHTML;
+        cont.innerHTML = html;
 
         document.querySelectorAll(".btnInfo").forEach(btn => {
             btn.addEventListener("click", function() {

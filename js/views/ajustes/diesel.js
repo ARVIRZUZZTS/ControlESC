@@ -1,6 +1,6 @@
 import { ajustesView } from "../ajustes.js";
 import { abrirModal, abrirAlert, abrirEliminar } from "../../components/modal.js";
-import { decimalFilter, comillasFilter, strFecha } from "../../utils.js";
+import { decimalFilter, comillasFilter, strFechaDMY, fechaISOToDMY, fechaDMYToISO, fechaFilter, fechaMask } from "../../utils.js";
 
 export async function dieselView() {
     const cont = document.getElementById("contDin");
@@ -47,7 +47,7 @@ export async function dieselView() {
                 <tr>
                     <td class="pb t5">${d.id_diesel}</td>
                     <td class="pb pm t8">${d.precio_x_litro}</td>
-                    <td class="pb pm t8">${d.fecha_guardado || "-"}</td>
+                    <td class="pb pm t8">${fechaISOToDMY(d.fecha_guardado) || "-"}</td>
                     <td class="pb pm t8">${d.litros_comprados_totales}</td>
                     <td class="pb pm t8">${d.precio_total_pagado}</td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${d.id_diesel}"><img src="img/edit.svg" alt="editar"></button></td>
@@ -79,7 +79,7 @@ export async function dieselView() {
 
 function newDieselModal(diesel, onSave) {
     const editando = !!diesel;
-    const hoy = strFecha();
+    const hoy = strFechaDMY();
 
     const contenidoHTML = `
         <form id="formDiesel">
@@ -89,7 +89,7 @@ function newDieselModal(diesel, onSave) {
             </div>
             <div class="modal-fila">
                 <label>Fecha Guardado:</label>
-                <input type="date" name="fecha_guardado" value="${editando ? (diesel.fecha_guardado || hoy) : hoy}" required>
+                <input type="text" name="fecha_guardado" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${editando ? (fechaISOToDMY(diesel.fecha_guardado) || hoy) : hoy}" required>
             </div>
         </form>
     `;
@@ -104,15 +104,18 @@ function newDieselModal(diesel, onSave) {
     });
 
     const form = resultado.overlay.querySelector("#formDiesel");
+    const inFechaGuardado = form.querySelector('input[name="fecha_guardado"]');
 
     form.querySelector('input[name="precio_x_litro"]').addEventListener("keydown", decimalFilter);
+    inFechaGuardado.addEventListener("keydown", fechaFilter);
+    inFechaGuardado.addEventListener("input", fechaMask);
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const payload = {
             precio_x_litro: parseFloat(form.querySelector('input[name="precio_x_litro"]').value),
-            fecha_guardado: form.querySelector('input[name="fecha_guardado"]').value || null
+            fecha_guardado: fechaDMYToISO(inFechaGuardado.value) || null
         };
         if (editando) {
             payload.id_diesel = diesel.id_diesel;

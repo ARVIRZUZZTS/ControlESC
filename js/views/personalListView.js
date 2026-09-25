@@ -1,5 +1,6 @@
 import { personal } from "./entitie/personal.js";
 import { newPersonalView } from "./new/newPersonalView.js";
+import { fechaISOToDMY } from "../utils.js";
 
 function moneda(valor) {
     const n = parseFloat(valor);
@@ -55,7 +56,7 @@ export async function personalListView() {
                     <td class="pb pm t8">${per.tipo_personal}</td>
                     <td class="pb pm t5">${moneda(per.mensual)}</td>
                     <td class="pb pm t5">${moneda(per.total)}</td>
-                    <td class="pb pm t5">${per.fecha_contrato || "-"}</td>
+                    <td class="pb pm t5">${fechaISOToDMY(per.fecha_contrato) || "-"}</td>
                     <td class="pb pm t5">${per.estado || "Activo"}</td>
                     <td class="pb t3"><button class="btnInfo listBtn" data-id="${per.id_personal}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
                 </tr>

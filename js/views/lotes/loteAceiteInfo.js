@@ -1,5 +1,6 @@
 import { aceitesListView } from "../aceitesListView.js";
 import { abrirAlert, abrirEliminar } from "../../components/modal.js";
+import { fechaISOToDMY } from "../../utils.js";
 
 export async function loteAceiteInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -70,7 +71,7 @@ export async function loteAceiteInfo(id_lote) {
                     <tr>
                         <td class="pb pm t5">${lote.id_al}</td>
                         <td class="pb pm t10">${lote.marcas || "-"}</td>
-                        <td class="pb pm t10">${lote.fecha_compra}</td>
+                        <td class="pb pm t10">${fechaISOToDMY(lote.fecha_compra)}</td>
                         <td class="pb pm t10">${resumenPrecioHtml(lote.precio_estimado || lote.precio_total, lote.precio_real || lote.precio_total, lote.estado_precio || "Mantuvo")}</td>
                         <td class="pb pm t8">${lote.cantidad}</td>
                         <td class="pb pm t8">${Number(lote.cantidad_lt || 0).toFixed(3)}</td>

@@ -3,6 +3,7 @@ import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { abrirAlert, abrirConfirmation, abrirEliminar } from "../../components/modal.js";
 import { abrirInfoRueda } from "../entitie/ruedaInfo.js";
 import { asignarRuedaAFlota } from "../entitie/asignarRuedaFlota.js";
+import { fechaISOToDMY } from "../../utils.js";
 
 export async function loteRuedaInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -75,7 +76,7 @@ export async function loteRuedaInfo(id_lote) {
                     <tr>
                         <td class="pb pm t5">${data_info_rueda.id_rl}</td>
                         <td class="pb pm t10">${data_info_rueda.marcas || "-"}</td>
-                        <td class="pb pm t8">${data_info_rueda.fecha_compra}</td>
+                        <td class="pb pm t8">${fechaISOToDMY(data_info_rueda.fecha_compra)}</td>
                         <td id="precioDinamicoRuedas" class="pb pm t8">${resumenPrecioHtml(data_info_rueda.precio_estimado || data_info_rueda.precio_total, data_info_rueda.precio_real || data_info_rueda.precio_total, data_info_rueda.estado_precio || "Mantuvo")}</td>
                         <td class="pb pm t5">${data_info_rueda.cantidad}</td>
                         <td class="pb pm t5">${data_info_rueda.stock}</td>

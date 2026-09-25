@@ -1,8 +1,7 @@
 import { personal } from "../entitie/personal.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
-import { decimalFilter, comillasFilter } from "../../utils.js";
-import { strFecha } from "../../utils.js";
+import { decimalFilter, comillasFilter, strFechaDMY, fechaISOToDMY, fechaDMYToISO, fechaFilter, fechaMask } from "../../utils.js";
 
 export async function editarPersonal(id_personal) {
 
@@ -18,8 +17,8 @@ export async function editarPersonal(id_personal) {
     const resTipos = await fetch("php/api/get/tipoPersonal/route.php");
     const tipos = (await resTipos.json()).data || [];
 
-    const hoy = strFecha();
-    const fechaContrato = dt.fecha_contrato || hoy;
+    const hoy = strFechaDMY();
+    const fechaContrato = fechaISOToDMY(dt.fecha_contrato) || hoy;
 
     const contenido = `
         <div class="modal-fila">
@@ -36,7 +35,7 @@ export async function editarPersonal(id_personal) {
         </div>
         <div class="modal-fila">
             <label>Fecha Contrato:</label>
-            <input type="date" id="eeFecha" value="${fechaContrato}">
+            <input type="text" id="eeFecha" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${fechaContrato}">
         </div>
         <div class="modal-fila">
             <label>Estado:</label>
@@ -79,7 +78,7 @@ export async function editarPersonal(id_personal) {
                 nombre: nNombre,
                 id_te: Number(t.id),
                 mensual,
-                fecha_contrato: nFecha || null,
+                fecha_contrato: fechaDMYToISO(nFecha) || null,
                 estado: nEstado
             };
 
@@ -117,4 +116,10 @@ export async function editarPersonal(id_personal) {
 
     const inpMensual = resultado.overlay.querySelector("#eeMensual");
     if (inpMensual) inpMensual.addEventListener("keydown", decimalFilter);
+
+    const inpFecha = resultado.overlay.querySelector("#eeFecha");
+    if (inpFecha) {
+        inpFecha.addEventListener("keydown", fechaFilter);
+        inpFecha.addEventListener("input", fechaMask);
+    }
 }

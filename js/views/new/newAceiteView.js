@@ -1,8 +1,8 @@
 import { aceitesListView } from "../aceitesListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 
-import { strFecha } from "../../utils.js";
-import { decimalFilter } from "../../utils.js";
+import { strFechaDMY } from "../../utils.js";
+import { decimalFilter, fechaDMYToISO, fechaFilter, fechaMask } from "../../utils.js";
 import { hardFilter } from "../../utils.js";
 
 export async function newAceiteView() {
@@ -10,7 +10,7 @@ export async function newAceiteView() {
     let cerrar = () => {};
 
     try {
-        const fechaDef = strFecha();
+        const fechaDef = strFechaDMY();
 
         const marcaRes = await fetch("php/api/get/marcaAceite/route.php");
         const marcasResponse = await marcaRes.json();
@@ -24,7 +24,7 @@ export async function newAceiteView() {
             <form id="formNuevoLoteAceite">
                 <div class="modal-fila">
                     <label>Fecha Compra:</label>
-                    <input type="date" name="fecha_compra" value="${fechaDef}" required>
+                    <input type="text" name="fecha_compra" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${fechaDef}" required>
                 </div>
                 <div class="modal-fila modal-fila-aviso">
                     <label>Detalles:</label>
@@ -60,6 +60,11 @@ export async function newAceiteView() {
         const contDetalles = overlay.querySelector("#loteAceiteDetalles");
         const inpEstimado = overlay.querySelector("#precioEstimadoText");
         const inpPrecioTot = overlay.querySelector("#precioTotalAceite");
+        const inpFechaCompra = overlay.querySelector('input[name="fecha_compra"]');
+
+        inpFechaCompra.addEventListener("keydown", fechaFilter);
+        inpFechaCompra.addEventListener("input", fechaMask);
+        inpPrecioTot.addEventListener("keydown", decimalFilter);
 
         let filas = [];
         let realTocado = false;
@@ -204,7 +209,7 @@ export async function newAceiteView() {
             const totalReal = realTocado ? realOverride : detalles.reduce((s, d) => s + d.precio_ingresado, 0);
 
             const payload = {
-                fecha_compra: overlay.querySelector('input[name="fecha_compra"]').value,
+                fecha_compra: fechaDMYToISO(inpFechaCompra.value),
                 precio_total: totalReal,
                 detalles
             };

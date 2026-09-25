@@ -1,14 +1,14 @@
 import { personalListView } from "../personalListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
-import { decimalFilter, comillasFilter } from "../../utils.js";
+import { decimalFilter, comillasFilter, strFechaDMY, fechaDMYToISO, fechaFilter, fechaMask } from "../../utils.js";
 
 export async function newPersonalView() {
 
     const resTipos = await fetch("php/api/get/tipoPersonal/route.php");
     const tipos = (await resTipos.json()).data || [];
 
-    const hoy = new Date().toISOString().split("T")[0];
+    const hoy = strFechaDMY();
 
     const contenido = `
         <div class="modal-fila">
@@ -25,7 +25,7 @@ export async function newPersonalView() {
         </div>
         <div class="modal-fila">
             <label>Fecha Contrato:</label>
-            <input type="date" id="neFecha" value="${hoy}">
+            <input type="text" id="neFecha" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${hoy}">
         </div>
     `;
 
@@ -60,7 +60,7 @@ export async function newPersonalView() {
                     nombre: nNombre,
                     id_te: Number(t.id),
                     mensual,
-                    fecha_contrato: nFecha || null
+                    fecha_contrato: fechaDMYToISO(nFecha) || null
                 }]
             };
 
@@ -98,4 +98,10 @@ export async function newPersonalView() {
 
     const inpMensual = resultado.overlay.querySelector("#neMensual");
     if (inpMensual) inpMensual.addEventListener("keydown", decimalFilter);
+
+    const inpFecha = resultado.overlay.querySelector("#neFecha");
+    if (inpFecha) {
+        inpFecha.addEventListener("keydown", fechaFilter);
+        inpFecha.addEventListener("input", fechaMask);
+    }
 }

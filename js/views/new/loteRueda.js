@@ -1,16 +1,16 @@
 import { ruedasListView } from "../list/ruedas.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 
-import { strFecha } from "../../utils.js";
+import { strFechaDMY } from "../../utils.js";
 import { hardFilter } from "../../utils.js";
-import { decimalFilter } from "../../utils.js";
+import { decimalFilter, fechaDMYToISO, fechaFilter, fechaMask } from "../../utils.js";
 
 export async function newLoteRuedaView() {
 
     let cerrar = () => {};
 
     try {
-        const fechaDef = strFecha();
+        const fechaDef = strFechaDMY();
 
         const marca_ruedaRes = await fetch("php/api/get/marcaRueda/route.php");
         const marcasResponse = await marca_ruedaRes.json();
@@ -24,7 +24,7 @@ export async function newLoteRuedaView() {
             <form id="formNuevoLote">
                 <div class="modal-fila">
                     <label>Fecha Compra:</label>
-                    <input type="date" name="fecha_compra" value="${fechaDef}" required>
+                    <input type="text" name="fecha_compra" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${fechaDef}" required>
                 </div>
                 <div class="modal-fila">
                     <label>Cantidad:</label>
@@ -59,11 +59,16 @@ export async function newLoteRuedaView() {
         const inpEstimado = overlay.querySelector("#precioEstimadoRuedas");
         const inpPrecioTot = overlay.querySelector("#precioTotal");
 
+        const inpFechaCompra = overlay.querySelector('input[name="fecha_compra"]');
+
         let filas = [];
         let realTocado = false;
         let realOverride = 0;
 
         if (inpCantidad) inpCantidad.addEventListener("keydown", hardFilter);
+        inpFechaCompra.addEventListener("keydown", fechaFilter);
+        inpFechaCompra.addEventListener("input", fechaMask);
+        inpPrecioTot.addEventListener("keydown", decimalFilter);
 
         function precioDeMarca(select) {
             const opt = select.selectedOptions[0];
@@ -183,7 +188,7 @@ export async function newLoteRuedaView() {
             const totalReal = realTocado ? realOverride : ruedas.reduce((s, r) => s + r.precio_rueda, 0);
 
             const payload = {
-                fecha_compra: overlay.querySelector('input[name="fecha_compra"]').value,
+                fecha_compra: fechaDMYToISO(inpFechaCompra.value),
                 cantidad: n,
                 precio_total: totalReal,
                 ruedas
