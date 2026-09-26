@@ -76,7 +76,7 @@ try {
         }
         $stmt->close();
 
-        $sqlAnom = "SELECT id_anomalia, detalle_anomalia, detalle_subanomalia, gasto_subanomalia
+        $sqlAnom = "SELECT id_anomalia, detalle_anomalia, gasto_subanomalia
                     FROM anomalia
                     WHERE id_reporte = ?
                     ORDER BY id_anomalia ASC";

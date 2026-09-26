@@ -84,13 +84,22 @@ export async function reporteViaje(placa) {
                 `<option value="${esc(u.nombre_ubicacion)}" ${esc(u.nombre_ubicacion) === esc(r?.ubicacion_retorno) ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`
             ).join("");
 
-        const optLlegada = `<option value="">-</option>` +
-            ubiLlegada.map(u =>
-                `<option value="${esc(u.nombre_ubicaciones_llegada)}" ${esc(u.nombre_ubicaciones_llegada) === esc(r?.ubicacion_llegada) ? "selected" : ""}>${esc(u.nombre_ubicaciones_llegada)}</option>`
-            ).join("");
+        const valLlegada = esc(r?.ubicacion_llegada);
+        const optLlegada = []
+            .concat(
+                ubicaciones.map(u => {
+                    const sel = valLlegada === "" ? esc(u.nombre_ubicacion) === "Cochabamba" : esc(u.nombre_ubicacion) === valLlegada;
+                    return `<option value="${esc(u.nombre_ubicacion)}" ${sel ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`;
+                }),
+                ubiLlegada.map(u => {
+                    const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegada;
+                    return `<option value="${esc(u.nombre_ubicaciones_llegada)}" ${sel ? "selected" : ""}>${esc(u.nombre_ubicaciones_llegada)}</option>`;
+                })
+            )
+            .join("");
 
         const optPeajes = peajes.map(p =>
-            `<option value="${esc(p.precio_subpeaje)}" data-precio="${esc(p.precio_subpeaje)}">Bs. ${esc(p.precio_subpeaje)} - ${esc(fechaISOToDMY(p.fecha_registro))}</option>`
+            `<option value="${esc(p.precio_peaje)}" data-precio="${esc(p.precio_peaje)}">Bs. ${esc(p.precio_peaje)} - ${esc(p.nombre_ubicacion)}</option>`
         ).join("");
         const optPeajesIda = peajes.length > 0 ? `<option value="">-</option>${optPeajes}` : `<option value="">-</option>`;
         const optPeajesRetorno = `<option value="">-</option>${optPeajes}`;
@@ -124,7 +133,6 @@ export async function reporteViaje(placa) {
                     <span>Llego a Cbba:</span>
                     <span id="lblLlegadaCbba">${fechaISOToDMY(val("fecha_llegada")) || "-"}</span>
                 </div>
-                <hr class="dottedHr">
                 <div class="rep-linea">
                     <span>Retorno de:</span>
                     <select id="selRetorno">${optRetorno}</select>
@@ -146,6 +154,8 @@ export async function reporteViaje(placa) {
             </div>
 
             <div class="estructuraReporteVista">
+                <h2 class="rep-seccion">Ingresos</h2>
+
                 <div class="sba">
                     <h4>Liquidacion de Pasajes: <span id="lblLiqPasajes">${val("ubicacion_retorno") ? val("ubicacion_retorno") : "-"}</span></h4>
                     <input type="number" class="repInput inpLiq" data-campo="liquidacion_pasajes" min="0" step="0.01" placeholder="0.00" value="${esc(val("liquidacion_pasajes"))}">
@@ -174,9 +184,11 @@ export async function reporteViaje(placa) {
                     <input type="number" class="repInput" id="sumaAsignacion" disabled placeholder="0.00">
                 </div>
 
-                <div class="sba">
-                    <h4>Otros:</h4>
-                    <input type="text" class="repInput" id="inpOtros" maxlength="300" placeholder="Detalle" value="${esc(val("otros"))}">
+                <div class="sba rep-ingresosRow">
+                    <div class="rep-nota">
+                        <h4>Otros:</h4>
+                        <input type="text" class="repInput" id="inpOtros" maxlength="300" placeholder="Detalle" value="${esc(val("otros"))}">
+                    </div>
                 </div>
 
                 <div class="sba">
@@ -204,23 +216,25 @@ export async function reporteViaje(placa) {
                     <h4>Peaje de: Cochabamba <span>a:</span> <span id="lblPeaje1">${val("ubicacion_retorno") ? val("ubicacion_retorno") : "-"}</span></h4>
                     <div class="rep-derecha">
                         <select id="selPeajeIda" class="repSelect">${optPeajesIda}</select>
-                        <input type="number" class="repInput" id="inpPeajeIda" disabled placeholder="0.00" value="${esc(val("peaje_ida"))}">
+                        <input type="number" class="repInput inpPeaje" id="inpPeajeIda" min="0" step="0.01" placeholder="0.00" value="${esc(val("peaje_ida"))}">
                     </div>
                 </div>
                 <div class="sba">
                     <h4>Peaje de: <span id="lblPeaje2">${val("ubicacion_retorno") ? val("ubicacion_retorno") : "-"}</span> a: Cochabamba</h4>
                     <div class="rep-derecha">
                         <select id="selPeajeRetorno" class="repSelect">${optPeajesRetorno}</select>
-                        <input type="number" class="repInput" id="inpPeajeRetorno" disabled placeholder="0.00" value="${esc(val("peaje_retorno"))}">
+                        <input type="number" class="repInput inpPeaje" id="inpPeajeRetorno" min="0" step="0.01" placeholder="0.00" value="${esc(val("peaje_retorno"))}">
                     </div>
                 </div>
 
                 <div class="sba rep-otros">
                     <div class="rep-otros-left">
-                        <h2 class="rep-seccion">Otros</h2>
-                        <div class="rep-botones">
-                            <button id="addGastoBtn" class="btnAddDetalle">+ Gasto</button>
-                            <button id="addAnomaliaBtn" class="btnAddDetalle">+ Anomalia</button>
+                        <div class="rep-otros-header">
+                            <h2 class="rep-otros-titulo">Otros</h2>
+                            <div class="rep-botones">
+                                <button id="addGastoBtn" class="btnAddDetalle">Agregar Gasto</button>
+                                <button id="addAnomaliaBtn" class="btnAddDetalle">Agregar Anomalia</button>
+                            </div>
                         </div>
                         <div id="listaGastos"></div>
                         <div id="listaAnomalias"></div>
@@ -228,8 +242,15 @@ export async function reporteViaje(placa) {
                 </div>
 
                 <div class="sba">
-                    <h4>Gasto Otros:</h4>
-                    <input type="number" class="repInput" id="totalGastosOtros" disabled placeholder="0.00" value="${esc(val("gasto_otros"))}">
+                    <h4>Gastos Totales:</h4>
+                    <input type="number" class="repInput" id="totalGastosOtros" disabled placeholder="0.00" value="${esc(val("gastos_totales"))}">
+                </div>
+
+                <h2 class="rep-seccion">Balance</h2>
+
+                <div class="sba">
+                    <h4>Resultado (Ingresos - Gastos):</h4>
+                    <input type="number" class="repInput" id="totalBalance" disabled placeholder="0.00">
                 </div>
             </div>
         `;
@@ -257,8 +278,10 @@ export async function reporteViaje(placa) {
         function actualizarSumas() {
             const liq = Array.from(document.querySelectorAll(".inpLiq")).reduce((acc, i) => acc + (num(i.value) || 0), 0);
             const asig = Array.from(document.querySelectorAll(".inpAsignacion")).reduce((acc, i) => acc + (num(i.value) || 0), 0);
+            const totalIngresos = liq + asig;
             document.getElementById("sumaAsignacion").value = asig.toFixed(2);
-            document.getElementById("totalEfectivo").value = (liq + asig).toFixed(2);
+            document.getElementById("totalEfectivo").value = totalIngresos.toFixed(2);
+            actualizarBalance(totalIngresos);
         }
 
         function actualizarLabelsRetorno() {
@@ -318,6 +341,7 @@ export async function reporteViaje(placa) {
         function seleccionarPeaje(sel, inp, valorInicial) {
             sel.addEventListener("change", () => {
                 inp.value = sel.value;
+                actualizarTotalGastosOtros();
             });
             if (sel.value !== "") {
                 inp.value = sel.value;
@@ -332,30 +356,62 @@ export async function reporteViaje(placa) {
         seleccionarPeaje(peajeRetornoSel, document.getElementById("inpPeajeRetorno"), val("peaje_retorno"));
 
         if (peajes.length > 0) {
-            if (peajeIdaSel.value === "") peajeIdaSel.value = peajes[0].precio_subpeaje;
-            if (peajeRetornoSel.value === "") peajeRetornoSel.value = peajes[0].precio_subpeaje;
+            if (peajeIdaSel.value === "") peajeIdaSel.value = peajes[0].precio_peaje;
+            if (peajeRetornoSel.value === "") peajeRetornoSel.value = peajes[0].precio_peaje;
             document.getElementById("inpPeajeIda").value = peajeIdaSel.value;
             document.getElementById("inpPeajeRetorno").value = peajeRetornoSel.value;
         }
 
+        document.querySelectorAll("#inpDieselPartida, #inpDieselLlegada, .inpPeaje")
+            .forEach(inp => inp.addEventListener("input", actualizarTotalGastosOtros));
+
         const mapaDetalles = new Map(gastosEstimados.filter(g => (g.detalles || []).length > 0)
             .map(g => [String(g.id_gasto_estimado), g.detalles]));
+
+        function actualizarBalance(totalIngresos) {
+            const el = document.getElementById("totalBalance");
+            if (!el) return;
+            const total = totalIngresos === undefined
+                ? (num(document.getElementById("totalEfectivo").value) || 0)
+                : totalIngresos;
+            el.value = (total - calcularTotalGastos()).toFixed(2);
+        }
+
+        function calcularTotalGastos() {
+            const diesel = (num(document.getElementById("inpDieselPartida").value) || 0)
+                + (num(document.getElementById("inpDieselLlegada").value) || 0);
+            const peajes = (num(document.getElementById("inpPeajeIda").value) || 0)
+                + (num(document.getElementById("inpPeajeRetorno").value) || 0);
+            const otros = Array.from(document.querySelectorAll(".inpPrecio, .inpMontoAnomalia"))
+                .reduce((acc, i) => acc + (num(i.value) || 0), 0);
+            return diesel + peajes + otros;
+        }
+
+        function actualizarTotalGastosOtros() {
+            const el = document.getElementById("totalGastosOtros");
+            if (el) el.value = calcularTotalGastos().toFixed(2);
+            actualizarBalance();
+        }
 
         function construirFilaGasto(datos) {
             const fila = document.createElement("div");
             fila.className = "filaGasto";
 
             fila.innerHTML = `
-                <select class="selGasto">
-                    <option value="">Gasto...</option>
-                    ${selGastos}
-                </select>
-                <select class="selDetalle" style="display:none;">
-                    <option value="">Detalle...</option>
-                </select>
-                <input type="number" class="repInput inpPrecio" min="0" step="0.01" placeholder="0.00">
-                <select class="selResponsable">${optResponsable}</select>
-                <button class="btnQuitarFila" type="button">x</button>
+                <div class="filaGasto-top">
+                    <select class="selGasto">
+                        <option value="">Gasto...</option>
+                        ${selGastos}
+                    </select>
+                    <select class="selDetalle" style="display:none;">
+                        <option value="">Detalle...</option>
+                    </select>
+                    <input type="number" class="repInput inpPrecio" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <div class="filaGasto-bottom">
+                    <select class="selResponsable">${optResponsable}</select>
+                    <button class="btnQuitarFila" type="button" title="Eliminar"><img src="img/trash.svg" alt="eliminar"></button>
+                </div>
             `;
 
             const selG = fila.querySelector(".selGasto");
@@ -390,7 +446,11 @@ export async function reporteViaje(placa) {
                 inpP.value = selD.value;
             });
             inpP.addEventListener("keydown", decimalFilter);
-            fila.querySelector(".btnQuitarFila").addEventListener("click", () => fila.remove());
+            inpP.addEventListener("input", actualizarTotalGastosOtros);
+            fila.querySelector(".btnQuitarFila").addEventListener("click", () => {
+                fila.remove();
+                actualizarTotalGastosOtros();
+            });
 
             if (datos) {
                 const matchG = Array.from(selG.options).find(o => o.text === datos.titulo);
@@ -415,29 +475,34 @@ export async function reporteViaje(placa) {
             fila.className = "filaAnomalia";
             fila.innerHTML = `
                 <input type="text" class="inpDetAnomalia" maxlength="150" placeholder="Detalle anomalia">
-                <input type="text" class="inpSubAnomalia" maxlength="255" placeholder="Sub anomalia">
                 <input type="number" class="repInput inpMontoAnomalia" min="0" step="0.01" placeholder="0.00">
-                <button class="btnQuitarFila" type="button">x</button>
+                <button class="btnQuitarFila" type="button" title="Eliminar"><img src="img/trash.svg" alt="eliminar"></button>
             `;
             if (datos) {
                 fila.querySelector(".inpDetAnomalia").value = esc(datos.detalle_anomalia);
-                fila.querySelector(".inpSubAnomalia").value = esc(datos.detalle_subanomalia);
                 fila.querySelector(".inpMontoAnomalia").value = esc(datos.gasto_subanomalia);
             }
             fila.querySelector(".inpMontoAnomalia").addEventListener("keydown", decimalFilter);
-            fila.querySelector(".btnQuitarFila").addEventListener("click", () => fila.remove());
+            fila.querySelector(".inpMontoAnomalia").addEventListener("input", actualizarTotalGastosOtros);
+            fila.querySelector(".btnQuitarFila").addEventListener("click", () => {
+                fila.remove();
+                actualizarTotalGastosOtros();
+            });
             return fila;
         }
 
         document.getElementById("addGastoBtn").addEventListener("click", () => {
             document.getElementById("listaGastos").appendChild(construirFilaGasto(null));
+            actualizarTotalGastosOtros();
         });
         document.getElementById("addAnomaliaBtn").addEventListener("click", () => {
             document.getElementById("listaAnomalias").appendChild(construirFilaAnomalia(null));
+            actualizarTotalGastosOtros();
         });
 
         gastosBD.forEach(g => document.getElementById("listaGastos").appendChild(construirFilaGasto(g)));
         anomaliasBD.forEach(a => document.getElementById("listaAnomalias").appendChild(construirFilaAnomalia(a)));
+        actualizarTotalGastosOtros();
 
         document.getElementById("guardarReporteBtn").addEventListener("click", guardarReporte);
 
@@ -457,13 +522,13 @@ export async function reporteViaje(placa) {
 
             const anomalias = Array.from(document.querySelectorAll(".filaAnomalia")).map(fila => {
                 const detalle = fila.querySelector(".inpDetAnomalia").value.trim();
-                const sub = fila.querySelector(".inpSubAnomalia").value.trim();
                 const monto = num(fila.querySelector(".inpMontoAnomalia").value);
-                if (detalle === "" && sub === "" && monto === null) return null;
-                return { detalle_anomalia: detalle, detalle_subanomalia: sub, gasto_subanomalia: monto };
+                if (detalle === "" && monto === null) return null;
+                return { detalle_anomalia: detalle, gasto_subanomalia: monto };
             }).filter(Boolean);
 
-            const totalGastos = Array.from(document.querySelectorAll(".inpPrecio")).reduce((acc, i) => acc + (num(i.value) || 0), 0);
+            const totalOtros = Array.from(document.querySelectorAll(".inpPrecio, .inpMontoAnomalia")).reduce((acc, i) => acc + (num(i.value) || 0), 0);
+            const totalGastos = calcularTotalGastos();
 
             const payload = {
                 placa: flota.placa,
@@ -480,7 +545,8 @@ export async function reporteViaje(placa) {
                 peaje_ida: num(document.getElementById("inpPeajeIda").value),
                 peaje_retorno: num(document.getElementById("inpPeajeRetorno").value),
                 otros: document.getElementById("inpOtros").value.trim() || null,
-                gasto_otros: totalGastos,
+                gasto_otros: totalOtros,
+                gastos_totales: totalGastos,
                 ubicacion_retorno: document.getElementById("selRetorno").value || null,
                 ubicacion_llegada: document.getElementById("selLlegada").value || null,
                 asignacion_efectivo: num(Array.from(document.querySelectorAll('.inpAsignacion[data-campo="efectivo"]'))[0]?.value),

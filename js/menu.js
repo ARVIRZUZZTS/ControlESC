@@ -2,6 +2,7 @@ import { estadisticasView } from "./views/estadisticaView.js";
 
 import { configView } from "./views/config.js";
 
+import { avisosView } from "./views/avisosView.js";
 import { ruedasListView } from "./views/list/ruedas.js";
 import { aceitesListView } from "./views/aceitesListView.js";
 import { flotasListView } from "./views/flotasListView.js";
@@ -10,6 +11,7 @@ import { personalListView } from "./views/personalListView.js";
 import { ajustesView } from "./views/ajustes.js";
 
 export function iniciarMenu() {
+    document.getElementById("estaBtn").addEventListener("click", avisosView);
     document.getElementById("ruedaBtn").addEventListener("click", ruedasListView);
     document.getElementById("aceiteBtn").addEventListener("click", aceitesListView);
     document.getElementById("flotaBtn").addEventListener("click", flotasListView);

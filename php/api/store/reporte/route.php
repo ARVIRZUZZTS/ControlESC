@@ -33,7 +33,9 @@ try {
     $peaje_ida = valDec($data['peaje_ida'] ?? null);
     $peaje_retorno = valDec($data['peaje_retorno'] ?? null);
     $otros = isset($data['otros']) ? substr(trim($data['otros']), 0, 300) : null;
+    $ingresos = isset($data['ingresos']) ? substr(trim($data['ingresos']), 0, 300) : null;
     $gasto_otros = valDec($data['gasto_otros'] ?? null);
+    $gastos_totales = valDec($data['gastos_totales'] ?? null);
     $ubicacion_retorno = isset($data['ubicacion_retorno']) ? substr(trim($data['ubicacion_retorno']), 0, 25) : null;
     $ubicacion_llegada = isset($data['ubicacion_llegada']) ? substr(trim($data['ubicacion_llegada']), 0, 50) : null;
     $asignacion_efectivo = valDec($data['asignacion_efectivo'] ?? null);
@@ -53,20 +55,20 @@ try {
     $sql = "INSERT INTO reporte (placa, fecha_partida, fecha_retorno, fecha_llegada,
             liquidacion_pasajes, liquidacion_encomiendas, liquidacion_pasajes_auxiliar,
             diesel_partida, diesel_llegada, factura_diesel_partida, factura_diesel_retorno,
-            peaje_ida, peaje_retorno, otros, gasto_otros, ubicacion_retorno, ubicacion_llegada,
+            peaje_ida, peaje_retorno, otros, ingresos, gasto_otros, gastos_totales, ubicacion_retorno, ubicacion_llegada,
             asignacion_efectivo, asignacion_qr)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion del reporte: " . $conexion->error);
     }
 
-    $stmt->bind_param("ssssdddddiiddsdssdd",
+    $stmt->bind_param("ssssdddddiiddssddssdd",
         $placa, $fecha_partida, $fecha_retorno, $fecha_llegada,
         $liquidacion_pasajes, $liquidacion_encomiendas, $liquidacion_pasajes_auxiliar,
         $diesel_partida, $diesel_llegada, $factura_diesel_partida, $factura_diesel_retorno,
-        $peaje_ida, $peaje_retorno, $otros, $gasto_otros, $ubicacion_retorno, $ubicacion_llegada,
+        $peaje_ida, $peaje_retorno, $otros, $ingresos, $gasto_otros, $gastos_totales, $ubicacion_retorno, $ubicacion_llegada,
         $asignacion_efectivo, $asignacion_qr);
 
     if (!$stmt->execute()) {
@@ -109,8 +111,8 @@ try {
     $stmtG->close();
     $stmtR->close();
 
-    $sqlAnom = "INSERT INTO anomalia (id_reporte, detalle_anomalia, detalle_subanomalia, gasto_subanomalia)
-                VALUES (?, ?, ?, ?)";
+    $sqlAnom = "INSERT INTO anomalia (id_reporte, detalle_anomalia, gasto_subanomalia)
+                VALUES (?, ?, ?)";
     $stmtA = $conexion->prepare($sqlAnom);
     if (!$stmtA) {
         throw new Exception("Error al preparar las anomalias: " . $conexion->error);
@@ -118,11 +120,10 @@ try {
 
     foreach ($anomalias as $a) {
         $detalle = isset($a['detalle_anomalia']) ? substr(trim($a['detalle_anomalia']), 0, 150) : "";
-        $sub = isset($a['detalle_subanomalia']) ? substr(trim($a['detalle_subanomalia']), 0, 255) : "";
         $monto = valDec($a['gasto_subanomalia'] ?? null);
-        if ($detalle === "" && $sub === "" && $monto === null) continue;
+        if ($detalle === "" && $monto === null) continue;
 
-        $stmtA->bind_param("issd", $id_reporte, $detalle, $sub, $monto);
+        $stmtA->bind_param("isd", $id_reporte, $detalle, $monto);
         if (!$stmtA->execute()) {
             throw new Exception("Error al guardar una anomalia: " . $stmtA->error);
         }

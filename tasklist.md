@@ -2,13 +2,21 @@
 ## Proceso [-] Finalizado [/] Falta [ ]
 ### BD
 - [/] Fix de la bd para el nuevo planteo
-- [ ] Terminar el analisis de Reporte
+- [/] Terminar el analisis de Reporte
+- [/] Migracion: `reporte.gastos_totales` + borrar `anomalia.detalle_subanomalia`
 ### Vista
 - ### Fix general
     - [/] vista general del menu nav -> bot
+    - [/] Vista de reportes al cargar la app
+    - [/] Vista de Avisos (boton AVISOS)
 - ### Reporte
-    - [ ] Vista de Reportes en Menu
-    - [ ] Nuevo Reporte
+    - [/] Vista de Reportes en Menu
+    - [/] Nuevo Reporte
+    - [/] Quitar filtro por placa
+    - [/] Habilitar inputs de peaje
+    - [/] Quitar sub anomalia
+    - [/] Gastos Totales = diesel + peaje + otros + anomalias
+    - [/] Balance (ingresos - gastos)
 - ### Flotas
     - [/] Vista de Flotas en Menu
     - [/] Nueva Flota

@@ -17,13 +17,29 @@ try {
         throw new Exception("El nombre de la ubicacion es obligatorio.");
     }
 
-    $sql = "INSERT INTO ubicacion (nombre_ubicacion) VALUES (?)";
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+    $precio_peaje = isset($data['precio_peaje']) && $data['precio_peaje'] !== '' && $data['precio_peaje'] !== null
+        ? (float)$data['precio_peaje']
+        : null;
+
+    if ($precio_peaje !== null && $precio_peaje < 0) {
+        throw new Exception("El precio del peaje no puede ser negativo.");
     }
 
-    $stmt->bind_param("s", $nombre);
+    if ($precio_peaje !== null) {
+        $sql = "INSERT INTO ubicacion (nombre_ubicacion, precio_peaje) VALUES (?, ?)";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $stmt->bind_param("sd", $nombre, $precio_peaje);
+    } else {
+        $sql = "INSERT INTO ubicacion (nombre_ubicacion) VALUES (?)";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $stmt->bind_param("s", $nombre);
+    }
 
     if (!$stmt->execute()) {
         throw new Exception("Error al guardar la ubicacion: " . $stmt->error);

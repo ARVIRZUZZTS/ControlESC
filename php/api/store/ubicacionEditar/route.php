@@ -18,13 +18,29 @@ try {
         throw new Exception("El nombre de la ubicacion es obligatorio.");
     }
 
-    $sql = "UPDATE ubicacion SET nombre_ubicacion = ? WHERE id_ubicacion = ?";
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+    $precio_peaje = isset($data['precio_peaje']) && $data['precio_peaje'] !== '' && $data['precio_peaje'] !== null
+        ? (float)$data['precio_peaje']
+        : null;
+
+    if ($precio_peaje !== null && $precio_peaje < 0) {
+        throw new Exception("El precio del peaje no puede ser negativo.");
     }
 
-    $stmt->bind_param("si", $nombre, $id_ubicacion);
+    if ($precio_peaje !== null) {
+        $sql = "UPDATE ubicacion SET nombre_ubicacion = ?, precio_peaje = ? WHERE id_ubicacion = ?";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $stmt->bind_param("sdi", $nombre, $precio_peaje, $id_ubicacion);
+    } else {
+        $sql = "UPDATE ubicacion SET nombre_ubicacion = ?, precio_peaje = NULL WHERE id_ubicacion = ?";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+        }
+        $stmt->bind_param("si", $nombre, $id_ubicacion);
+    }
 
     if (!$stmt->execute()) {
         throw new Exception("Error al actualizar la ubicacion: " . $stmt->error);

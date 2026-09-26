@@ -4,9 +4,10 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_subpeaje, precio_subpeaje, fecha_registro
-            FROM peaje
-            ORDER BY fecha_registro DESC, id_subpeaje DESC";
+    $sql = "SELECT id_ubicacion, nombre_ubicacion, precio_peaje
+            FROM ubicacion
+            WHERE precio_peaje IS NOT NULL
+            ORDER BY id_ubicacion";
 
     $stmt = $conexion->prepare($sql);
 

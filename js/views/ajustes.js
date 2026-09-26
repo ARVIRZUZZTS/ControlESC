@@ -2,7 +2,6 @@ import { gastosView } from "./ajustes/gastos.js";
 import { ubicacionesView } from "./ajustes/ubicaciones.js";
 import { tiposPersonalView } from "./ajustes/tiposPersonal.js";
 import { dieselView } from "./ajustes/diesel.js";
-import { peajesView } from "./ajustes/peajes.js";
 import { ubicacionesLlegadaView } from "./ajustes/ubicacionesLlegada.js";
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { marcasRuedasView } from "./marcas/ruedas.js";
@@ -26,7 +25,6 @@ export function ajustesView() {
             </div>
             <div class="ajustesRow center">
                 <button id="ajDiesel" class="ajustesBtn">DIESEL</button>
-                <button id="ajPeaje" class="ajustesBtn">PEAJE</button>
                 <button id="ajUbicacionLlegada" class="ajustesBtn">UBIC. LLEGADA</button>
             </div>
         </div>
@@ -38,6 +36,5 @@ export function ajustesView() {
     document.getElementById("ajMarcaAceite").addEventListener("click", () => marcasAceitesView({ onBack: ajustesView }));
     document.getElementById("ajMarcaRueda").addEventListener("click", () => marcasRuedasView({ onBack: ajustesView }));
     document.getElementById("ajDiesel").addEventListener("click", dieselView);
-    document.getElementById("ajPeaje").addEventListener("click", peajesView);
     document.getElementById("ajUbicacionLlegada").addEventListener("click", ubicacionesLlegadaView);
 }    

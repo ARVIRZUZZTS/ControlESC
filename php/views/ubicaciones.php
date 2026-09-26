@@ -4,7 +4,7 @@ require_once("../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_ubicacion, nombre_ubicacion FROM ubicacion ORDER BY nombre_ubicacion";
+    $sql = "SELECT id_ubicacion, nombre_ubicacion, precio_peaje FROM ubicacion ORDER BY nombre_ubicacion";
 
     $stmt = $conexion->prepare($sql);
     $stmt->execute();
