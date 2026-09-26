@@ -1,16 +1,8 @@
 import { reportesView } from "../reportesView.js";
-import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, fechaFilter, fechaMask, decimalFilter } from "../../utils.js";
-import { abrirAlert } from "../../components/modal.js";
-
-const DIAS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-
-function diaDeFecha(f) {
-    if (!f) return "-";
-    const partes = f.split("/");
-    if (partes.length !== 3) return "-";
-    const dt = new Date(Number(partes[2]), Number(partes[1]) - 1, Number(partes[0]));
-    return DIAS[dt.getDay()];
-}
+import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter } from "../../utils.js";
+import { crearCampoFecha } from "../../components/fechaCampo.js";
+import { historialReporteView } from "./historialReporte.js";
+import { abrirAlert, abrirConfirmation } from "../../components/modal.js";
 
 function num(v) {
     if (v === null || v === undefined || v === "") return null;
@@ -20,6 +12,23 @@ function num(v) {
 
 function esc(v) {
     return v === null || v === undefined ? "" : String(v);
+}
+
+function fmt(v, dec = 2) {
+    const n = num(v);
+    return n === null ? "0" : n.toFixed(dec);
+}
+
+/* Una ruta "A - B - C" son 2 viajes; "A - B - B - A" tambien (quedarse en la ciudad no es viaje) */
+function contarTramos(ubicacion) {
+    if (ubicacion === null || ubicacion === undefined || String(ubicacion).trim() === "") return 1;
+    const lugares = String(ubicacion).split("-").map(s => s.trim()).filter(s => s !== "");
+    if (lugares.length < 2) return 1;
+    let n = 0;
+    for (let i = 1; i < lugares.length; i++) {
+        if (lugares[i].toLowerCase() !== lugares[i - 1].toLowerCase()) n++;
+    }
+    return n > 0 ? n : 1;
 }
 
 export async function reporteViaje(placa) {
@@ -49,8 +58,12 @@ export async function reporteViaje(placa) {
 
         const flota = data.flota;
         const r = data.reporte;
+        const ultimo = data.ultimo_finalizado;
         const gastosBD = data.gastos || [];
         const anomaliasBD = data.anomalias || [];
+        const aceite = data.aceite || {};
+        const CONFIG = data.config || {};
+        const MAX_VIAJES = CONFIG.max_viajes_reporte || 3;
 
         const ubicaciones = (await resUbi.json()).data || [];
         const ubiLlegada = (await resULL.json()).data || [];
@@ -67,12 +80,16 @@ export async function reporteViaje(placa) {
             </div>
             <div class="btnsTitle">
                 <button id="guardarReporteBtn"><img src="img/save.svg" alt="Guardar">Guardar</button>
-                <button id="reportesListBtn"><img src="img/reportesList.svg" alt="Reportes"> Reportes ${flota.placa}</button>
+                <button id="finalizarReporteBtn" class="btnFinalizar"><img src="img/end.svg" alt="Finalizar">Finalizar Reporte</button>
+                <button id="historialReporteBtn"><img src="img/reportesList.svg" alt="Reportes"> Historial</button>
             </div>
         `;
 
         document.getElementById("backBtn").addEventListener("click", reportesView);
-        document.getElementById("reportesListBtn").addEventListener("click", reportesView);
+        document.getElementById("historialReporteBtn").addEventListener("click", () => {
+            historialReporteView({ placa: flota.placa, onBack: () => reporteViaje(placa) });
+        });
+        document.getElementById("finalizarReporteBtn").addEventListener("click", finalizarReporte);
 
         const optPartida = ubicaciones.map(u =>
             `<option value="${esc(u.nombre_ubicacion)}" ${Number(u.id_ubicacion) === 1 ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`
@@ -127,31 +144,33 @@ export async function reporteViaje(placa) {
                     <span>Partio de:</span>
                     <select id="selPartida">${optPartida}</select>
                     <span>Fecha:</span>
-                    <input type="text" id="fechaPartida" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${esc(fechaISOToDMY(val("fecha_partida", hoy)))}">
+                    <span id="fechaPartida" class="fechaContenedor"></span>
                     <span>Dia:</span>
-                    <span id="diaPartida" class="rep-dia">${diaDeFecha(fechaISOToDMY(val("fecha_partida", hoy)))}</span>
+                    <span id="diaPartida" class="rep-dia">-</span>
                     <span>Llego a Cbba:</span>
-                    <span id="lblLlegadaCbba">${fechaISOToDMY(val("fecha_llegada")) || "-"}</span>
+                    <span id="lblLlegadaCbba">-</span>
                 </div>
                 <div class="rep-linea">
                     <span>Retorno de:</span>
                     <select id="selRetorno">${optRetorno}</select>
                     <span>Fecha:</span>
-                    <input type="text" id="fechaRetorno" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${esc(fechaISOToDMY(val("fecha_retorno")))}">
+                    <span id="fechaRetorno" class="fechaContenedor"></span>
                     <span>Dia:</span>
-                    <span id="diaRetorno" class="rep-dia">${diaDeFecha(fechaISOToDMY(val("fecha_retorno")))}</span>
+                    <span id="diaRetorno" class="rep-dia">-</span>
                 </div>
                 <div class="rep-linea">
                     <span>Llego a:</span>
                     <select id="selLlegada">${optLlegada}</select>
                     <span>Fecha:</span>
-                    <input type="text" id="fechaLlegada" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" value="${esc(fechaISOToDMY(val("fecha_llegada")))}">
+                    <span id="fechaLlegada" class="fechaContenedor"></span>
                     <span>Dia:</span>
-                    <span id="diaLlegada" class="rep-dia">${diaDeFecha(fechaISOToDMY(val("fecha_llegada")))}</span>
+                    <span id="diaLlegada" class="rep-dia">-</span>
                     <span>Placa:</span>
                     <strong>${flota.placa}</strong>
                 </div>
             </div>
+
+            <div class="rep-cierre" id="repCierre"></div>
 
             <div class="estructuraReporteVista">
                 <h2 class="rep-seccion">Ingresos</h2>
@@ -259,6 +278,114 @@ export async function reporteViaje(placa) {
 
         const tipoPagos = document.getElementById("inputTipoPagos");
 
+        const hoyISO = fechaDMYToISO(hoy);
+        const campos = {
+            partida: crearCampoFecha(val("fecha_partida") || hoyISO),
+            retorno: crearCampoFecha(val("fecha_retorno") || hoyISO),
+            llegada: crearCampoFecha(val("fecha_llegada") || hoyISO)
+        };
+
+        document.getElementById("fechaPartida").appendChild(campos.partida);
+        document.getElementById("fechaRetorno").appendChild(campos.retorno);
+        document.getElementById("fechaLlegada").appendChild(campos.llegada);
+
+        const mostrarUltimoFinalizado = () => {
+            if (!ultimo) return "";
+            const f = fechaISOToDMY(ultimo.fecha_llegada) || "-";
+            return `
+                <div class="rep-cierreTag rep-cierreOk">
+                    <strong>Reporte #${ultimo.id_reporte} finalizado</strong>
+                    <span>Llegada: ${f} - ${ultimo.viajes} viaje(s) - ${fmt(ultimo.aceite_consumido, 2)} L de aceite</span>
+                </div>
+            `;
+        };
+
+        const selLlegada = document.getElementById("selLlegada");
+        let viajesRep = r ? (parseInt(r.viajes, 10) || contarTramos(selLlegada.value)) : contarTramos(selLlegada.value);
+        if (viajesRep < 1) viajesRep = 1;
+        if (viajesRep > MAX_VIAJES) viajesRep = MAX_VIAJES;
+
+        const ajustarViajes = (delta) => {
+            let v = viajesRep + delta;
+            if (v < 1) v = 1;
+            if (v > MAX_VIAJES) v = MAX_VIAJES;
+            viajesRep = v;
+            actualizarResumenCierre();
+        };
+
+        const actualizarResumenCierre = () => {
+            const cont = document.getElementById("repCierre");
+            if (!cont) return;
+
+            if (!r) {
+                cont.innerHTML = mostrarUltimoFinalizado();
+                return;
+            }
+
+            const lpv = num(aceite.litros_por_viaje) || 0;
+            const consumo = lpv * viajesRep;
+            const restante = (num(aceite.aceite_actual) || 0) - consumo;
+            const capacidad = num(flota.capacidad_aceite) || 0;
+            const viajes_aceite = parseInt(aceite.viajes_aceite, 10) || 0;
+            const insuficiente = restante < lpv;
+
+            cont.innerHTML = `
+                ${mostrarUltimoFinalizado()}
+                <div class="rep-cierreTag ${insuficiente ? "rep-cierreAlerta" : ""}">
+                    <div class="rep-cierreItem">
+                        <span class="rep-cierreLabel">Viajes del reporte</span>
+                        <div class="fechaParte rep-viajes">
+                            <button type="button" class="fechaBtn" id="viajesMenos">&minus;</button>
+                            <input type="text" class="fechaInp" id="inpViajes" value="${viajesRep}" readonly>
+                            <button type="button" class="fechaBtn" id="viajesMas">+</button>
+                        </div>
+                    </div>
+                    <div class="rep-cierreItem">
+                        <span class="rep-cierreLabel">Consumo de aceite</span>
+                        <strong>${fmt(consumo, 2)} L</strong>
+                    </div>
+                    <div class="rep-cierreItem">
+                        <span class="rep-cierreLabel">Por viaje</span>
+                        <strong>${fmt(lpv, 3)} L</strong>
+                    </div>
+                    <div class="rep-cierreItem">
+                        <span class="rep-cierreLabel">Aceite en flota</span>
+                        <strong>${fmt(restante, 2)} / ${fmt(capacidad, 0)} L</strong>
+                    </div>
+                    <div class="rep-cierreItem">
+                        <span class="rep-cierreLabel">Viajes desde el ultimo cambio</span>
+                        <strong>${viajes_aceite}</strong>
+                    </div>
+                </div>
+                ${insuficiente ? `<p class="rep-cierreAviso">No hay aceite suficiente para el siguiente viaje. Al finalizar quedara un aviso de recarga.</p>` : ""}
+            `;
+
+            const menos = document.getElementById("viajesMenos");
+            const mas = document.getElementById("viajesMas");
+            if (menos) menos.addEventListener("click", () => ajustarViajes(-1));
+            if (mas) mas.addEventListener("click", () => ajustarViajes(1));
+        };
+
+        selLlegada.addEventListener("change", () => {
+            viajesRep = contarTramos(selLlegada.value);
+            if (viajesRep > MAX_VIAJES) viajesRep = MAX_VIAJES;
+            actualizarResumenCierre();
+        });
+
+        const refrescarDias = () => {
+            document.getElementById("diaPartida").textContent = campos.partida.getDia();
+            document.getElementById("diaRetorno").textContent = campos.retorno.getDia();
+            document.getElementById("diaLlegada").textContent = campos.llegada.getDia();
+            document.getElementById("lblLlegadaCbba").textContent = campos.llegada.getDMY() || "-";
+        };
+
+        [campos.partida, campos.retorno, campos.llegada].forEach(c =>
+            c.addEventListener("fechaCambio", refrescarDias)
+        );
+
+        refrescarDias();
+        actualizarResumenCierre();
+
         function renderTipoPagos() {
             const t = document.getElementById("selTipoPago").value;
             let h = "";
@@ -310,25 +437,6 @@ export async function reporteViaje(placa) {
 
         document.getElementById("selRetorno").addEventListener("change", actualizarLabelsRetorno);
         actualizarLabelsRetorno();
-
-        document.getElementById("fechaPartida").addEventListener("input", (e) => {
-            fechaMask(e);
-            document.getElementById("diaPartida").textContent = diaDeFecha(e.target.value);
-        });
-        document.getElementById("fechaRetorno").addEventListener("input", (e) => {
-            fechaMask(e);
-            document.getElementById("diaRetorno").textContent = diaDeFecha(e.target.value);
-        });
-        document.getElementById("fechaLlegada").addEventListener("input", (e) => {
-            fechaMask(e);
-            const v = e.target.value;
-            document.getElementById("diaLlegada").textContent = diaDeFecha(v);
-            document.getElementById("lblLlegadaCbba").textContent = v ? v : "-";
-        });
-
-        document.querySelectorAll("#fechaPartida, #fechaRetorno, #fechaLlegada").forEach(inp =>
-            inp.addEventListener("keydown", fechaFilter)
-        );
 
         document.querySelectorAll("input[type=number]:not(:disabled)").forEach(inp =>
             inp.addEventListener("keydown", decimalFilter)
@@ -506,7 +614,7 @@ export async function reporteViaje(placa) {
 
         document.getElementById("guardarReporteBtn").addEventListener("click", guardarReporte);
 
-        function guardarReporte() {
+        function construirPayload() {
             const gastos = Array.from(document.querySelectorAll(".filaGasto")).map(fila => {
                 const selG = fila.querySelector(".selGasto");
                 const selR = fila.querySelector(".selResponsable");
@@ -527,14 +635,14 @@ export async function reporteViaje(placa) {
                 return { detalle_anomalia: detalle, gasto_subanomalia: monto };
             }).filter(Boolean);
 
-            const totalOtros = Array.from(document.querySelectorAll(".inpPrecio, .inpMontoAnomalia")).reduce((acc, i) => acc + (num(i.value) || 0), 0);
-            const totalGastos = calcularTotalGastos();
+            const totalOtros = Array.from(document.querySelectorAll(".inpPrecio, .inpMontoAnomalia"))
+                .reduce((acc, i) => acc + (num(i.value) || 0), 0);
 
-            const payload = {
+            return {
                 placa: flota.placa,
-                fecha_partida: fechaDMYToISO(document.getElementById("fechaPartida").value),
-                fecha_retorno: fechaDMYToISO(document.getElementById("fechaRetorno").value),
-                fecha_llegada: fechaDMYToISO(document.getElementById("fechaLlegada").value),
+                fecha_partida: campos.partida.getISO(),
+                fecha_retorno: campos.retorno.getISO(),
+                fecha_llegada: campos.llegada.getISO(),
                 liquidacion_pasajes: num(document.querySelector('.inpLiq[data-campo="liquidacion_pasajes"]').value),
                 liquidacion_encomiendas: num(document.querySelector('.inpLiq[data-campo="liquidacion_encomiendas"]').value),
                 liquidacion_pasajes_auxiliar: num(document.querySelector('.inpLiq[data-campo="liquidacion_pasajes_auxiliar"]').value),
@@ -546,15 +654,19 @@ export async function reporteViaje(placa) {
                 peaje_retorno: num(document.getElementById("inpPeajeRetorno").value),
                 otros: document.getElementById("inpOtros").value.trim() || null,
                 gasto_otros: totalOtros,
-                gastos_totales: totalGastos,
+                gastos_totales: calcularTotalGastos(),
                 ubicacion_retorno: document.getElementById("selRetorno").value || null,
-                ubicacion_llegada: document.getElementById("selLlegada").value || null,
+                ubicacion_llegada: selLlegada.value || null,
                 asignacion_efectivo: num(Array.from(document.querySelectorAll('.inpAsignacion[data-campo="efectivo"]'))[0]?.value),
                 asignacion_qr: num(Array.from(document.querySelectorAll('.inpAsignacion[data-campo="qr"]'))[0]?.value),
                 gastos: gastos,
-                anomalias: anomalias
+                anomalias: anomalias,
+                viajes: viajesRep
             };
+        }
 
+        function guardarReporte() {
+            const payload = construirPayload();
             const esNuevo = !r;
             if (!esNuevo) payload.id_reporte = r.id_reporte;
             const url = esNuevo ? "php/api/store/reporte/route.php" : "php/api/store/reporteEditar/route.php";
@@ -575,6 +687,59 @@ export async function reporteViaje(placa) {
             .catch(error => {
                 abrirAlert({ mensaje: "Error al guardar el reporte." });
                 console.error(error);
+            });
+        }
+
+        function finalizarReporte() {
+            if (!r) {
+                abrirAlert({ mensaje: "No hay ningun reporte abierto para finalizar." });
+                return;
+            }
+
+            const payload = construirPayload();
+            payload.id_reporte = r.id_reporte;
+
+            if (!payload.fecha_llegada) {
+                abrirAlert({ mensaje: "Completa el dia, mes y anio de la fecha de llegada antes de finalizar." });
+                return;
+            }
+
+            const viajes = viajesRep;
+
+            abrirConfirmation({
+                titulo: "Finalizar Reporte",
+                mensaje: `Se guardara el reporte y ya no podras editarlo. Al finalizar se sumaran <strong>${viajes} viaje(s)</strong> a la flota y a sus ruedas, y se descontaran <strong>${fmt((num(aceite.litros_por_viaje) || 0) * viajes, 2)} L</strong> de aceite.`,
+                botonAceptar: "FINALIZAR",
+                onAceptar: () => {
+                    fetch("php/api/store/reporteFinalizar/route.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(resp => resp.json())
+                    .then(result => {
+                        if (result.status !== "success") {
+                            abrirAlert({ mensaje: result.message });
+                            return;
+                        }
+                        const btn = document.getElementById("finalizarReporteBtn");
+                        if (btn) btn.disabled = true;
+                        abrirConfirmation({
+                            titulo: "Reporte finalizado",
+                            mensaje: `Reporte <strong>#${result.id}</strong> finalizado.<br><br>
+                                      Viajes sumados: <strong>${result.viajes}</strong><br>
+                                      Aceite consumido: <strong>${fmt(result.aceite_consumido, 2)} L</strong><br>
+                                      Aceite restante: <strong>${fmt(result.aceite_restante, 2)} L</strong><br>
+                                      Ruedas actualizadas: <strong>${result.ruedas_afectadas}</strong>`,
+                            botonAceptar: "IR A REPORTES",
+                            onAceptar: () => reportesView()
+                        });
+                    })
+                    .catch(error => {
+                        abrirAlert({ mensaje: "Error al finalizar el reporte." });
+                        console.error(error);
+                    });
+                }
             });
         }
 

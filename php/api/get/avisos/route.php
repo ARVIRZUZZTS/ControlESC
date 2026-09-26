@@ -1,10 +1,12 @@
 <?php
 require_once("../../../conexion.php");
+require_once("../../../includes/reporteDatos.php");
 
 header('Content-Type: application/json');
 
 try {
 
+    $config = configSistema();
     $sqlRuedas = "SELECT rf.placa, rf.id_rf,
                          COALESCE(p.nombre_posicion, '-') AS posicion,
                          rd.id_rd, rd.codigo,
@@ -54,11 +56,33 @@ try {
     }
     $stmt->close();
 
+    $sqlAnom = "SELECT a.id_as, a.placa, a.tipo, a.evento, a.viajes, a.limite, a.fecha, a.detalle,
+                       rd.codigo, mr.nombre_marca_rueda
+                FROM anomalia_sistema a
+                LEFT JOIN rueda_detalle rd ON rd.id_rd = a.id_rd
+                LEFT JOIN marca_rueda mr ON mr.id_marca_rueda = rd.id_marca_rueda
+                ORDER BY a.fecha DESC, a.id_as DESC";
+
+    $stmt = $conexion->prepare($sqlAnom);
+    if (!$stmt) {
+        throw new Exception("Error al preparar la consulta de anomalias: " . $conexion->error);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $anomalias = [];
+    while ($row = $result->fetch_assoc()) {
+        $anomalias[] = $row;
+    }
+    $stmt->close();
+
     echo json_encode([
         "status" => "success",
         "message" => "Avisos obtenidos correctamente",
         "ruedas" => $ruedas,
-        "aceites" => $aceites
+        "aceites" => $aceites,
+        "anomalias" => $anomalias,
+        "config" => $config
     ]);
 
 } catch (Exception $e) {

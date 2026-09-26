@@ -1,7 +1,28 @@
 <?php
 require_once("../../../conexion.php");
+require_once("../../../includes/mantenimiento.php");
 
 header('Content-Type: application/json');
+
+/* Si la recarga se hizo antes del umbral recomendado, queda registrado como anomalia */
+function avisarCambioAceite($conexion, $placa, $litros, $viajes_aceite) {
+    if ($viajes_aceite >= VIAJES_AVISO_ACEITE) return;
+
+    $stmt = $conexion->prepare("SELECT COUNT(*) AS n FROM aceite_flota WHERE placa = ?");
+    if (!$stmt) return;
+    $stmt->bind_param("s", $placa);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (intval($res['n']) < 1) return;
+    if (anomaliasDePlaca($conexion, $placa, 'Aceite cambiado antes de tiempo')) return;
+
+    registrarAnomalia($conexion, $placa, 'Aceite', 'Aceite cambiado antes de tiempo',
+        "Se recargaron " . number_format($litros, 2, '.', '') . " L con solo $viajes_aceite "
+        . "viajes desde la ultima recarga (lo recomendado es " . VIAJES_AVISO_ACEITE . " a " . VIAJES_POR_CAMBIO_ACEITE . ").",
+        $viajes_aceite, VIAJES_POR_CAMBIO_ACEITE);
+}
 
 try {
     $json = file_get_contents('php://input');
@@ -63,7 +84,7 @@ try {
         throw new Exception("Cantidad supera el stock disponible de esta marca (disponible: " . $disponible_tabla . " litros).");
     }
 
-    $sqlFlota = "SELECT placa, capacidad_aceite, aceite_actual FROM flota WHERE placa = ? FOR UPDATE";
+    $sqlFlota = "SELECT placa, capacidad_aceite, aceite_actual, viajes_aceite FROM flota WHERE placa = ? FOR UPDATE";
     $stmtFlota = $conexion->prepare($sqlFlota);
     if (!$stmtFlota) {
         throw new Exception("Error en la preparacion de la flota: " . $conexion->error);
@@ -101,16 +122,24 @@ try {
     }
     $stmtInsert->close();
 
-    $sqlUpd = "UPDATE flota SET aceite_actual = aceite_actual + ? WHERE placa = ?";
+    $nuevo_actual = round($actual + $cantidad, 3);
+    $recarga_completa = $nuevo_actual >= $capacidad * 0.9;
+
+    $sqlUpd = "UPDATE flota
+        SET aceite_actual = aceite_actual + ?,
+            viajes_aceite = IF(? >= capacidad_aceite * 0.9, 0, viajes_aceite)
+        WHERE placa = ?";
     $stmtUpd = $conexion->prepare($sqlUpd);
     if (!$stmtUpd) {
         throw new Exception("Error en la preparacion del update de flota: " . $conexion->error);
     }
-    $stmtUpd->bind_param("ds", $cantidad, $placa);
+    $stmtUpd->bind_param("dss", $cantidad, $nuevo_actual, $placa);
     if (!$stmtUpd->execute()) {
         throw new Exception("Error al actualizar el aceite actual de la flota: " . $stmtUpd->error);
     }
     $stmtUpd->close();
+
+    avisarCambioAceite($conexion, $placa, $cantidad, (int)$flota['viajes_aceite']);
 
     $conexion->commit();
     $conexion->autocommit(true);
@@ -120,7 +149,9 @@ try {
         "message" => "Aceite asignado correctamente a la flota " . $placa,
         "asignado" => $cantidad,
         "litros" => $litros,
-        "aceite_actual" => $actual + $cantidad
+        "aceite_actual" => $nuevo_actual,
+        "recarga_completa" => $recarga_completa,
+        "viajes_aceite" => $recarga_completa ? 0 : (int)$flota['viajes_aceite']
     ]);
 
 } catch (Exception $e) {

@@ -1,7 +1,25 @@
 <?php
 require_once("../../../conexion.php");
+require_once("../../../includes/mantenimiento.php");
 
 header('Content-Type: application/json');
+
+/* Al sacar una rueda del servicio se revisa si aun le quedaba vida util */
+function avisarRuedaRetirada($conexion, $placa, $id_rd) {
+    $rueda = vidaUtilRueda($conexion, $id_rd);
+    if (!$rueda) return;
+
+    $viajes = (int)$rueda['viajes_hechos'];
+    $media = (int)$rueda['media_viajes'];
+    if ($media <= 0 || $viajes >= $media) return;
+    if (anomaliasDePlaca($conexion, $placa, 'Rueda retirada antes de vida util')) return;
+
+    $marca = $rueda['nombre_marca_rueda'] !== null ? $rueda['nombre_marca_rueda'] : 'Sin marca';
+    registrarAnomalia($conexion, $placa, 'Rueda', 'Rueda retirada antes de vida util',
+        "Rueda " . $rueda['codigo'] . " ($marca) se retiro con $viajes de $media viajes de vida util. "
+        . "Faltaron " . ($media - $viajes) . " viajes.",
+        $viajes, $media, (int)$rueda['id_rd']);
+}
 
 try {
     $json = file_get_contents('php://input');
@@ -155,6 +173,8 @@ try {
                 }
                 $stmt->close();
             }
+
+            avisarRuedaRetirada($conexion, $placa, $reemplazada);
         }
 
         $sql = "INSERT INTO rueda_flota (id_rd, placa, id_pr, viajes_hechos, estado, fecha_instalacion) VALUES (?,?,?,0,'Operativa',NOW())";
@@ -229,6 +249,8 @@ try {
                 }
                 $stmt->close();
             }
+
+            avisarRuedaRetirada($conexion, $placa, $idAfectado);
         }
     }
 

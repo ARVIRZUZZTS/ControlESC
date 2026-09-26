@@ -123,3 +123,20 @@ export function fechaMask(event) {
     }
     el.value = f;
 }
+
+/*------------ESTADO DEL ACEITE------------*/
+/* Color del badge con los viajes desde el ultimo cambio de aceite:
+     0 a 10  -> verde   (el aceite todavia aguanta)
+     11 a 14 -> amarillo (se esta acercando al cambio)
+     15 o mas -> rojo    (cambio urgente)
+   Son umbrales solo de presentacion. Los umbrales con los que el sistema
+   genera avisos son los de php/constantes.php (14 aviso / 17 cambio). */
+const UMBRAL_ACEITE_AMARILLO = 11;
+const UMBRAL_ACEITE_ROJO = 15;
+
+export function estadoAceiteClase(viajes) {
+    const v = parseInt(viajes) || 0;
+    if (v >= UMBRAL_ACEITE_ROJO) return "estadoAceite-critico";
+    if (v >= UMBRAL_ACEITE_AMARILLO) return "estadoAceite-cambio";
+    return "estadoAceite-normal";
+}

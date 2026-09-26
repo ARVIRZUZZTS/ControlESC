@@ -1,5 +1,6 @@
 <?php
 require_once("../../../conexion.php");
+require_once("../../../includes/mantenimiento.php");
 
 header('Content-Type: application/json');
 
@@ -10,6 +11,7 @@ try {
     $placa = trim($_GET['placa']);
 
     $sqlFlota = "SELECT f.placa, f.id_fe, f.id_ubicacion AS id_u,
+                        f.viajes, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite,
                         COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
                         COALESCE(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion
                  FROM flota f
@@ -38,7 +40,7 @@ try {
     $stmt->close();
 
     $sqlRep = "SELECT * FROM reporte
-               WHERE placa = ? AND fecha_llegada IS NULL
+               WHERE placa = ? AND estado = 'Abierto'
                ORDER BY id_reporte DESC LIMIT 1";
 
     $stmt = $conexion->prepare($sqlRep);
@@ -51,6 +53,23 @@ try {
 
     $reporte = $result->num_rows > 0 ? $result->fetch_assoc() : null;
     $stmt->close();
+
+    $ultimo = null;
+    if (!$reporte) {
+        $sqlUlt = "SELECT id_reporte, placa, estado, fecha_partida, fecha_retorno, fecha_llegada,
+                          ubicacion_retorno, ubicacion_llegada, viajes, aceite_consumido
+                   FROM reporte
+                   WHERE placa = ? AND estado = 'Finalizado'
+                   ORDER BY id_reporte DESC LIMIT 1";
+        $stmtU = $conexion->prepare($sqlUlt);
+        if ($stmtU) {
+            $stmtU->bind_param("s", $placa);
+            $stmtU->execute();
+            $resU = $stmtU->get_result();
+            $ultimo = $resU->num_rows > 0 ? $resU->fetch_assoc() : null;
+            $stmtU->close();
+        }
+    }
 
     $gastos = [];
     $anomalias = [];
@@ -94,13 +113,25 @@ try {
         $stmt->close();
     }
 
+    $litros_por_viaje = litrosPorViaje($flota['capacidad_aceite']);
+    $aceite_actual = round(floatval($flota['aceite_actual']), 3);
+
     echo json_encode([
         "status" => "success",
         "message" => "Reporte obtenido correctamente",
         "flota" => $flota,
         "reporte" => $reporte,
+        "ultimo_finalizado" => $ultimo,
         "gastos" => $gastos,
-        "anomalias" => $anomalias
+        "anomalias" => $anomalias,
+        "aceite" => [
+            "litros_por_viaje" => $litros_por_viaje,
+            "aceite_actual" => $aceite_actual,
+            "viajes_aceite" => (int)$flota['viajes_aceite'],
+            "umbral_aviso" => VIAJES_AVISO_ACEITE,
+            "umbral_cambio" => VIAJES_POR_CAMBIO_ACEITE
+        ],
+        "config" => configSistema()
     ]);
 
 } catch (Exception $e) {

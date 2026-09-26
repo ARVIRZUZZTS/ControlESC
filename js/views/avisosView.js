@@ -6,7 +6,8 @@ const ACEITE_CRITICO_VIAJES = 17;
 
 const NIVELES = {
     critico: { orden: 2, clase: "aviso-critico", etiqueta: "CRITICO" },
-    aviso: { orden: 1, clase: "aviso-warning", etiqueta: "AVISO" }
+    aviso: { orden: 1, clase: "aviso-warning", etiqueta: "AVISO" },
+    anomalia: { orden: 0, clase: "aviso-anomalia", etiqueta: "ANOMALIA" }
 };
 
 function esc(v) {
@@ -22,49 +23,65 @@ function nivelRueda(viajes, media) {
     return null;
 }
 
-function nivelAceite(viajes) {
-    const v = parseInt(viajes) || 0;
-    if (v >= ACEITE_CRITICO_VIAJES) return "critico";
-    if (v >= ACEITE_AVISO_VIAJES) return "aviso";
-    return null;
-}
-
 function listarAvisos(data) {
     const avisos = [];
+    const cfg = data.config || {};
+    const avisoRuedaPorc = cfg.porc_aviso_rueda || RUEDA_AVISO_PORC;
+    const avisoAceite = cfg.viajes_aviso_aceite || ACEITE_AVISO_VIAJES;
+    const criticoAceite = cfg.viajes_por_cambio_aceite || ACEITE_CRITICO_VIAJES;
 
     (data.ruedas || []).forEach(r => {
-        const nivel = nivelRueda(r.viajes_hechos, r.media_viajes);
+        const v = parseInt(r.viajes_hechos) || 0;
+        const m = parseInt(r.media_viajes) || 0;
+        if (m <= 0) return;
+        let nivel = null;
+        if (v >= m) nivel = "critico";
+        else if (v >= Math.ceil(m * avisoRuedaPorc)) nivel = "aviso";
         if (!nivel) return;
-        const viajes = parseInt(r.viajes_hechos) || 0;
-        const media = parseInt(r.media_viajes) || 0;
         avisos.push({
             tipo: "Rueda",
             nivel: nivel,
             placa: r.placa,
             detalle: `${r.nombre_marca_rueda} - ${r.posicion}`,
-            viajes: viajes,
-            limite: media,
+            viajes: v,
+            limite: m,
             mensaje: nivel === "critico"
-                ? `Rueda supero su vida util (${viajes}/${media} viajes). Programar cambio urgente.`
-                : `Prever siguiente compra de rueda (${viajes}/${media} viajes).`
+                ? `Rueda supero su vida util (${v}/${m} viajes). Programar cambio urgente.`
+                : `Prever siguiente compra de rueda (${v}/${m} viajes).`
         });
     });
 
     (data.aceites || []).forEach(a => {
-        const nivel = nivelAceite(a.viajes_aceite);
+        const v = parseInt(a.viajes_aceite) || 0;
+        let nivel = null;
+        if (v >= criticoAceite) nivel = "critico";
+        else if (v >= avisoAceite) nivel = "aviso";
         if (!nivel) return;
-        const viajes = parseInt(a.viajes_aceite) || 0;
         const ultimo = a.ultimo_cambio ? fechaISOToDMY(a.ultimo_cambio) : "sin registro";
         avisos.push({
             tipo: "Aceite",
             nivel: nivel,
             placa: a.placa,
             detalle: `Cambio de aceite: ${ultimo}`,
-            viajes: viajes,
-            limite: ACEITE_CRITICO_VIAJES,
+            viajes: v,
+            limite: criticoAceite,
             mensaje: nivel === "critico"
-                ? `Cambio de aceite vencido (${viajes} viajes desde el ultimo cambio).`
-                : `Prever cambio de aceite (${viajes} viajes desde el ultimo cambio).`
+                ? `Cambio de aceite vencido (${v} viajes desde el ultimo cambio).`
+                : `Prever cambio de aceite (${v} viajes desde el ultimo cambio).`
+        });
+    });
+
+    (data.anomalias || []).forEach(a => {
+        const extra = a.codigo ? ` - ${a.codigo}` : "";
+        avisos.push({
+            tipo: a.tipo,
+            nivel: "anomalia",
+            placa: a.placa,
+            detalle: `${a.evento}${extra}`,
+            viajes: a.viajes,
+            limite: a.limite,
+            mensaje: a.detalle,
+            fecha: a.fecha
         });
     });
 
@@ -93,6 +110,7 @@ export async function avisosView() {
 
         const avisos = listarAvisos(data);
         const criticos = avisos.filter(a => a.nivel === "critico").length;
+        const anomalias = avisos.filter(a => a.nivel === "anomalia").length;
 
         title.innerHTML = `
             <h2>AVISOS</h2>
@@ -102,11 +120,13 @@ export async function avisosView() {
                     <option value="">Todo</option>
                     <option value="Rueda">Ruedas</option>
                     <option value="Aceite">Aceite</option>
+                    <option value="__anomalia">Anomalias</option>
                 </select>
                 <select id="filtroAvisoNivel">
                     <option value="">Todos los niveles</option>
                     <option value="critico">Solo criticos</option>
                     <option value="aviso">Solo avisos</option>
+                    <option value="anomalia">Solo anomalias</option>
                 </select>
             </div>
         `;
@@ -119,10 +139,11 @@ export async function avisosView() {
             const nivel = document.getElementById("filtroAvisoNivel").value;
 
             const resumen = document.getElementById("resumenAvisos");
-            const visibles = avisos.filter(a =>
-                (tipo === "" || a.tipo === tipo) && (nivel === "" || a.nivel === nivel)
-            );
-            resumen.textContent = `${visibles.length} aviso(s) - ${criticos} critico(s)`;
+            const visibles = avisos.filter(a => {
+                const coincideTipo = tipo === "" || (tipo === "__anomalia" ? a.nivel === "anomalia" : a.tipo === tipo);
+                return coincideTipo && (nivel === "" || a.nivel === nivel);
+            });
+            resumen.textContent = `${visibles.length} aviso(s) - ${criticos} critico(s) - ${anomalias} anomalia(s)`;
             resumen.className = criticos > 0 ? "aviso-resumen aviso-resumen-critico" : "aviso-resumen";
 
             if (visibles.length === 0) {
@@ -154,8 +175,8 @@ export async function avisosView() {
                         <td class="pb pm t5">${a.tipo}</td>
                         <td class="pb t8">${esc(a.placa)}</td>
                         <td class="pb pm t20">${esc(a.detalle)}</td>
-                        <td class="pb pm t5">${a.viajes}</td>
-                        <td class="pb pm t5">${a.limite}</td>
+                        <td class="pb pm t5">${a.viajes === null || a.viajes === undefined ? "-" : a.viajes}</td>
+                        <td class="pb pm t5">${a.limite === null || a.limite === undefined ? "-" : a.limite}</td>
                         <td class="pb t20">${esc(a.mensaje)}</td>
                     </tr>
                 `;

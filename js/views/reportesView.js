@@ -1,12 +1,6 @@
 import { reporteViaje } from "./reporte/reporteInfo.js";
-
-function fechaHoy() {
-    const hoy = new Date();
-    const dia = String(hoy.getDate()).padStart(2, "0");
-    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
-    const anio = hoy.getFullYear();
-    return `${dia}/${mes}/${anio}`;
-}
+import { historialReporteView } from "./reporte/historialReporte.js";
+import { fechaISOToDMY } from "../utils.js";
 
 export async function reportesView() {
 
@@ -79,6 +73,11 @@ export async function reportesView() {
                     reporteViaje(this.dataset.placa);
                 });
             });
+            document.querySelectorAll("#tbReportes .btnHistorial").forEach(btn => {
+                btn.addEventListener("click", function() {
+                    historialReporteView({ placa: this.dataset.placa, onBack: reportesView });
+                });
+            });
         }
 
         function construirHtml(lista) {
@@ -88,21 +87,30 @@ export async function reportesView() {
                         <tr>
                             <th class="thl t8">Placa</th>
                             <th class="th t8">Estado</th>
-                            <th class="th t10">Fecha Reporte</th>
-                            <th class="thr t3">Info.</th>
+                            <th class="th t10">Reporte</th>
+                            <th class="th t3">Info.</th>
+                            <th class="thr t5">Historial</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
             lista.forEach(f => {
+                const rep = f.id_reporte
+                    ? `#${f.id_reporte} - ${fechaISOToDMY(f.fecha_partida) || "-"}`
+                    : "Sin reporte abierto";
                 html += `
                     <tr>
                         <td class="pb t8">${f.placa}</td>
                         <td class="pb pm t8">${f.estado}</td>
-                        <td class="pb pm t10">${fechaHoy()}</td>
-                        <td class="pb t3">
-                            <button class="btnInfo listBtn" data-placa="${f.placa}">
+                        <td class="pb pm t10">${rep}</td>
+                        <td class="pb pm t3">
+                            <button class="btnInfo listBtn" data-placa="${f.placa}" title="Abrir reporte">
                                 <img src="img/info.svg" alt="reporte">
+                            </button>
+                        </td>
+                        <td class="pb t5">
+                            <button class="btnHistorial listBtn" data-placa="${f.placa}" title="Ver historial de ${f.finalizados} reporte(s)">
+                                <img src="img/reportesList.svg" alt="historial">
                             </button>
                         </td>
                     </tr>

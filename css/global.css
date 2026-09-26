@@ -215,17 +215,18 @@ textarea {
     background: linear-gradient(135deg, var(--highlight-start), var(--highlight-end));
     color: white !important;
     justify-content: space-between;
-    padding: 0px 5vh;
+    padding: 1.2vh 5vh;
+    min-height: 6.5vh;
+    font-size: 2.2vh;
     align-items: center;
 }
-#estadoAceite {
+.estadoAceite {
     border-radius: 15px;
     padding: 0.5vh 2vh;
     font-weight: bold;
 }
 .estadoAceite-normal { background: rgba(0, 150, 80, 0.85); }
-.estadoAceite-regular { background: rgba(220, 170, 0, 0.9); color: #000 !important; }
-.estadoAceite-cambio { background: rgba(255, 140, 0, 0.9); }
+.estadoAceite-cambio { background: rgba(240, 200, 0, 0.92); color: #000 !important; }
 .estadoAceite-critico { background: rgba(200, 0, 0, 0.9); }
 /*------------AVISOS------------*/
 .aviso-fila td {
@@ -270,6 +271,199 @@ textarea {
 .aviso-vacio {
     font-size: 2.6vh;
     color: rgb(0, 120, 60);
+}
+.aviso-fila.aviso-anomalia {
+    background: linear-gradient(135deg, rgb(230, 225, 255), rgb(200, 190, 250));
+    color: rgb(45, 20, 95);
+}
+.aviso-badge.aviso-anomalia {
+    background: rgb(90, 50, 190);
+}
+/*------------CAMPO FECHA DIA/MES/ANIO------------*/
+.fechaContenedor {
+    display: inline-flex;
+}
+.fechaCampo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4vh;
+}
+.fechaParte {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: var(--bg-lightest);
+    overflow: hidden;
+}
+.fechaInp {
+    width: 5.4vh;
+    min-height: 4.4vh;
+    border: none;
+    text-align: center;
+    background: transparent;
+    color: inherit;
+    font-size: 2.6vh;
+    font-weight: bold;
+    padding: 0;
+}
+.fechaInp:focus {
+    outline: 2px solid var(--accent);
+}
+.fechaParte input[data-parte="anio"] {
+    width: 7.4vh;
+}
+.fechaBtn {
+    min-width: 3.4vh;
+    min-height: 4.4vh;
+    border: none;
+    background: var(--bg-hover);
+    color: inherit;
+    font-size: 2.2vh;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+}
+.fechaBtn:hover {
+    background: var(--accent);
+    color: var(--bg-lightest);
+}
+.fechaSep {
+    font-size: 2.4vh;
+    font-weight: bold;
+    opacity: 0.6;
+}
+/*------------RESUMEN DE CIERRE DE REPORTE------------*/
+.rep-cierre {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8vh;
+    margin: 1vh 0;
+}
+.rep-cierreTag {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2vh;
+    border: solid 2px var(--accent);
+    border-radius: 8px;
+    padding: 1vh 2vh;
+    font-size: 2.4vh;
+}
+.rep-cierreOk {
+    background: rgb(230, 250, 238);
+    color: rgb(0, 90, 45);
+    justify-content: center;
+}
+.rep-cierreAlerta {
+    background: linear-gradient(135deg, rgb(255, 250, 210), rgb(255, 232, 130));
+    border-color: rgb(200, 145, 0);
+    color: rgb(90, 65, 0);
+}
+.rep-cierreItem {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+.rep-cierreLabel {
+    font-size: 2vh;
+    opacity: 0.75;
+}
+.rep-cierreItem strong {
+    font-size: 2.8vh;
+}
+.rep-cierreAviso {
+    margin: 0;
+    padding: 0.8vh 2vh;
+    border-radius: 6px;
+    background: rgb(255, 220, 220);
+    color: rgb(120, 0, 0);
+    font-size: 2.3vh;
+    font-weight: bold;
+}
+#finalizarReporteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+    font-weight: bold;
+}
+#finalizarReporteBtn img {
+    height: 2.6vh;
+    width: auto;
+}
+#finalizarReporteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+#historialReporteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+    font-weight: bold;
+}
+#historialReporteBtn img {
+    height: 2.6vh;
+    width: auto;
+}
+/*------------HISTORIAL DE REPORTES------------*/
+.hist-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2vh;
+    align-items: stretch;
+    margin-bottom: 1.5vh;
+}
+.hist-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3vh;
+    align-items: center;
+    padding: 1vh 2vh;
+    border-radius: 6px;
+    background: var(--bg-lightest);
+}
+.hist-stats > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.hist-stats span {
+    font-size: 2vh;
+    opacity: 0.75;
+}
+.hist-stats strong {
+    font-size: 2.8vh;
+}
+.hist-aceite {
+    flex: 1;
+    min-width: 40vh;
+}
+.hist-neg {
+    color: rgb(180, 0, 0);
+    font-weight: bold;
+}
+.hist-estado {
+    display: inline-block;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+}
+.hist-estadoAb { background: rgb(0, 130, 200); }
+.hist-estadoFin { background: rgb(0, 150, 80); }
+.hist-vacio {
+    font-size: 2.4vh;
+    text-align: center;
+    padding: 2vh;
+}
+.rep-viajes .fechaInp {
+    width: 5vh;
+    cursor: default;
+}
+.btnHistorial.listBtn {
+    height: 4.5vh;
 }
 /*------------AUTOCOMPLETE------------*/
 .ac-wrap {
