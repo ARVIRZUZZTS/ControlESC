@@ -1,5 +1,8 @@
 import { fechaISOToDMY, estadoAceiteClase } from "../../utils.js";
 import { reportesView } from "../reportesView.js";
+import { abrirHojaImpresion, imprimirParte, datosDesdeReporte } from "./imprimirReporte.js";
+import { reporteFinalizadoView } from "./reporteFinalizadoView.js";
+import { abrirAlert } from "../../components/modal.js";
 
 function esc(v) {
     return v === null || v === undefined ? "" : String(v);
@@ -31,7 +34,15 @@ function fila(rep) {
             <td class="pb pm t5">${rep.viajes}</td>
             <td class="pb pm t5">${fmt(rep.aceite_consumido)} L</td>
             <td class="pb pm t10">${fmt(rep.gastos_totales)}</td>
-            <td class="pb t15 ${num(rep.balance) < 0 ? "hist-neg" : ""}">${signo(rep.balance)}</td>
+            <td class="pb pm t15 ${num(rep.balance) < 0 ? "hist-neg" : ""}">${signo(rep.balance)}</td>
+            <td class="pb pm t8 thr hist-acciones">
+                <button class="btnHistAccion" data-ver-rep="${rep.id_reporte}" title="Ver detalle del reporte #${rep.id_reporte}">
+                    <img src="img/info.svg" alt="Ver">
+                </button>
+                <button class="btnHistAccion" data-print-rep="${rep.id_reporte}" title="Imprimir parte de ${esc(rep.placa)} #${rep.id_reporte}">
+                    <img src="img/print.svg" alt="Imprimir">
+                </button>
+            </td>
         </tr>
     `;
 }
@@ -95,7 +106,8 @@ export async function historialReporteView({ placa, onBack = reportesView } = {}
                             <th class="t5">Viajes</th>
                             <th class="t5">Aceite</th>
                             <th class="t10">Gastos</th>
-                            <th class="thr t15">Balance</th>
+                            <th class="t15">Balance</th>
+                            <th class="t12 thr">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -105,8 +117,46 @@ export async function historialReporteView({ placa, onBack = reportesView } = {}
             `}
         `;
 
+        const tabla = document.getElementById("tbHistorial");
+        if (tabla) {
+            tabla.addEventListener("click", (ev) => {
+                const ver = ev.target.closest("[data-ver-rep]");
+                if (ver) {
+                    reporteFinalizadoView({
+                        idReporte: ver.dataset.verRep,
+                        onBack: () => historialReporteView({ placa, onBack })
+                    });
+                    return;
+                }
+                const btn = ev.target.closest("[data-print-rep]");
+                if (btn) imprimirDesdeHistorial(btn);
+            });
+        }
+
     } catch (error) {
         cont.innerHTML = "<p>Error al cargar el historial</p>";
         console.error(error);
+    }
+}
+
+/* La ventana se abre aqui, en el mismo clic: si se esperara al fetch antes de
+   abrirla, el navegador la bloquearia como emergente. */
+async function imprimirDesdeHistorial(btn) {
+
+    const win = abrirHojaImpresion();
+    if (!win) return;
+
+    btn.disabled = true;
+    try {
+        const res = await fetch(`php/api/get/reporteDetalle/route.php?id_reporte=${encodeURIComponent(btn.dataset.printRep)}`);
+        const data = await res.json();
+        if (data.status === "error") throw new Error(data.message);
+        imprimirParte(datosDesdeReporte(data.reporte, data.gastos, data.anomalias), win);
+    } catch (error) {
+        win.close();
+        abrirAlert({ mensaje: error.message || "Error al cargar el reporte para imprimir." });
+        console.error(error);
+    } finally {
+        btn.disabled = false;
     }
 }

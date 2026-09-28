@@ -17,6 +17,20 @@ START TRANSACTION;
 DELETE FROM anomalia_sistema
 WHERE (placa = @placa AND evento IN ('Rueda supero su vida util', 'Aceite insuficiente'))
    OR (placa = '1803-BNE' AND evento = 'Aceite insuficiente');
+
+-- gasto / responsable / anomalia NO tienen ON DELETE CASCADE, asi que hay que
+-- borrarlos antes que el reporte; si no, cada corrida deja huerfanos.
+DELETE r FROM responsable r
+  JOIN gasto g  ON g.id_gasto    = r.id_gasto
+  JOIN reporte p ON p.id_reporte = g.id_reporte
+ WHERE p.placa = @placa AND p.id_reporte >= 8;
+DELETE g FROM gasto g
+  JOIN reporte p ON p.id_reporte = g.id_reporte
+ WHERE p.placa = @placa AND p.id_reporte >= 8;
+DELETE a FROM anomalia a
+  JOIN reporte p ON p.id_reporte = a.id_reporte
+ WHERE p.placa = @placa AND p.id_reporte >= 8;
+
 DELETE FROM reporte WHERE placa = @placa AND id_reporte >= 8;
 
 -- Las ruedas que estaban en la flota vuelven al almacen
@@ -108,7 +122,7 @@ VALUES
     (12, @placa, 'Finalizado', 2, 3.530,
      '2026-09-22', '2026-09-22', '2026-09-23',
      2700.00, 380.00, 90.00,
-     1600.00, 1550.00, 1, 1,
+     1600.00, 1480.00, 1, 1,
      300.00, 300.00, NULL, 0.00, 3680.00,
      NULL, 'La Paz - Oruro - Cochabamba', 450.00, 150.00),
 
@@ -127,7 +141,55 @@ VALUES
      NULL, 'Santa Cruz - Cochabamba - Montero', 300.00, 0.00);
 
 -- ---------------------------------------------------------------------------
--- 5. Anomalias de sistema (badge morado en AVISOS)
+-- 5. Gastos y anomalias de los reportes de arriba
+--    Estas filas existen para que 'Gastos Totales' sea igual a la suma de los
+--    items (diesel + peajes + gastos + anomalias). Antes los gastos_totales
+--    estaban escritos a mano y no cuadraban, por eso el historial y la hoja
+--    de impresion mostraban balances distintos.
+--    Los #9 y #13 siguen en negativo a proposito.
+--    Se insertan de a uno para poder tomar el id con LAST_INSERT_ID().
+-- ---------------------------------------------------------------------------
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES ( 9, 'Reparacion de freno de aire', 320.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 1);   -- ERICK MENDOZA
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES ( 9, 'Viaticos del chofer', 300.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 3);   -- JUAN QUISPE
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (10, 'Cambio de neumaticos', 500.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 4);   -- MARIO CRUZ
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (10, 'Mantenimiento de frenos', 240.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 2);   -- WILSON LAZARTE
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (11, 'Lavado y engrase', 100.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 6);   -- JHONNY VARGAS
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (13, 'Reparacion de electromotor', 450.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 8);   -- VICTOR HUGO VELARSCO
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (13, 'Compra de refill', 350.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 7);   -- ALEX SANDRO VILLARROEL
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (14, 'Cambio de amortiguadores', 400.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 9);   -- ELOY TERCEROS
+
+INSERT INTO gasto (id_reporte, titulo, gasto_generico) VALUES (14, 'Reparacion electrica', 390.00);
+SET @g := LAST_INSERT_ID();
+INSERT INTO responsable (id_gasto, id_personal) VALUES (@g, 10);  -- RICHAR IRUSTA
+
+INSERT INTO anomalia (id_reporte, detalle_anomalia, gasto_subanomalia) VALUES
+    (11, 'Aceite insuficiente en Cochabamba', 120.00);
+
+-- ---------------------------------------------------------------------------
+-- 6. Anomalias de sistema (badge morado en AVISOS)
 -- ---------------------------------------------------------------------------
 INSERT INTO anomalia_sistema (placa, tipo, evento, id_rd, viajes, limite, fecha, detalle) VALUES
     (@placa, 'Rueda', 'Rueda supero su vida util', 35, 52, 50, '2026-09-24',

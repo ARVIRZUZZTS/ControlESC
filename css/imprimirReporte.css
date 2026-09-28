@@ -1,0 +1,109 @@
+/* Hoja de impresion del PARTE DE LLEGADAS DE BUSES.
+   Solo la usa la ventana nueva que genera js/views/reporte/imprimirReporte.js,
+   no afecta la aplicacion. */
+
+@page { margin: 0.5cm; }
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 9pt;
+    line-height: 1.15;
+    color: #000;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/*------------TITULOS------------*/
+.pg-tit,
+.pg-sub {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+}
+.pg-sub { margin-bottom: 1.5mm; }
+
+/*------------CABECERA DE VIAJE------------
+   El punteado de cada campo llega solo hasta el final de la hoja: el relleno
+   es flex, asi que no hay que calcular medidas. */
+.pg-cab { margin-top: 1mm; }
+
+.pg-fila {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5mm;
+    margin-bottom: 1.4mm;
+}
+
+.pg-campo {
+    display: flex;
+    align-items: flex-end;
+    flex: 1 1 0;
+    min-width: 0;
+    border-bottom: 1px dotted #000;
+    padding-bottom: 0.4mm;
+    white-space: nowrap;
+}
+.pg-eti { flex: 0 0 auto; }
+.pg-val {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pg-llena { flex: 1 1 0; min-width: 1mm; }
+
+/*------------TITULOS DE SECCION------------
+   INGRESOS / EGRESOS / BALANCE van en la columna de texto. El padding superior
+   va en las 4 celdas de la fila, no solo en la primera: si se aplicara solo al
+   texto, el blanco quedaria como una franja corta a la derecha. */
+.pg-sec-fila td {
+    padding-top: 3mm;
+}
+.pg-sec {
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.6pt;
+}
+
+/*------------TABLA DE 4 COLUMNAS------------
+   texto (70%) | egresos (10%) | ingresos (10%) | subtotal (10%)
+   Todas las casillas van punteadas, sin excepcion. */
+.pg-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 1.5mm;
+}
+.pg-tbl col.w1 { width: 70%; }
+.pg-tbl col.w2 { width: 10%; }
+
+.pg-tbl tr { page-break-inside: avoid; }
+
+.pg-tbl td {
+    padding: 0.5mm 1.2mm;
+    border: 1px dotted #000;
+    vertical-align: top;
+    font-size: 8.5pt;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.pg-tbl td.c2,
+.pg-tbl td.c3,
+.pg-tbl td.c4 {
+    text-align: right;
+    white-space: nowrap;
+}
+.pg-tbl td.centro { text-align: center; }
+
+.pg-tot { font-weight: bold; }
+.pg-nota { font-style: italic; }

@@ -2,6 +2,7 @@ import { reportesView } from "../reportesView.js";
 import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter } from "../../utils.js";
 import { crearCampoFecha } from "../../components/fechaCampo.js";
 import { historialReporteView } from "./historialReporte.js";
+import { imprimirParte } from "./imprimirReporte.js";
 import { abrirAlert, abrirConfirmation } from "../../components/modal.js";
 
 function num(v) {
@@ -79,8 +80,9 @@ export async function reporteViaje(placa) {
                 <h2>Reporte de ${flota.placa}</h2>
             </div>
             <div class="btnsTitle">
+                <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
                 <button id="guardarReporteBtn"><img src="img/save.svg" alt="Guardar">Guardar</button>
-                <button id="finalizarReporteBtn" class="btnFinalizar"><img src="img/end.svg" alt="Finalizar">Finalizar Reporte</button>
+                <button id="finalizarReporteBtn" class="btnFinalizar"><img src="img/end.svg" alt="Finalizar">Finalizar</button>
                 <button id="historialReporteBtn"><img src="img/reportesList.svg" alt="Reportes"> Historial</button>
             </div>
         `;
@@ -613,6 +615,98 @@ export async function reporteViaje(placa) {
         actualizarTotalGastosOtros();
 
         document.getElementById("guardarReporteBtn").addEventListener("click", guardarReporte);
+        document.getElementById("imprimirReporteBtn").addEventListener("click", () => imprimirParte(datosParaImprimir()));
+
+        function datoInput(sel) {
+            return num(document.querySelector(sel)?.value) || 0;
+        }
+
+        function textoSel(sel) {
+            const el = document.querySelector(sel);
+            if (!el || el.value === "") return "";
+            return el.options[el.selectedIndex].text;
+        }
+
+        function opcionSel(sel, indice) {
+            const el = document.querySelector(sel);
+            if (!el) return "";
+            return el.selectedIndex > indice ? el.options[el.selectedIndex].text : "";
+        }
+
+        function facturaOk(sel) {
+            return document.querySelector(sel).checked ? " (Factura Ok)" : "";
+        }
+
+        /* Arma la hoja con el estado actual del formulario, sin necesidad de guardar */
+        function datosParaImprimir() {
+            const retorno = textoSel("#selRetorno") || "-";
+            const llegada = textoSel("#selLlegada") || "-";
+            const auxTexto = retorno === "Santa Cruz" ? "Montero" : (document.getElementById("selPasajesAux").value || "-");
+            const tipoPago = { efectivo: "Efectivo", qr: "Qr", ambos: "Ambos" }[document.getElementById("selTipoPago").value] || "";
+            const hayMasDeUnPago = document.querySelectorAll(".inpAsignacion").length > 1;
+
+            const ingresos = [
+                { texto: `Liquidacion de pasajes: ${retorno}`, monto: datoInput('.inpLiq[data-campo="liquidacion_pasajes"]') },
+                { texto: `Liquidacion de encomiendas: ${retorno}`, monto: datoInput('.inpLiq[data-campo="liquidacion_encomiendas"]') },
+                { texto: `Liquidacion de pasajes: ${auxTexto}`, monto: datoInput('.inpLiq[data-campo="liquidacion_pasajes_auxiliar"]') }
+            ];
+
+            document.querySelectorAll(".inpAsignacion").forEach(inp => {
+                const etiqueta = inp.dataset.campo === "qr" ? "Qr" : "Efectivo";
+                ingresos.push({
+                    texto: `Asignacion $ en: ${hayMasDeUnPago ? tipoPago + " - " + etiqueta : etiqueta}`,
+                    monto: num(inp.value) || 0
+                });
+            });
+
+            const egresos = [
+                { texto: `Diesel de: Cochabamba a: ${retorno}${facturaOk("#chkDieselPartida")}`, monto: datoInput("#inpDieselPartida") },
+                { texto: `Diesel de: ${retorno} a: Cochabamba${facturaOk("#chkDieselRetorno")}`, monto: datoInput("#inpDieselLlegada") },
+                { texto: `Peaje de: Cochabamba a: ${retorno}`, monto: datoInput("#inpPeajeIda") },
+                { texto: `Peaje de: ${retorno} a: Cochabamba`, monto: datoInput("#inpPeajeRetorno") }
+            ];
+
+            document.querySelectorAll(".filaGasto").forEach(f => {
+                const monto = num(f.querySelector(".inpPrecio").value);
+                const titulo = opcionSel(f.querySelector(".selGasto"), 0);
+                const detalle = opcionSel(f.querySelector(".selDetalle"), 0);
+                const responsable = opcionSel(f.querySelector(".selResponsable"), 0);
+                if (titulo === "" && detalle === "" && monto === null) return;
+                egresos.push({
+                    texto: [titulo, detalle, responsable].filter(Boolean).join(" - "),
+                    monto: monto || 0
+                });
+            });
+
+            document.querySelectorAll(".filaAnomalia").forEach(f => {
+                const detalle = f.querySelector(".inpDetAnomalia").value.trim();
+                const monto = num(f.querySelector(".inpMontoAnomalia").value);
+                if (detalle === "" && monto === null) return;
+                egresos.push({
+                    texto: detalle === "" ? "Anomalia" : `Anomalia - ${detalle}`,
+                    monto: monto || 0
+                });
+            });
+
+            const totalIngresos = ingresos.reduce((a, i) => a + i.monto, 0);
+            const totalEgresos = egresos.reduce((a, e) => a + e.monto, 0);
+
+            const fechaDe = (c) => ({ fecha: c.getDMY() || "-", dia: c.getDia() || "-" });
+
+            return {
+                placa: flota.placa,
+                partida: Object.assign({ lugar: textoSel("#selPartida") || "-" }, fechaDe(campos.partida)),
+                retorno: Object.assign({ lugar: retorno }, fechaDe(campos.retorno)),
+                llegada: Object.assign({ lugar: llegada }, fechaDe(campos.llegada)),
+                llegada_cbba: campos.llegada.getDMY() || "-",
+                ingresos: ingresos,
+                egresos: egresos,
+                otros_ingresos: document.getElementById("inpOtros").value.trim(),
+                total_ingresos: totalIngresos,
+                total_egresos: totalEgresos,
+                balance: totalIngresos - totalEgresos
+            };
+        }
 
         function construirPayload() {
             const gastos = Array.from(document.querySelectorAll(".filaGasto")).map(fila => {

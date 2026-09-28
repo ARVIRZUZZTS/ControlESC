@@ -946,6 +946,93 @@ textarea {
     height: 2.6vh;
     width: auto;
 }
+#imprimirReporteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+    font-weight: bold;
+}
+#imprimirReporteBtn img {
+    height: 2.6vh;
+    width: auto;
+}
+.hist-acciones {
+    text-align: center;
+    white-space: nowrap;
+}
+/* Botones de accion del historial: mismo formato que el resto de botones de la
+   app, solo que mas pequenos para que quepan dos en la celda. */
+.btnHistAccion {
+    min-height: 3.6vh;
+    min-width: 4.2vh;
+    padding: 0 0.5vh;
+    margin: 0 0.3vh;
+    font-size: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+.btnHistAccion img {
+    height: 2.6vh;
+    width: auto;
+}
+.btnHistAccion:disabled {
+    opacity: 0.35;
+    cursor: default;
+    box-shadow: none;
+    transform: none;
+    background: linear-gradient(135deg, rgb(255, 255, 255), var(--btn-gradient-end));
+}
+    /*------------VISTA DE REPORTE FINALIZADO (solo lectura)------------*/
+.rep-dato {
+    display: inline-block;
+    min-width: 16vh;
+    padding: 1vh;
+    text-align: right;
+    font-size: 2.5vh;
+    border: solid 2px var(--input-border);
+    border-radius: 5px;
+    background: var(--bg-lighter);
+}
+.rep-datoObs {
+    font-style: italic;
+}
+.rep-datoAnom {
+    color: var(--text-dark);
+}
+.rep-datoOk {
+    font-size: 1.8vh;
+    font-weight: bold;
+    color: var(--accent);
+    background: var(--bg-lighter);
+    border-radius: 4px;
+    padding: 0 0.5vh;
+}
+.rep-listaOtros {
+    list-style: none;
+    margin: 0.6vh 0;
+    padding: 0;
+    text-align: left;
+}
+.rep-listaOtros li {
+    font-size: 2.2vh;
+    padding: 0.4vh 0.8vh;
+    border: dotted 2px var(--input-border);
+    border-radius: 5px;
+    margin-bottom: 0.4vh;
+}
+.rep-soloLectura {
+    display: inline-block;
+    margin-top: 1vh;
+    font-size: 1.9vh;
+    font-style: italic;
+    color: var(--text-dark);
+    background: var(--bg-lighter);
+    border: dotted 2px var(--accent);
+    border-radius: 5px;
+    padding: 0.3vh 1vh;
+}
 #reportesListBtn {
     display: inline-flex;
     align-items: center;
