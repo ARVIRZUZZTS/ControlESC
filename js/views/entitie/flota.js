@@ -1,4 +1,4 @@
-import { flotasListView } from "../flotasListView.js";
+﻿import { flotasListView } from "../flotasListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase } from "../../utils.js";
@@ -85,7 +85,7 @@ async function editarFlota(placa) {
         fetch(`php/api/get/flotaEnt/route.php?placa=${encodeURIComponent(placa)}`),
         fetch(`php/api/get/personalTipo/route.php?tipo=1`),
         fetch(`php/api/get/personalTipo/route.php?tipo=2`),
-        fetch(`php/api/get/ubicaciones/route.php`),
+        fetch(`php/api/get/destinos/route.php`),
         fetch(`php/api/get/flotaEstados/route.php`)
     ]);
 
@@ -202,8 +202,10 @@ async function editarFlota(placa) {
 
     acUbi = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#edUbicacion"),
-        opciones: ubicaciones.map(u => ({ id: u.id_ubicacion, label: u.nombre_ubicacion })),
+        opciones: ubicaciones.map(u => ({ id: u.id, label: u.nombre_destino })),
         valorActual: dt.ubicacion === 'Sin ubicacion' ? "" : dt.ubicacion,
         onCambio: null
     });
 }
+
+

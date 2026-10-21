@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Expreso SC - Iniciar sesion</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="loginBody">
+  <div class="loginCard">
+    <img src="img/logoX.png" alt="Logo" class="loginLogo">
+    <h1>CONTROL EXPRESO SANTA CRUZ</h1>
+    <form id="loginForm" autocomplete="off">
+      <div class="loginFila">
+        <label for="loginUsuario">Usuario</label>
+        <input type="text" id="loginUsuario" maxlength="20" placeholder="Usuario" autocomplete="off" required>
+      </div>
+      <div class="loginFila">
+        <label for="loginContra">Contrasena</label>
+        <input type="password" id="loginContra" maxlength="20" placeholder="Contrasena" autocomplete="off" required>
+      </div>
+      <div class="loginRecordar">
+        <input type="checkbox" id="loginRecordar">
+        <label for="loginRecordar">Recordar usuario</label>
+      </div>
+      <div class="loginError" id="loginError"></div>
+      <button type="submit" id="loginBtn">INGRESAR</button>
+    </form>
+  </div>
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

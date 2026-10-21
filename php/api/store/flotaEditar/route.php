@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once("../../../conexion.php");
 
 header('Content-Type: application/json');
@@ -15,7 +15,7 @@ try {
         throw new Exception("La placa es obligatoria.");
     }
 
-    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_ubicacion = ? WHERE placa = ?";
+    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_destino = ? WHERE placa = ?";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
@@ -59,3 +59,4 @@ try {
 }
 $conexion->close();
 ?>
+

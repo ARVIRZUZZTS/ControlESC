@@ -45,11 +45,11 @@ function llegadaNav() {
 /*********** Datos del DOM ***********/
 function cargarLocation(navBttn, sideBttn, val) {   
     if (val){
-        sideBtn.style.backgroundColor = "rgb(161, 245, 161)";
-        navBtn.style.backgroundColor = "rgb(199, 236, 199)";
+        sideBtn.style.backgroundColor = "var(--bg-light)";
+        navBtn.style.backgroundColor = "var(--bg-lighter)";
     } else {
-        sideBtn.style.backgroundColor = "rgb(161, 245, 161)";
-        navBtn.style.backgroundColor = "rgb(199, 236, 199)";
+        sideBtn.style.backgroundColor = "var(--bg-light)";
+        navBtn.style.backgroundColor = "var(--bg-lighter)";
     }
 }
 function cargarFecha() {

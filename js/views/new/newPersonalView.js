@@ -8,7 +8,14 @@ export async function newPersonalView() {
     const resTipos = await fetch("php/api/get/tipoPersonal/route.php");
     const tipos = (await resTipos.json()).data || [];
 
+    const resSucursales = await fetch("php/api/get/sucursal/route.php");
+    const sucursales = (await resSucursales.json()).data || [];
+
     const hoy = strFechaDMY();
+
+    const sucursalOptions = sucursales.map(s =>
+        `<option value="${s.id_sucursal}">${s.nombre}</option>`
+    ).join("");
 
     const contenido = `
         <div class="modal-fila">
@@ -18,6 +25,17 @@ export async function newPersonalView() {
         <div class="modal-fila">
             <label>Tipo Personal:</label>
             <input type="text" id="neTipo" value="" autocomplete="off" placeholder="Seleccione o escriba">
+        </div>
+        <div class="modal-fila" id="neSucursalWrap" style="display:none;">
+            <label>Sucursal:</label>
+            <select id="neSucursal">
+                <option value="">-- Seleccione --</option>
+                ${sucursalOptions}
+            </select>
+        </div>
+        <div class="modal-fila">
+            <label>Contraseña:</label>
+            <input type="text" id="neContrasena" value="" maxlength="50" placeholder="Contraseña">
         </div>
         <div class="modal-fila">
             <label>Mensual Bs. (opcional):</label>
@@ -30,6 +48,22 @@ export async function newPersonalView() {
     `;
 
     let acTipo = null;
+    let tipoSeleccionado = null;
+
+    function buscarTipo(id) {
+        return tipos.find(x => String(x.id_te) === String(id)) || null;
+    }
+
+    function requiereSucursal(tipo) {
+        return !!tipo && Number(tipo.sucursal) === 1;
+    }
+
+    function mostrarSucursal(tipo) {
+        const wrap = resultado.overlay.querySelector("#neSucursalWrap");
+        if (wrap) {
+            wrap.style.display = requiereSucursal(tipo) ? "flex" : "none";
+        }
+    }
 
     const resultado = abrirModal({
         titulo: "NUEVO PERSONAL",
@@ -38,17 +72,34 @@ export async function newPersonalView() {
             const nNombre = document.getElementById("neNombre").value.trim();
             const nMensual = document.getElementById("neMensual").value;
             const nFecha = document.getElementById("neFecha").value;
+            const nContrasena = document.getElementById("neContrasena").value.trim();
 
             const t = acTipo ? acTipo.obtener() : { id: null, label: "" };
+            const tipo = buscarTipo(t.id);
 
             if (!nNombre) {
                 abrirAlert({ mensaje: "El nombre del personal es obligatorio." });
                 return;
             }
-            if (!t.id) {
+            if (!t.id || !tipo) {
                 abrirAlert({ mensaje: "Seleccione un tipo de personal valido." });
                 return;
             }
+            if (!nContrasena) {
+                abrirAlert({ mensaje: "La contraseña es obligatoria." });
+                return;
+            }
+
+            let sucursal = null;
+            if (requiereSucursal(tipo)) {
+                const sucursalVal = document.getElementById("neSucursal").value;
+                if (!sucursalVal) {
+                    abrirAlert({ mensaje: "Seleccione una sucursal." });
+                    return;
+                }
+                sucursal = parseInt(sucursalVal);
+            }
+
             const mensual = nMensual.trim() === "" ? 0.00 : parseFloat(nMensual);
             if (isNaN(mensual) || mensual < 0) {
                 abrirAlert({ mensaje: "Mensual debe ser un numero mayor o igual a 0." });
@@ -60,10 +111,14 @@ export async function newPersonalView() {
                     nombre: nNombre,
                     id_te: Number(t.id),
                     mensual,
-                    fecha_contrato: fechaDMYToISO(nFecha) || null
+                    fecha_contrato: fechaDMYToISO(nFecha) || null,
+                    sucursal,
+                    contrasena: nContrasena
                 }]
             };
 
+            const btnAc = resultado.overlay.querySelector(".modal-accept");
+            if(btnAc){ btnAc.disabled=true; btnAc.style.opacity=0.6; btnAc.style.cursor="not-allowed"; }
             try {
                 const res = await fetch("php/api/store/personalNuevo/route.php", {
                     method: "POST",
@@ -72,12 +127,14 @@ export async function newPersonalView() {
                 });
                 const result = await res.json();
                 if (result.status !== "success") {
+                    if(btnAc){ btnAc.disabled=false; btnAc.style.opacity=""; btnAc.style.cursor=""; }
                     abrirAlert({ mensaje: "Error al guardar: " + result.message });
                     return;
                 }
                 cerrar();
                 personalListView();
             } catch (error) {
+                if(btnAc){ btnAc.disabled=false; btnAc.style.opacity=""; btnAc.style.cursor=""; }
                 abrirAlert({ mensaje: "Error al guardar el personal." });
             }
         }
@@ -87,7 +144,10 @@ export async function newPersonalView() {
         input: resultado.overlay.querySelector("#neTipo"),
         opciones: tipos.map(t2 => ({ id: t2.id_te, label: t2.nombre_tipo_personal })),
         valorActual: "",
-        onCambio: null
+        onCambio: ({ id }) => {
+            tipoSeleccionado = buscarTipo(id);
+            mostrarSucursal(tipoSeleccionado);
+        }
     });
 
     const inpNombre = resultado.overlay.querySelector("#neNombre");

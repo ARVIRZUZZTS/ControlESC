@@ -10,15 +10,22 @@ try {
 
     $id_personal = (int)$_GET['id_personal'];
 
-    $sql = "SELECT p.id_personal, p.nombre_apellido, IFNULL(tp.nombre_tipo_personal, 'Sin tipo') AS tipo_personal, IFNULL(p.mensual, 0) AS mensual, IFNULL(p.total, 0) AS total, p.fecha_contrato, p.estado
+    $sql = "SELECT p.id_personal, p.nombre_apellido, IFNULL(tp.nombre_tipo_personal, 'Sin tipo') AS tipo_personal, IFNULL(p.mensual, 0) AS mensual, IFNULL(p.total, 0) AS total, p.fecha_contrato, p.estado, p.sucursal, IFNULL(s.nombre, '') AS nombre_sucursal
             FROM personal p
             LEFT JOIN tipo_personal tp ON tp.id_te = p.id_te
+            LEFT JOIN sucursal s ON s.id_sucursal = p.sucursal
             WHERE p.id_personal = ?";
 
     $stmt = $conexion->prepare($sql);
-
     if (!$stmt) {
-        throw new Exception("Error al preparar la consulta: " . $conexion->error);
+        $sql = "SELECT p.id_personal, p.nombre_apellido, IFNULL(tp.nombre_tipo_personal, 'Sin tipo') AS tipo_personal, IFNULL(p.mensual, 0) AS mensual, IFNULL(p.total, 0) AS total, p.fecha_contrato, p.estado
+                FROM personal p
+                LEFT JOIN tipo_personal tp ON tp.id_te = p.id_te
+                WHERE p.id_personal = ?";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conexion->error);
+        }
     }
 
     $stmt->bind_param("i", $id_personal);
@@ -44,4 +51,3 @@ try {
     ]);
 }
 $conexion->close();
-?>

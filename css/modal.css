@@ -5,7 +5,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 20, 50, 0.5);
+    background: rgba(92, 24, 33, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,7 +14,9 @@
     box-sizing: border-box;
 }
 .modal-panel {
-    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    /* Mismo fondo que el body: el gradiente fuerte anterior se comia
+       las letras oscuras de las tablas dentro del modal */
+    background: linear-gradient(135deg, var(--bag-gradient-start), var(--bag-gradient-end));
     color: var(--text-primary);
     border: 2px solid var(--accent);
     border-left: 6px solid var(--accent);
@@ -189,7 +191,7 @@
 #asRange {
     flex: 1;
     min-width: 0;
-    accent-color: rgb(0, 100, 130);
+    accent-color: rgb(229, 111, 23);
 }
 /*------------MODAL GENERATIVO------------*/
 .modal-panel-generativo .modal-header h3 {
@@ -246,7 +248,7 @@
 }
 /*------------MODAL DIAGRAMA------------*/
 .modal-panel-diagrama {
-    background: #ffffff;
+    background: linear-gradient(135deg, var(--bag-gradient-start), var(--bag-gradient-end));
     color: var(--text-primary);
     max-width: 960px;
 }
@@ -295,10 +297,10 @@
 }
 .diagrama-static .rueda-btn {
     cursor: pointer;
-    box-shadow: 0 0 6px 2px rgba(40, 140, 240, 0.7);
+    box-shadow: 0 0 6px 2px rgba(229, 111, 23, 0.7);
 }
 .diagrama-static .rueda-btn:hover {
-    box-shadow: 0 0 12px 5px rgba(60, 150, 220, 1);
+    box-shadow: 0 0 12px 5px rgba(229, 111, 23, 1);
     transform: none;
 }
 #diagramaImgWrap {
@@ -323,7 +325,7 @@
     align-items: center;
     justify-content: center;
     z-index: 5;
-    box-shadow: 0 0 8px 3px rgba(40, 140, 240, 0.85);
+    box-shadow: 0 0 8px 3px rgba(229, 111, 23, 0.85);
     cursor: grab;
     transition: none;
 }
@@ -333,7 +335,7 @@
     border: none;
 }
 .rueda-btn:hover {
-    box-shadow: 0 0 14px 6px rgba(60, 150, 220, 1);
+    box-shadow: 0 0 14px 6px rgba(229, 111, 23, 1);
     transform: none;
 }
 .rueda-btn.dragging {

@@ -1,4 +1,4 @@
-import { reporteViaje } from "./reporte/reporteInfo.js";
+﻿import { reporteViaje } from "./reporte/reporteInfo.js";
 import { historialReporteView } from "./reporte/historialReporte.js";
 import { fechaISOToDMY } from "../utils.js";
 
@@ -14,7 +14,7 @@ export async function reportesView() {
         const [resFlotas, resEstados, resUbicaciones] = await Promise.all([
             fetch("php/views/reportes.php"),
             fetch("php/api/get/flotaEstados/route.php"),
-            fetch("php/api/get/ubicaciones/route.php")
+            fetch("php/api/get/destinos/route.php")
         ]);
 
         const flotas = await resFlotas.json();
@@ -31,7 +31,7 @@ export async function reportesView() {
             estados.map(e => `<option value="${e.id_fe}">${e.nombre_estado_flota}</option>`).join("");
 
         const optUbicaciones = `<option value="">Todas ubicaciones</option>` +
-            ubicaciones.map(u => `<option value="${u.id_ubicacion}">${u.nombre_ubicacion}</option>`).join("");
+            ubicaciones.map(u => `<option value="${u.id}">${u.nombre_destino}</option>`).join("");
 
         let titleHtml = `
             <h2>REPORTES</h2>
@@ -130,3 +130,4 @@ export async function reportesView() {
         console.error(error);
     }
 }
+

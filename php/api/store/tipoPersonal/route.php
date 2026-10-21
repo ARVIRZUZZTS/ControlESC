@@ -12,18 +12,19 @@ try {
     }
 
     $nombre = isset($data['nombre_tipo_personal']) ? trim($data['nombre_tipo_personal']) : "";
+    $sucursal = isset($data['sucursal']) && intval($data['sucursal']) === 1 ? 1 : 0;
 
     if ($nombre === "") {
         throw new Exception("El nombre del tipo de personal es obligatorio.");
     }
 
-    $sql = "INSERT INTO tipo_personal (nombre_tipo_personal) VALUES (?)";
+    $sql = "INSERT INTO tipo_personal (nombre_tipo_personal, sucursal) VALUES (?, ?)";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("s", $nombre);
+    $stmt->bind_param("si", $nombre, $sucursal);
 
     if (!$stmt->execute()) {
         throw new Exception("Error al guardar el tipo de personal: " . $stmt->error);
@@ -44,4 +45,3 @@ try {
     ]);
 }
 $conexion->close();
-?>

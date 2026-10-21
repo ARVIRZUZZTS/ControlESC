@@ -42,6 +42,16 @@
 - ### Configuracion
     - [-] Vista de Configuracion
     - [-] Vista de Planilla de Posicion de Ruedas
+### Supabase (sucursal + login)
+- [/] SQL Supabase: tabla sucursal, tipo_empleado -> rol, usuario admin
+- [/] Migracion local: tabla usuarios_rol (login sin internet)
+- [x] CRUD sucursal contra Supabase (fuente de verdad) + replica local
+- [x] Login contra Supabase con roles (solo admin elimina)
+- [x] Login sin internet (espejo local) + recordar usuario
+- [x] Cambiar contrasena
+- [x] Cola sync_pendiente: offline escribe local y sube al reconectar
+- [x] Worker al loguear + auto-sync cada 5 min + badge de pendientes
+- [x] Ejecutar SQL de Supabase y probar flujo completo end-to-end
 ## Notas
 [/] Vamos a cambiar la estructura de rueda ya que esta rueda unitaria y no varias ruedas, error de abstraccion y herencia
 [ ] Agregar las nuevas de Utils a newMarcaRuedaView

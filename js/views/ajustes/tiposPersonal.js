@@ -33,6 +33,7 @@ export async function tiposPersonalView() {
                     <tr>
                         <th class="thl t5">ID</th>
                         <th class="th t10">Nombre Tipo Personal</th>
+                        <th class="th t5">Requiere Sucursal</th>
                         <th class="th t3">Editar</th>
                         <th class="thr t3">Eliminar</th>
                     </tr>
@@ -44,6 +45,7 @@ export async function tiposPersonalView() {
                 <tr>
                     <td class="pb t5">${t.id_te}</td>
                     <td class="pb pm t10">${t.nombre_tipo_personal}</td>
+                    <td class="pb pm t5">${Number(t.sucursal) === 1 ? "Sí" : "No"}</td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${t.id_te}"><img src="img/edit.svg" alt="editar"></button></td>
                     <td class="pb t3"><button class="btnEliminar listBtn" data-id="${t.id_te}"><img src="img/trash.svg" alt="eliminar"></button></td>
                 </tr>
@@ -80,6 +82,10 @@ function newTipoPersonalModal(tipo, onSave) {
                 <label>Nombre Tipo Personal:</label>
                 <input type="text" name="nombre_tipo_personal" value="${editando ? tipo.nombre_tipo_personal : ""}" maxlength="50" placeholder="Ej: Chofer Principal" required>
             </div>
+            <div class="modal-fila">
+                <label>Requiere Sucursal:</label>
+                <input type="checkbox" name="sucursal" ${editando && Number(tipo.sucursal) === 1 ? "checked" : ""}>
+            </div>
         </form>
     `;
 
@@ -94,6 +100,7 @@ function newTipoPersonalModal(tipo, onSave) {
 
     const form = resultado.overlay.querySelector("#formTipoPersonal");
     const inpNombre = form.querySelector('input[name="nombre_tipo_personal"]');
+    const inpSucursal = form.querySelector('input[name="sucursal"]');
     inpNombre.addEventListener("keydown", comillasFilter);
 
     form.addEventListener("submit", async (e) => {
@@ -104,7 +111,7 @@ function newTipoPersonalModal(tipo, onSave) {
             return;
         }
 
-        const payload = { nombre_tipo_personal: nombre };
+        const payload = { nombre_tipo_personal: nombre, sucursal: inpSucursal.checked ? 1 : 0 };
         if (editando) payload.id_te = tipo.id_te;
 
         const url = editando ? "php/api/store/tipoPersonalEditar/route.php" : "php/api/store/tipoPersonal/route.php";

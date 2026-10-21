@@ -4,7 +4,7 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT MIN(id_te) AS id_te, nombre_tipo_personal
+    $sql = "SELECT MIN(id_te) AS id_te, nombre_tipo_personal, MAX(IFNULL(sucursal, 0)) AS sucursal
             FROM tipo_personal
             GROUP BY nombre_tipo_personal
             ORDER BY nombre_tipo_personal";

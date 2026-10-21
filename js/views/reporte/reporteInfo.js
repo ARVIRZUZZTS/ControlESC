@@ -1,4 +1,4 @@
-import { reportesView } from "../reportesView.js";
+﻿import { reportesView } from "../reportesView.js";
 import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter } from "../../utils.js";
 import { crearCampoFecha } from "../../components/fechaCampo.js";
 import { historialReporteView } from "./historialReporte.js";
@@ -43,7 +43,7 @@ export async function reporteViaje(placa) {
 
         const [resRV, resUbi, resULL, resPeajes, resGastos, resPersonal] = await Promise.all([
             fetch(`php/api/get/reporteViaje/route.php?placa=${encodeURIComponent(placa)}`),
-            fetch("php/api/get/ubicaciones/route.php"),
+            fetch("php/api/get/destinos/route.php"),
             fetch("php/api/get/ubicacionesLlegada/route.php"),
             fetch("php/api/get/peajes/route.php"),
             fetch("php/api/get/gastosConDetalles/route.php"),
@@ -94,37 +94,37 @@ export async function reporteViaje(placa) {
         document.getElementById("finalizarReporteBtn").addEventListener("click", finalizarReporte);
 
         const optPartida = ubicaciones.map(u =>
-            `<option value="${esc(u.nombre_ubicacion)}" ${Number(u.id_ubicacion) === 1 ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`
+            `<option value="${esc(u.nombre_destino)}" ${Number(u.id) === 1 ? "selected" : ""}>${esc(u.nombre_destino)}</option>`
         ).join("");
 
-        const retornoOptions = ubicaciones.filter(u => Number(u.id_ubicacion) !== Number(flota.id_u));
+        const retornoOptions = ubicaciones.filter(u => Number(u.id) !== Number(flota.id_u));
         const optRetorno = `<option value="">-</option>` +
             retornoOptions.map(u =>
-                `<option value="${esc(u.nombre_ubicacion)}" ${esc(u.nombre_ubicacion) === esc(r?.ubicacion_retorno) ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`
+                `<option value="${esc(u.nombre_destino)}" ${esc(u.nombre_destino) === esc(r?.ubicacion_retorno) ? "selected" : ""}>${esc(u.nombre_destino)}</option>`
             ).join("");
 
         const valLlegada = esc(r?.ubicacion_llegada);
         const optLlegada = []
             .concat(
                 ubicaciones.map(u => {
-                    const sel = valLlegada === "" ? esc(u.nombre_ubicacion) === "Cochabamba" : esc(u.nombre_ubicacion) === valLlegada;
-                    return `<option value="${esc(u.nombre_ubicacion)}" ${sel ? "selected" : ""}>${esc(u.nombre_ubicacion)}</option>`;
+                    const sel = valLlegada === "" ? esc(u.nombre_destino) === "Cochabamba" : esc(u.nombre_destino) === valLlegada;
+                    return `<option value="${esc(u.nombre_destino)}" ${sel ? "selected" : ""}>${esc(u.nombre_destino)}</option>`;
                 }),
                 ubiLlegada.map(u => {
-                    const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegada;
+const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegada;
                     return `<option value="${esc(u.nombre_ubicaciones_llegada)}" ${sel ? "selected" : ""}>${esc(u.nombre_ubicaciones_llegada)}</option>`;
                 })
             )
             .join("");
 
         const optPeajes = peajes.map(p =>
-            `<option value="${esc(p.precio_peaje)}" data-precio="${esc(p.precio_peaje)}">Bs. ${esc(p.precio_peaje)} - ${esc(p.nombre_ubicacion)}</option>`
+            `<option value="${esc(p.precio_peaje)}" data-precio="${esc(p.precio_peaje)}">Bs. ${esc(p.precio_peaje)} - ${esc(p.nombre_destino)}</option>`
         ).join("");
         const optPeajesIda = peajes.length > 0 ? `<option value="">-</option>${optPeajes}` : `<option value="">-</option>`;
         const optPeajesRetorno = `<option value="">-</option>${optPeajes}`;
 
         const optPasajesAux = `<option value="">-</option>` +
-            ubicaciones.map(u => `<option value="${esc(u.nombre_ubicacion)}">${esc(u.nombre_ubicacion)}</option>`).join("");
+            ubicaciones.map(u => `<option value="${esc(u.nombre_destino)}">${esc(u.nombre_destino)}</option>`).join("");
 
         const optResponsable = `<option value="">Responsable...</option>` +
             personal.map(p => `<option value="${esc(p.id_personal)}">${esc(p.nombre_apellido)}</option>`).join("");
@@ -842,3 +842,6 @@ export async function reporteViaje(placa) {
         console.error(error);
     }
 }
+
+
+

@@ -13,18 +13,19 @@ try {
 
     $id_te = (int)$data['id_te'];
     $nombre = isset($data['nombre_tipo_personal']) ? trim($data['nombre_tipo_personal']) : "";
+    $sucursal = isset($data['sucursal']) && intval($data['sucursal']) === 1 ? 1 : 0;
 
     if ($nombre === "") {
         throw new Exception("El nombre del tipo de personal es obligatorio.");
     }
 
-    $sql = "UPDATE tipo_personal SET nombre_tipo_personal = ? WHERE id_te = ?";
+    $sql = "UPDATE tipo_personal SET nombre_tipo_personal = ?, sucursal = ? WHERE id_te = ?";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("si", $nombre, $id_te);
+    $stmt->bind_param("sii", $nombre, $sucursal, $id_te);
 
     if (!$stmt->execute()) {
         throw new Exception("Error al actualizar el tipo de personal: " . $stmt->error);
@@ -45,4 +46,3 @@ try {
     ]);
 }
 $conexion->close();
-?>

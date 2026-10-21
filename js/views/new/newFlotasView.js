@@ -1,4 +1,4 @@
-import { flotasListView } from "../flotasListView.js";
+﻿import { flotasListView } from "../flotasListView.js";
 import { abrirModal, abrirAlert, abrirConfirmation } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { validarPlaca, validarPropietario, placaFilter } from "../../utils.js";
@@ -8,7 +8,7 @@ export async function newFlotaView() {
     const [resEmp1, resEmp2, resUbi, resEst] = await Promise.all([
         fetch("php/api/get/personalTipo/route.php?tipo=1"),
         fetch("php/api/get/personalTipo/route.php?tipo=2"),
-        fetch("php/api/get/ubicaciones/route.php"),
+        fetch("php/api/get/destinos/route.php"),
         fetch("php/api/get/flotaEstados/route.php")
     ]);
 
@@ -176,7 +176,7 @@ export async function newFlotaView() {
 
     acUbi = autocompleteSeleccion({
         input: resultado.overlay.querySelector("#nuUbicacion"),
-        opciones: ubicaciones.map(u2 => ({ id: u2.id_ubicacion, label: u2.nombre_ubicacion })),
+        opciones: ubicaciones.map(u2 => ({ id: u2.id, label: u2.nombre_destino })),
         valorActual: "",
         onCambio: null
     });

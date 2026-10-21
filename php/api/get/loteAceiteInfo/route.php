@@ -66,11 +66,32 @@ try {
     }
     $stmtDetalle->close();
 
+    $sqlFlotas = "SELECT af.id_af, af.placa, af.cantidad, af.estado, af.fecha_uso
+                  FROM aceite_flota af
+                  INNER JOIN aceite_detalle ad ON af.id_ad = ad.id_ad
+                  WHERE ad.id_al = ?
+                  ORDER BY af.fecha_uso DESC";
+
+    $stmtFlotas = $conexion->prepare($sqlFlotas);
+    if (!$stmtFlotas) {
+        throw new Exception("Error al preparar la consulta de flotas: " . $conexion->error);
+    }
+    $stmtFlotas->bind_param("i", $id_lote);
+    $stmtFlotas->execute();
+    $resultFlotas = $stmtFlotas->get_result();
+
+    $flotas = [];
+    while ($row = $resultFlotas->fetch_assoc()) {
+        $flotas[] = $row;
+    }
+    $stmtFlotas->close();
+
     echo json_encode([
         "status" => "success",
         "message" => "Lote de aceite obtenido correctamente",
         "data" => $lote,
-        "detalles" => $detalles
+        "detalles" => $detalles,
+        "flotas" => $flotas
     ]);
 } catch (Exception $e) {
     http_response_code(500);

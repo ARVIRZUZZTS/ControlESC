@@ -59,11 +59,11 @@ export async function loteAceiteInfo(id_lote) {
                 <thead>
                     <tr>
                         <th class="thl t5">ID</th>
-                        <th class="th t10">Marca</th>
-                        <th class="th t10">Fecha Compra</th>
-                        <th class="th t10">Precio Total Bs.</th>
-                        <th class="th t8">Unidades</th>
-                        <th class="th t8">Cantidad</th>
+                        <th class="t10">Marca</th>
+                        <th class="t10">Fecha Compra</th>
+                        <th class="t10">Precio Total Bs.</th>
+                        <th class="t8">Unidades</th>
+                        <th class="t8">Cantidad</th>
                         <th class="thr t3">Eliminar</th>
                     </tr>
                 </thead>
@@ -87,17 +87,19 @@ export async function loteAceiteInfo(id_lote) {
 
         html += `
             <hr class="loteSeparador">
-            <h3 class="loteTitulo">Detalle de Lote</h3>
+            <div class="asignarWrap">
+                <h2 class="loteTitulo">Detalle de Lote</h2>
+                <button class="btnAsignarGlobal listBtn" id="btnAsignarGlobal">Asignar Aceite a Flota</button>
+            </div>
             <table id="tbDetalleAceite">
                 <thead>
                     <tr>
                         <th class="thl t10">Marca</th>
-                        <th class="th t8">Precio Ingresado Bs.</th>
-                        <th class="th t8">Cantidad</th>
-                        <th class="th t8">Asignado</th>
-                        <th class="th t8">Disponible</th>
-                        <th class="th t8">Estado</th>
-                        <th class="thr t5">Asignar</th>
+                        <th class="t8">Precio Ingresado Bs.</th>
+                        <th class="t8">Cantidad</th>
+                        <th class="t8">Asignado</th>
+                        <th class="t8">Disponible</th>
+                        <th class="t8">Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,11 +114,6 @@ export async function loteAceiteInfo(id_lote) {
                     <td class="pb pm t8">${(parseFloat(rd.asignado) || 0).toFixed(3)}</td>
                     <td class="pb pm t8">${(parseFloat(rd.disponible) || 0).toFixed(3)}</td>
                     <td class="pb pm t8">${rd.estado}</td>
-                    <td class="pb t5">
-                        <button class="btnAsignar listBtn" data-id="${rd.id_ad}" data-disponible="${rd.disponible}">
-                            Asignar
-                        </button>
-                    </td>
                 </tr>
             `;
         });
@@ -125,6 +122,38 @@ export async function loteAceiteInfo(id_lote) {
                 </tbody>
             </table>
         `;
+
+        if (loteResponse.flotas && loteResponse.flotas.length > 0) {
+            html += `
+                <hr class="loteSeparador">
+                <h3 class="loteTitulo">Aceite por Flota</h3>
+                <table id="tbAceiteFlota">
+                    <thead>
+                        <tr>
+                            <th class="thl t10">Placa</th>
+                            <th class="t8">Cantidad (Lt.)</th>
+                            <th class="t8">Estado</th>
+                            <th class="thr t10">Fecha de Uso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            loteResponse.flotas.forEach(af => {
+                const fechaUso = af.fecha_uso && af.fecha_uso !== '0000-00-00' ? fechaISOToDMY(af.fecha_uso) : '-';
+                html += `
+                    <tr>
+                        <td class="pb t10">${af.placa}</td>
+                        <td class="pb pm t8">${(parseFloat(af.cantidad) || 0).toFixed(3)}</td>
+                        <td class="pb pm t8">${af.estado}</td>
+                        <td class="pb pm t10">${fechaUso}</td>
+                    </tr>
+                `;
+            });
+            html += `
+                    </tbody>
+                </table>
+            `;
+        }
 
         cont.innerHTML = html;
 
@@ -151,12 +180,15 @@ export async function loteAceiteInfo(id_lote) {
             });
         });
 
-        document.querySelectorAll(".btnAsignar").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const id_ad = this.dataset.id;
-                const disponible = parseFloat(this.dataset.disponible);
-                asignarAceiteModal({ id_ad, disponible, onSuccess: () => loteAceiteInfo(id_lote) });
-            });
+        document.getElementById("btnAsignarGlobal").addEventListener("click", function () {
+            const primerDetalle = detalles[0];
+            if (!primerDetalle) {
+                abrirAlert({ mensaje: "No hay detalles disponibles para asignar." });
+                return;
+            }
+            const id_ad = primerDetalle.id_ad;
+            const disponible = parseFloat(primerDetalle.disponible);
+            asignarAceiteModal({ id_ad, disponible, onSuccess: () => loteAceiteInfo(id_lote) });
         });
 
     } catch (error) {

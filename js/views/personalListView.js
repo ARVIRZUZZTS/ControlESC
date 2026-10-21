@@ -49,6 +49,7 @@ export async function personalListView() {
                 <tbody>
         `;
         data.forEach(per => {
+            const estado = per.estado || "activo";
             html += `
                 <tr>
                     <td class="pb t5">${per.id_personal}</td>
@@ -57,7 +58,7 @@ export async function personalListView() {
                     <td class="pb pm t5">${moneda(per.mensual)}</td>
                     <td class="pb pm t5">${moneda(per.total)}</td>
                     <td class="pb pm t5">${fechaISOToDMY(per.fecha_contrato) || "-"}</td>
-                    <td class="pb pm t5">${per.estado || "Activo"}</td>
+                    <td class="pb pm t5">${estado}</td>
                     <td class="pb t3"><button class="btnInfo listBtn" data-id="${per.id_personal}" alt="reporte"><img src="img/info.svg" alt="reporte"></button></td>
                 </tr>
             `;

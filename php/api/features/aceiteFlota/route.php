@@ -116,7 +116,7 @@ try {
     if (!$stmtInsert) {
         throw new Exception("Error en la preparacion del insert: " . $conexion->error);
     }
-    $stmtInsert->bind_param("issd", $id_ad, $placa, $cantidad, $fecha_uso);
+    $stmtInsert->bind_param("isss", $id_ad, $placa, $cantidad, $fecha_uso);
     if (!$stmtInsert->execute()) {
         throw new Exception("Error al asignar el aceite: " . $stmtInsert->error);
     }

@@ -6,13 +6,12 @@ table {
 tr {
     height: 5vh;
 }
-th, td {    
+th, td {
     font-weight: 900;
     font-size: medium;
     margin: 0px;
 }
-th {border: 2px solid var(--accent) ;
-    border-top: 1px solid var(--accent);}
+/* El encabezado no lleva bordes: el degradé hace de separador */
 .thl {border-left: none;}
 .thr {border-right: none;}
 
@@ -34,9 +33,13 @@ thead {
     top: 0;
     z-index: 10;
 }
+/* Encabezado de todas las tablas con el gradiente highlight y letras claras */
 thead th {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: var(--bg-lighter);
+    background: linear-gradient(135deg, var(--highlight-start), var(--highlight-end));
+    color: #fff;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(92, 24, 33, 0.45);
 }

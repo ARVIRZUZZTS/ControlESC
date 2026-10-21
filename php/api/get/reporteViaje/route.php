@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once("../../../conexion.php");
 require_once("../../../includes/mantenimiento.php");
 
@@ -10,13 +10,13 @@ try {
     }
     $placa = trim($_GET['placa']);
 
-    $sqlFlota = "SELECT f.placa, f.id_fe, f.id_ubicacion AS id_u,
+    $sqlFlota = "SELECT f.placa, f.id_fe, f.id_destino AS id_u,
                         f.viajes, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite,
                         COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
-                        COALESCE(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion
+                        COALESCE(u.nombre_destino, 'Sin ubicacion') AS ubicacion
                  FROM flota f
                  LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
-                 LEFT JOIN ubicacion u ON u.id_ubicacion = f.id_ubicacion
+                 LEFT JOIN destinos u ON u.id = f.id_destino
                  WHERE f.placa = ?";
 
     $stmt = $conexion->prepare($sqlFlota);
@@ -143,3 +143,5 @@ try {
 }
 $conexion->close();
 ?>
+
+

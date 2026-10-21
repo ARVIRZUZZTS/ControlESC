@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once("../conexion.php");
 
 header('Content-Type: application/json');
@@ -6,13 +6,13 @@ header('Content-Type: application/json');
 try {
     $sql = "SELECT f.placa,
                    IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado,
-                   IFNULL(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion,
-                   f.id_fe, f.id_ubicacion AS id_u,
+                   IFNULL(u.nombre_destino, 'Sin ubicacion') AS ubicacion,
+                   f.id_fe, f.id_destino AS id_u,
                    r.id_reporte, r.estado AS estado_reporte, r.fecha_partida,
                    (SELECT COUNT(*) FROM reporte rt WHERE rt.placa = f.placa AND rt.estado = 'Finalizado') AS finalizados
             FROM flota f
             LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
-            LEFT JOIN ubicacion u ON u.id_ubicacion = f.id_ubicacion
+            LEFT JOIN destinos u ON u.id = f.id_destino
             LEFT JOIN reporte r ON r.id_reporte = (
                 SELECT rr.id_reporte FROM reporte rr
                 WHERE rr.placa = f.placa AND rr.estado = 'Abierto'
@@ -41,3 +41,5 @@ try {
     ]);
 }
 ?>
+
+

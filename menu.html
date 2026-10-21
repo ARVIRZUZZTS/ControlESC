@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -8,57 +8,78 @@
   <link rel="stylesheet" href="css/menu.css">
   <link rel="stylesheet" href="css/tablas.css">
   <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/toast.css">
 </head>
 <body>
-<header>
-    <h1>CONTROL DE FLOTAS<!--PARTE DE LLEGADAS DE BUSES--></h1>
-    <img src="img/logoX.png" alt="Logo">
-</header>
-
 <main>
-    <nav>
-        <h3 id="fecha"></h3>
-        <div class="topButt">
-            <button id="estaBtn">
-                <img src="img/aviso.svg" alt="personal">
-                <div>AVISOS</div>
-            </button>
-            <button id="confBtn">
-                <img src="img/config.svg" alt="reporte">
-                <div>AJUSTES</div>
-            </button>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="img/logoX.png" alt="Logo" class="sidebar-logo" id="sidebarLogo" data-expanded="img/logoX.png" data-collapsed="img/logo-nobk-esc.png">
+            <h1 class="sidebar-title">Control Expreso SC</h1>
         </div>
-        <div class="topButt">
-            <button id="ruedaBtn">
-                <img src="img/wheel.svg" alt="rueda">
-                <div>RUEDAS</div>
+        <nav class="sidebar-nav">
+            <h3 id="fecha"></h3>
+            <button id="estaBtn" class="sidebar-btn">
+                <img src="img/aviso2.svg" alt="avisos">
+                <span>AVISOS</span>
             </button>
-            <button id="aceiteBtn">
-                <img src="img/aceite.svg" alt="reporte">
-                <div>ACEITES</div>
+            <button id="confBtn" class="sidebar-btn">
+                <img src="img/config2.svg" alt="ajustes">
+                <span>AJUSTES</span>
             </button>
+            <button id="ruedaBtn" class="sidebar-btn">
+                <img src="img/wheel2.svg" alt="ruedas">
+                <span>RUEDAS</span>
+            </button>
+            <button id="aceiteBtn" class="sidebar-btn">
+                <img src="img/aceite2.svg" alt="aceites">
+                <span>ACEITES</span>
+            </button>
+            <button id="flotaBtn" class="sidebar-btn">
+                <img src="img/flota2.svg" alt="flotas">
+                <span>FLOTAS</span>
+            </button>
+            <button id="reporteBtn" class="sidebar-btn">
+                <img src="img/reporte2.svg" alt="reportes">
+                <span>REPORTES</span>
+            </button>
+            <button id="personalBtn" class="sidebar-btn">
+                <img src="img/personal2.svg" alt="personal">
+                <span>PERSONAL</span>
+            </button>
+        </nav>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <img src="img/toggle.svg" alt="toggle">
+        </button>
+        <div class="sidebar-usuario">
+            <div class="usuarioInfo">
+                <span id="usuarioNombre"></span>
+                <span id="usuarioRol" class="usuarioRol"></span>
+            </div>
+            <div class="usuarioBtns">
+                <button id="usuarioContraBtn" class="usuarioBtn" title="Cambiar contrasena">
+                    <img src="img/key.svg" alt="Contrasena">
+                    <span>CONTRASENA</span>
+                </button>
+                <button id="usuarioSalirBtn" class="usuarioBtn" title="Cerrar sesion">
+                    <img src="img/logout.svg" alt="Salir">
+                    <span>SALIR</span>
+                </button>
+            </div>
         </div>
-        <button id="flotaBtn">
-            <img src="img/flota.svg" alt="flota">
-            <div>FLOTAS</div>
-        </button>
-        <button id="reporteBtn">
-            <img src="img/reporte.svg" alt="flota">
-            <div>REPORTES</div>
-        </button>
-        <button id="personalBtn">
-            <img src="img/personal.svg" alt="personal">
-            <div>PERSONAL</div>
-        </button>
-    </nav>
-    <div id="dinamic">
-        <div id="titleDin">
-            <h2>REPORTES</h2>
+    </aside>
+    <div class="content">
+        <div id="dinamic">
+            <div id="titleDin">
+                <h2>REPORTES</h2>
+            </div>
+            <hr>
+            <div id="contDin"></div>
         </div>
-        <hr>
-        <div id="contDin"></div>
     </div>
 </main>
+    <div class="toast-viewport" id="toastViewport" role="status" aria-live="polite"></div>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
+

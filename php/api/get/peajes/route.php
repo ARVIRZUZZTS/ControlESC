@@ -1,13 +1,13 @@
-<?php
+﻿<?php
 require_once("../../../conexion.php");
 
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_ubicacion, nombre_ubicacion, precio_peaje
-            FROM ubicacion
+    $sql = "SELECT id, nombre_destino, precio_peaje
+            FROM destinos
             WHERE precio_peaje IS NOT NULL
-            ORDER BY id_ubicacion";
+            ORDER BY id";
 
     $stmt = $conexion->prepare($sql);
 
