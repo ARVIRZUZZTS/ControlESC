@@ -1,10 +1,12 @@
-import { gastosView } from "./ajustes/gastos.js";
-import { ubicacionesView } from "./ajustes/ubicaciones.js";
+﻿import { gastosView } from "./ajustes/gastos.js";
+import { destinosView } from "./ajustes/destinos.js";
 import { tiposPersonalView } from "./ajustes/tiposPersonal.js";
 import { dieselView } from "./ajustes/diesel.js";
 import { ubicacionesLlegadaView } from "./ajustes/ubicacionesLlegada.js";
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { marcasRuedasView } from "./marcas/ruedas.js";
+import { sucursalesView } from "./ajustes/sucursales.js";
+import { actualizarBadgeSuc } from "../sync.js";
 
 export function ajustesView() {
     const cont = document.getElementById("contDin");
@@ -16,12 +18,13 @@ export function ajustesView() {
         <div class="ajustesButtons">
             <div class="ajustesRow">
                 <button id="ajGastos" class="ajustesBtn">GASTOS</button>
-                <button id="ajUbicaciones" class="ajustesBtn">UBICACIONES</button>
+                <button id="ajDestinos" class="ajustesBtn">DESTINOS</button>
                 <button id="ajTipoPersonal" class="ajustesBtn">TIPO PERSONAL</button>
             </div>
             <div class="ajustesRow">
                 <button id="ajMarcaAceite" class="ajustesBtn">MARCA ACEITE</button>
                 <button id="ajMarcaRueda" class="ajustesBtn">MARCA RUEDA</button>
+                <button id="ajSucursales" class="ajustesBtn">SUCURSALES<span id="syncBadgeSuc" class="syncBadge"></span></button>
             </div>
             <div class="ajustesRow center">
                 <button id="ajDiesel" class="ajustesBtn">DIESEL</button>
@@ -31,10 +34,14 @@ export function ajustesView() {
     `;
 
     document.getElementById("ajGastos").addEventListener("click", gastosView);
-    document.getElementById("ajUbicaciones").addEventListener("click", ubicacionesView);
+    document.getElementById("ajDestinos").addEventListener("click", destinosView);
     document.getElementById("ajTipoPersonal").addEventListener("click", tiposPersonalView);
     document.getElementById("ajMarcaAceite").addEventListener("click", () => marcasAceitesView({ onBack: ajustesView }));
     document.getElementById("ajMarcaRueda").addEventListener("click", () => marcasRuedasView({ onBack: ajustesView }));
+    document.getElementById("ajSucursales").addEventListener("click", sucursalesView);
     document.getElementById("ajDiesel").addEventListener("click", dieselView);
     document.getElementById("ajUbicacionLlegada").addEventListener("click", ubicacionesLlegadaView);
+
+    actualizarBadgeSuc();
 }    
+

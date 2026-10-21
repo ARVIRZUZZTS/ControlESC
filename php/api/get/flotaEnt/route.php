@@ -1,24 +1,24 @@
-<?php
+﻿<?php
 require_once("../../../conexion.php");
 
 header('Content-Type: application/json');
 
 try {
     if (!isset($_GET['placa'])) {
-        throw new Exception("Parámetro 'placa' no proporcionado");
+        throw new Exception("ParÃ¡metro 'placa' no proporcionado");
     }
     
-    $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_ubicacion AS id_u, f.viajes,
+    $sql = "SELECT f.placa, f.propietario, f.chofer1, f.chofer2, f.id_fe, f.id_destino AS id_u, f.viajes,
                    f.capacidad_aceite, f.aceite_actual, f.viajes_aceite,
                    COALESCE(p1.nombre_apellido, 'Sin Asignar') AS chofer1_nombre,
                    COALESCE(p2.nombre_apellido, 'Sin Asignar') AS chofer2_nombre,
                    COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
-                   COALESCE(u.nombre_ubicacion, 'Sin ubicacion') AS ubicacion
+                   COALESCE(u.nombre_destino, 'Sin ubicacion') AS ubicacion
             FROM flota f
             LEFT JOIN personal p1 ON p1.id_personal = f.chofer1
             LEFT JOIN personal p2 ON p2.id_personal = f.chofer2
             LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
-            LEFT JOIN ubicacion u ON u.id_ubicacion = f.id_ubicacion
+            LEFT JOIN destinos u ON u.id = f.id_destino
             WHERE f.placa = ?";
 
     $stmt = $conexion->prepare($sql);
@@ -54,3 +54,5 @@ try {
     ]);
 }
 ?>
+
+
