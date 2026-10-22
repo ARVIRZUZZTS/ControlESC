@@ -33,17 +33,25 @@ function authExigirAdmin() {
 }
 
 /* Refresca el espejo local de credenciales (solo admins) */
-function authUpsertEspejoLocal($nombre, $rol, $contrasena) {
+function authUpsertEspejoLocal($nombre, $rol, $contrasena, $ubicacion_actual = null) {
     global $conexion;
     if (!$conexion) return;
     // Solo admins se guardan en usuarios_rol
     if ($rol !== 'admin') return;
     try {
-        $stmt = $conexion->prepare(
-            "INSERT INTO usuarios_rol (nombre, rol, contrasena) VALUES (?, ?, ?)
-             ON DUPLICATE KEY UPDATE rol = ?, contrasena = ?"
-        );
-        $stmt->bind_param("sssss", $nombre, $rol, $contrasena, $rol, $contrasena);
+        if ($ubicacion_actual !== null) {
+            $stmt = $conexion->prepare(
+                "INSERT INTO usuarios_rol (nombre, rol, contrasena, ubicacion_actual) VALUES (?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE rol = ?, contrasena = ?, ubicacion_actual = ?"
+            );
+            $stmt->bind_param("sssssss", $nombre, $rol, $contrasena, $ubicacion_actual, $rol, $contrasena, $ubicacion_actual);
+        } else {
+            $stmt = $conexion->prepare(
+                "INSERT INTO usuarios_rol (nombre, rol, contrasena) VALUES (?, ?, ?)
+                 ON DUPLICATE KEY UPDATE rol = ?, contrasena = ?"
+            );
+            $stmt->bind_param("sssss", $nombre, $rol, $contrasena, $rol, $contrasena);
+        }
         $stmt->execute();
         $stmt->close();
     } catch (Exception $e) {
@@ -70,6 +78,7 @@ function authLoginLocal($nombre, $contrasena) {
     return [
         "nombre" => $row['nombre'],
         "rol" => $row['rol'],
-        "sucursal" => null
+        "sucursal" => null,
+        "ubicacion_actual" => $row['ubicacion_actual'] ?? null
     ];
 }

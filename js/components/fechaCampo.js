@@ -66,7 +66,9 @@ export function crearCampoFecha(valorISO) {
             const a = leerNum("anio");
             const dentro = d >= 1 && d <= 31 && m >= 1 && m <= 12 && a >= LIMITES.anio.min && a <= LIMITES.anio.max;
             if (dentro && d <= diasDelMes(m, a)) {
-                inp.value = String(d).padStart(2, "0");
+                if (parte === "dia") inp.value = String(d).padStart(2, "0");
+                else if (parte === "mes") inp.value = String(m).padStart(2, "0");
+                else if (parte === "anio") inp.value = String(a).padStart(4, "0");
             }
         };
 
@@ -85,7 +87,16 @@ export function crearCampoFecha(valorISO) {
         menos.addEventListener("click", () => ajustar(-1));
         mas.addEventListener("click", () => ajustar(1));
         inp.addEventListener("input", () => {
-            inp.value = inp.value.replace(/\D/g, "").slice(0, inp.maxLength);
+            let v = inp.value.replace(/\D/g, "").slice(0, inp.maxLength);
+            const lim = LIMITES[parte];
+            if (v !== "") {
+                let num = parseInt(v, 10);
+                if (!isNaN(num) && num > lim.max) {
+                    num = lim.max;
+                    v = String(num);
+                }
+            }
+            inp.value = v;
             sep();
             el.dispatchEvent(new Event("fechaCambio", { bubbles: true }));
         });

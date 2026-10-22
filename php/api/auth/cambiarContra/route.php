@@ -1,9 +1,8 @@
 <?php
 require_once("../../../conexion.php");
-require_once("../../../supabase.php");
 require_once("../../../sesion.php");
 
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 
 $usuario = authUsuario();
 if (!$usuario) {
@@ -13,11 +12,12 @@ if (!$usuario) {
 }
 
 try {
-    $json = file_get_contents('php://input');
+    $json = file_get_contents("php://input");
     $data = json_decode($json, true);
 
-    $nueva = isset($data['contrasena']) ? $data['contrasena'] : "";
-    $repetir = isset($data['repetir']) ? $data['repetir'] : "";
+    $nueva = isset($data["contrasena"]) ? $data["contrasena"] : "";
+    $repetir = isset($data["repetir"]) ? $data["repetir"] : "";
+    $ubicacion_actual = isset($data["ubicacion_actual"]) ? trim($data["ubicacion_actual"]) : null;
 
     if ($nueva === "" || $repetir === "") {
         throw new Exception("Completa ambos campos.");
@@ -29,29 +29,26 @@ try {
         throw new Exception("Las contrasenas no coinciden.");
     }
 
-    $idUsuario = isset($usuario['id_usuario']) ? intval($usuario['id_usuario']) : 0;
-    $avisoOffline = null;
+    $idUsuario = isset($usuario["id_usuario"]) ? intval($usuario["id_usuario"]) : 0;
 
     if ($idUsuario > 0) {
         try {
-            $actual = supabaseUsuarioPorId($idUsuario);
-            if ($actual && isset($actual['contraseña']) && $actual['contraseña'] === $nueva) {
-                throw new Exception("La nueva contrasena debe ser distinta a la actual.");
-            }
             supabaseCambiarContra($idUsuario, $nueva);
         } catch (Exception $e) {
-            /* Sin red: se guarda en el espejo local para el proximo login sin conexion */
-            $avisoOffline = "Sin conexion: el cambio se guardo solo en este equipo.";
+            // Sin red: se guarda en el espejo local
         }
     }
 
     $usuario2 = $usuario;
-    authUpsertEspejoLocal($usuario['nombre'], $usuario['rol'], $nueva);
-    $_SESSION['usuario'] = $usuario2;
+    if ($ubicacion_actual !== null && $ubicacion_actual !== "") {
+        $usuario2["ubicacion_actual"] = $ubicacion_actual;
+    }
+    authUpsertEspejoLocal($usuario["nombre"], $usuario["rol"], $nueva, $ubicacion_actual);
+    $_SESSION["usuario"] = $usuario2;
 
     echo json_encode([
         "status" => "success",
-        "message" => $avisoOffline ?: "Contrasena actualizada correctamente"
+        "message" => "Contrasena actualizada correctamente"
     ]);
 } catch (Exception $e) {
     http_response_code(400);
@@ -60,3 +57,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+$conexion->close();
+?>

@@ -1372,3 +1372,131 @@ textarea {
     height: 2.6vh;
     width: auto;
 }
+
+
+/*------------HISTORIAL DE VIAJES------------*/
+.hist-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2vh;
+    margin-bottom: 2vh;
+    background: linear-gradient(135deg, var(--highlight-start), var(--highlight-end));
+    border-radius: 8px;
+    padding: 1vh 2vh;
+}
+.hist-nav-btn {
+    min-height: 4vh;
+    min-width: 4vh;
+    padding: 0.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hist-nav-btn img {
+    width: 2vh;
+    height: 2vh;
+}
+.hist-periodo {
+    font-size: 2.8vh;
+    font-weight: bold;
+    color: #fff;
+    min-width: 20vh;
+    text-align: center;
+}
+.hist-buscador {
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+    justify-content: center;
+}
+
+.hist-grupo {
+    display: flex;
+    gap: 1.5vh;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.hist-dia {
+    flex: 1 1 15vh;
+    min-width: 14vh;
+    max-width: 18vh;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 1vh;
+    background: linear-gradient(135deg, var(--bag-gradient-start), var(--bag-gradient-end));
+    display: flex;
+    flex-direction: column;
+    gap: 0.8vh;
+}
+.hist-dia-hoy {
+    border-color: var(--highlight-start);
+    box-shadow: 0 0 10px 3px rgba(229, 111, 23, 0.4);
+}
+.hist-dia-fecha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3vh;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 0.5vh;
+}
+.hist-badge-hoy {
+    display: inline-block;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    background: linear-gradient(135deg, var(--highlight-start), var(--highlight-end));
+    color: #fff;
+    font-size: 1.6vh;
+    font-weight: bold;
+}
+.hist-dia-num {
+    font-size: 3vh;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+.hist-dia-mes {
+    font-size: 1.8vh;
+    color: var(--text-dark);
+}
+.hist-dia-sem {
+    font-size: 1.6vh;
+    color: var(--text-dark);
+    font-style: italic;
+}
+.hist-dia-eventos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4vh;
+    min-height: 4vh;
+}
+.hist-evento {
+    font-size: 1.7vh;
+    padding: 0.3vh 0.6vh;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.hist-ev-partio {
+    background: linear-gradient(135deg, rgb(230, 225, 255), rgb(200, 190, 250));
+    color: rgb(45, 20, 95);
+}
+.hist-ev-llego {
+    background: rgb(230, 250, 238);
+    color: rgb(0, 90, 45);
+}
+.hist-ev-retorno {
+    background: linear-gradient(135deg, rgb(255, 250, 210), rgb(255, 232, 130));
+    color: rgb(90, 65, 0);
+}
+.hist-ev-estimado {
+    border: 1px dashed var(--accent);
+    color: var(--text-dark);
+    font-style: italic;
+}
+.hist-sin-eventos {
+    font-size: 1.8vh;
+    color: var(--text-dark);
+    opacity: 0.5;
+    text-align: center;
+}
+

@@ -7,6 +7,7 @@ import { ruedasListView } from "./views/list/ruedas.js";
 import { aceitesListView } from "./views/aceitesListView.js";
 import { flotasListView } from "./views/flotasListView.js";
 import { reportesView } from "./views/reportesView.js";
+import { historialViajesView } from "./views/historialViajes.js";
 import { personalListView } from "./views/personalListView.js";
 import { ajustesView } from "./views/ajustes.js";
 import { modalCambiarContra } from "./cuenta.js";
@@ -18,6 +19,7 @@ export function iniciarMenu() {
     document.getElementById("aceiteBtn").addEventListener("click", aceitesListView);
     document.getElementById("flotaBtn").addEventListener("click", flotasListView);
     document.getElementById("reporteBtn").addEventListener("click", reportesView);
+    document.getElementById("historialBtn").addEventListener("click", historialViajesView);
     document.getElementById("personalBtn").addEventListener("click", personalListView);
     document.getElementById("confBtn").addEventListener("click", ajustesView);
 
