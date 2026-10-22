@@ -74,25 +74,26 @@ function supabaseDestinoListar() {
     return supabaseRequest('GET', 'destinos?select=*&order=id.asc');
 }
 
+
 function supabaseDestinoCrear($datos) {
     $res = supabaseRequest('POST', 'destinos', $datos, 'resolution=merge-duplicates, return=representation');
     return is_array($res) && count($res) > 0 ? $res[0] : null;
 }
 
 function supabaseDestinoEditar($id, $datos) {
-    supabaseRequest('PATCH', 'destinos?id=eq.' . intval($id), $datos);
+    supabaseRequest('PATCH', 'destinos?id=eq.' . rawurlencode($id), $datos);
     return true;
 }
 
 function supabaseDestinoEliminar($id) {
-    supabaseRequest('DELETE', 'destinos?id=eq.' . intval($id));
+    supabaseRequest('DELETE', 'destinos?id=eq.' . rawurlencode($id));
     return true;
 }
 
 function supabaseDestinoNombreExiste($nombre, $idIgnorar = null) {
     $endpoint = 'destinos?select=id,nombre_destino&nombre_destino=eq.' . rawurlencode($nombre);
     if ($idIgnorar !== null) {
-        $endpoint .= '&id=neq.' . intval($idIgnorar);
+        $endpoint .= '&id=neq.' . rawurlencode($idIgnorar);
     }
     $res = supabaseRequest('GET', $endpoint);
     if (is_array($res) && count($res) > 0) return true;
@@ -111,7 +112,7 @@ function supabaseDestinoNombreExiste($nombre, $idIgnorar = null) {
 }
 
 function supabaseDestinosPorSucursal($idSucursal) {
-    $res = supabaseRequest('GET', 'destinos?select=id&sucursal=eq.' . intval($idSucursal));
+    $res = supabaseRequest('GET', 'destinos?select=id&sucursal=eq.' . rawurlencode($idSucursal));
     return is_array($res) ? $res : [];
 }
 
@@ -126,30 +127,21 @@ function supabaseSucursalCrear($nombre) {
     return is_array($res) && count($res) > 0 ? $res[0] : null;
 }
 
-/* Sube una sucursal creada offline respetando su id local.
-   merge-duplicates: si el id ya existe en Supabase, actualiza en vez de fallar. */
-function supabaseSucursalCrearConId($datos) {
-    $res = supabaseRequest('POST', 'sucursal', [
-        'id_sucursal' => intval($datos['id_sucursal']),
-        'nombre' => $datos['nombre']
-    ], 'resolution=merge-duplicates, return=representation');
-    return is_array($res) && count($res) > 0 ? $res[0] : null;
-}
 
 function supabaseSucursalEditar($idSucursal, $nombre) {
-    supabaseRequest('PATCH', 'sucursal?id_sucursal=eq.' . intval($idSucursal), ['nombre' => $nombre]);
+    supabaseRequest('PATCH', 'sucursal?id_sucursal=eq.' . rawurlencode($idSucursal), ['nombre' => $nombre]);
     return true;
 }
 
 function supabaseSucursalEliminar($idSucursal) {
-    supabaseRequest('DELETE', 'sucursal?id_sucursal=eq.' . intval($idSucursal));
+    supabaseRequest('DELETE', 'sucursal?id_sucursal=eq.' . rawurlencode($idSucursal));
     return true;
 }
 
 function supabaseSucursalNombreExiste($nombre, $idIgnorar = null) {
     $endpoint = 'sucursal?select=id_sucursal,nombre&nombre=eq.' . rawurlencode($nombre);
     if ($idIgnorar !== null) {
-        $endpoint .= '&id_sucursal=neq.' . intval($idIgnorar);
+        $endpoint .= '&id_sucursal=neq.' . rawurlencode($idIgnorar);
     }
     $endpoint .= '&limit=1000';
     $res = supabaseRequest('GET', $endpoint);
@@ -193,19 +185,37 @@ function supabaseRolDe($fila) {
 }
 
 function supabaseUsuarioPorId($idUsuario) {
-    $res = supabaseRequest('GET', 'usuarios?select=*&id_usuario=eq.' . intval($idUsuario) . '&limit=1');
+    $res = supabaseRequest('GET', 'usuarios?select=*&id_usuario=eq.' . rawurlencode($idUsuario) . '&limit=1');
     return is_array($res) && count($res) > 0 ? $res[0] : null;
 }
 
 function supabaseUsuariosPorSucursal($idSucursal) {
-    $res = supabaseRequest('GET', 'usuarios?select=id_usuario&sucursal=eq.' . intval($idSucursal));
+    $res = supabaseRequest('GET', 'usuarios?select=id_usuario&sucursal=eq.' . rawurlencode($idSucursal));
     return is_array($res) ? $res : [];
 }
 
 function supabaseCambiarContra($idUsuario, $nuevaContra) {
-    supabaseRequest('PATCH', 'usuarios?id_usuario=eq.' . intval($idUsuario), [
+    supabaseRequest('PATCH', 'usuarios?id_usuario=eq.' . rawurlencode($idUsuario), [
         'contraseña' => $nuevaContra,
         'cambio_contra' => true
     ]);
+    return true;
+}
+
+
+/* -------------------- Usuarios (fuente de verdad en la nube) -------------------- */
+
+function supabaseUsuarioListar() {
+    return supabaseRequest("GET", "usuarios?select=*&order=id_usuario.asc");
+}
+
+
+function supabaseUsuarioCrear($datos) {
+    $res = supabaseRequest("POST", "usuarios", $datos, "resolution=merge-duplicates, return=representation");
+    return is_array($res) && count($res) > 0 ? $res[0] : null;
+}
+
+function supabaseUsuarioEditar($id, $datos) {
+    supabaseRequest("PATCH", "usuarios?id_usuario=eq." . rawurlencode($id), $datos);
     return true;
 }

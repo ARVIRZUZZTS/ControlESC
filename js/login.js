@@ -60,7 +60,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             btn.textContent = "INGRESAR";
         }
     } catch (error) {
-        mostrarError("Error de conexion. Intenta de nuevo.");
+        mostrarError("Error de conexion. Verifica que el servidor este corriendo.");
         btn.disabled = false;
         btn.textContent = "INGRESAR";
     }

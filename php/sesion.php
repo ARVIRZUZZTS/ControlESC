@@ -1,7 +1,7 @@
 <?php
 
-/* Sesiones y roles. El login vive contra Supabase (usuarios) y,
-   si no hay red, contra el espejo local (usuarios_rol). */
+/* Sesiones y roles. El login vive 100% contra el espejo local (usuarios_rol).
+   No toca Supabase. Solo admins tienen acceso. */
 
 function authSesionIniciada() {
     if (session_status() === PHP_SESSION_NONE) {
@@ -32,10 +32,12 @@ function authExigirAdmin() {
     }
 }
 
-/* Refresca el espejo local de credenciales para poder entrar sin internet */
+/* Refresca el espejo local de credenciales (solo admins) */
 function authUpsertEspejoLocal($nombre, $rol, $contrasena) {
     global $conexion;
     if (!$conexion) return;
+    // Solo admins se guardan en usuarios_rol
+    if ($rol !== 'admin') return;
     try {
         $stmt = $conexion->prepare(
             "INSERT INTO usuarios_rol (nombre, rol, contrasena) VALUES (?, ?, ?)
@@ -49,10 +51,11 @@ function authUpsertEspejoLocal($nombre, $rol, $contrasena) {
     }
 }
 
+/* Login 100% local contra usuarios_rol */
 function authLoginLocal($nombre, $contrasena) {
     global $conexion;
     if (!$conexion) {
-        throw new Exception("Sin conexion a Supabase y sin base local disponible. Conectate a internet al menos una vez.");
+        throw new Exception("Base local no disponible. Verifica que MySQL este corriendo.");
     }
     $stmt = $conexion->prepare("SELECT nombre, rol, contrasena FROM usuarios_rol WHERE nombre = ? LIMIT 1");
     $stmt->bind_param("s", $nombre);
@@ -62,7 +65,7 @@ function authLoginLocal($nombre, $contrasena) {
     $stmt->close();
 
     if (!$row || $row['contrasena'] === null || $contrasena !== $row['contrasena']) {
-        throw new Exception("Usuario o contrasena incorrectos (modo sin conexion).");
+        throw new Exception("Usuario o contrasena incorrectos.");
     }
     return [
         "nombre" => $row['nombre'],

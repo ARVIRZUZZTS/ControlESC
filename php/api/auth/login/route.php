@@ -1,8 +1,6 @@
-<?php
+﻿<?php
 require_once("../../../conexion.php");
-require_once("../../../supabase.php");
 require_once("../../../sesion.php");
-require_once("../../../sync.php");
 
 header('Content-Type: application/json');
 
@@ -22,43 +20,19 @@ try {
 
     authSesionIniciada();
 
-    $usuario = null;
-    $online = true;
-    try {
-        $fila = supabaseUsuarioPorNombre($nombre);
-        if (!$fila || $fila['contraseña'] !== $contrasena) {
-            http_response_code(401);
-            echo json_encode(["status" => "error", "message" => "Usuario o contrasena incorrectos."]);
-            exit;
-        }
-        if (($fila['estado'] ?? '') !== 'activo') {
-            http_response_code(403);
-            echo json_encode(["status" => "error", "message" => "El usuario esta inactivo."]);
-            exit;
-        }
-        $usuario = [
-            "id_usuario" => $fila['id_usuario'],
-            "nombre" => $fila['nombre'],
-            "rol" => supabaseRolDe($fila),
-            "sucursal" => $fila['sucursal']
-        ];
-    } catch (Exception $e) {
-        /* Sin red: se intenta con el espejo local */
-        $online = false;
-        $usuario = authLoginLocal($nombre, $contrasena);
+    // Login 100% local: solo compara contra usuarios_rol (solo admins)
+    $usuario = authLoginLocal($nombre, $contrasena);
+
+    // Verificar que sea admin
+    if ($usuario['rol'] !== 'admin') {
+        throw new Exception("No tiene acceso a esta plataforma.");
     }
 
     $_SESSION['usuario'] = $usuario;
 
-    if ($online) {
-        authUpsertEspejoLocal($usuario['nombre'], $usuario['rol'], $contrasena);
-        /* Apenas hay red se sube lo que quedó pendiente */
-        syncProcesar();
-    }
-
     echo json_encode([
         "status" => "success",
-        "message" => $online ? "Bienvenido" : "Bienvenido (sin conexion)",
+        "message" => "Bienvenido",
         "usuario" => $usuario
     ]);
 } catch (Exception $e) {
@@ -68,3 +42,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+$conexion->close();
+?>

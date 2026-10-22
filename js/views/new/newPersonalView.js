@@ -35,7 +35,7 @@ export async function newPersonalView() {
         </div>
         <div class="modal-fila">
             <label>Contraseña:</label>
-            <input type="text" id="neContrasena" value="" maxlength="50" placeholder="Contraseña">
+            <input type="text" id="neContrasena" value="" maxlength="20" placeholder="Contraseña">
         </div>
         <div class="modal-fila">
             <label>Mensual Bs. (opcional):</label>

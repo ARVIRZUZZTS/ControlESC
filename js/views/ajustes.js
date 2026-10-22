@@ -6,7 +6,6 @@ import { ubicacionesLlegadaView } from "./ajustes/ubicacionesLlegada.js";
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { marcasRuedasView } from "./marcas/ruedas.js";
 import { sucursalesView } from "./ajustes/sucursales.js";
-import { actualizarBadgeSuc } from "../sync.js";
 
 export function ajustesView() {
     const cont = document.getElementById("contDin");
@@ -24,7 +23,7 @@ export function ajustesView() {
             <div class="ajustesRow">
                 <button id="ajMarcaAceite" class="ajustesBtn">MARCA ACEITE</button>
                 <button id="ajMarcaRueda" class="ajustesBtn">MARCA RUEDA</button>
-                <button id="ajSucursales" class="ajustesBtn">SUCURSALES<span id="syncBadgeSuc" class="syncBadge"></span></button>
+                <button id="ajSucursales" class="ajustesBtn">SUCURSALES</button>
             </div>
             <div class="ajustesRow center">
                 <button id="ajDiesel" class="ajustesBtn">DIESEL</button>
@@ -42,6 +41,6 @@ export function ajustesView() {
     document.getElementById("ajDiesel").addEventListener("click", dieselView);
     document.getElementById("ajUbicacionLlegada").addEventListener("click", ubicacionesLlegadaView);
 
-    actualizarBadgeSuc();
 }    
+
 

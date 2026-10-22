@@ -1,7 +1,7 @@
 <?php
 require_once("../../../conexion.php");
 require_once("../../../supabase.php");
-require_once("../../../sync.php");
+require_once("../../../sesion.php");
 
 header('Content-Type: application/json');
 
@@ -11,18 +11,6 @@ try {
 
     if (!$data || !isset($data['personal']) || !is_array($data['personal']) || count($data['personal']) === 0) {
         throw new Exception("No se recibió personal para registrar.");
-    }
-
-    $sql = "INSERT INTO personal (nombre_apellido, id_te, mensual, total, fecha_contrato, estado, sucursal, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conexion->prepare($sql);
-    $hasNewFields = true;
-    if (!$stmt) {
-        $hasNewFields = false;
-        $sql = "INSERT INTO personal (nombre_apellido, id_te, mensual, total, fecha_contrato, estado) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conexion->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
-        }
     }
 
     $creados = [];
@@ -45,55 +33,71 @@ try {
         $estado = isset($emp['estado']) && in_array($emp['estado'], ['activo', 'inactivo'], true)
             ? $emp['estado']
             : 'activo';
-        $sucursal = isset($emp['sucursal']) ? intval($emp['sucursal']) : null;
+        $sucursal = isset($emp['sucursal']) && $emp['sucursal'] !== null ? intval($emp['sucursal']) : 3;
         $contrasena = isset($emp['contrasena']) ? $emp['contrasena'] : "";
 
-        if ($hasNewFields) {
-            $stmt->bind_param("siddssis", $nombre, $id_te, $mensual, $total, $fecha_contrato, $estado, $sucursal, $contrasena);
+        if ($contrasena === "") {
+            throw new Exception("La contraseña es obligatoria.");
+        }
+
+        // Get tipo_personal name for Supabase rol
+        $nombre_tipo = "";
+        if ($conexion) {
+            $stmtTipo = $conexion->prepare("SELECT nombre_tipo_personal FROM tipo_personal WHERE id_te = ? LIMIT 1");
+            $stmtTipo->bind_param("i", $id_te);
+            $stmtTipo->execute();
+            $resTipo = $stmtTipo->get_result();
+            $tipo = $resTipo->fetch_assoc();
+            $stmtTipo->close();
+            $nombre_tipo = $tipo ? $tipo['nombre_tipo_personal'] : "";
+        }
+
+        // Fuente de verdad: Supabase
+        $datosSupabase = [
+            'nombre' => $nombre,
+            'rol' => $nombre_tipo,
+            'estado' => $estado,
+            'sucursal' => $sucursal,
+            'contraseña' => $contrasena,
+            'sincronizado' => 1
+        ];
+
+        $creado = supabaseCrearUsuario($nombre, $nombre_tipo, $estado, $sucursal, $contrasena);
+        if (!$creado) {
+            throw new Exception("Supabase no devolvio el usuario creado.");
+        }
+
+        if (is_array($creado) && isset($creado[0]['id_usuario'])) {
+            $id_supabase = $creado[0]['id_usuario'];
+        } elseif (isset($creado['id_usuario'])) {
+            $id_supabase = $creado['id_usuario'];
         } else {
-            $stmt->bind_param("siddss", $nombre, $id_te, $mensual, $total, $fecha_contrato, $estado);
+            throw new Exception("Supabase no devolvio el id del usuario creado.");
         }
 
-        if (!$stmt->execute()) {
-            throw new Exception("Error al registrar el personal: " . $stmt->error);
-        }
-
-        $id_personal = $stmt->insert_id;
-
-        $sqlTipo = "SELECT nombre_tipo_personal FROM tipo_personal WHERE id_te = ? LIMIT 1";
-        $stmtTipo = $conexion->prepare($sqlTipo);
-        $stmtTipo->bind_param("i", $id_te);
-        $stmtTipo->execute();
-        $resTipo = $stmtTipo->get_result();
-        $tipo = $resTipo->fetch_assoc();
-        $stmtTipo->close();
-        $nombre_tipo = $tipo ? $tipo['nombre_tipo_personal'] : "";
-
+        // Replica local (best effort)
         try {
-            supabaseCrearUsuario($nombre, $nombre_tipo, $estado, $sucursal, $contrasena);
-        } catch (SupabaseOfflineException $e) {
-            /* Sin red: se encola para subir cuando vuelva la conexion */
-            syncEncolar('usuarios', 'insert', [
-                'id_usuario' => $id_personal,
-                'nombre' => $nombre,
-                'rol' => $nombre_tipo,
-                'estado' => $estado,
-                'sucursal' => $sucursal,
-                'contraseña' => $contrasena,
-                'sincronizado' => 1
-            ], $id_personal);
+            if ($conexion) {
+                $stmt = $conexion->prepare("INSERT INTO personal (id_personal, nombre_apellido, id_te, mensual, total, fecha_contrato, estado, sucursal, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("isiddssis", $id_supabase, $nombre, $id_te, $mensual, $total, $fecha_contrato, $estado, $sucursal, $contrasena);
+                $stmt->execute();
+                $stmt->close();
+            }
         } catch (Exception $e) {
-            error_log("Error Supabase al crear usuario: " . $e->getMessage());
+            error_log("Replica MySQL personal (crear) fallo: " . $e->getMessage());
+        }
+
+        // Solo admins se agregan al espejo local (usuarios_rol)
+        if ($nombre_tipo === 'admin') {
+            authUpsertEspejoLocal($nombre, $nombre_tipo, $contrasena);
         }
 
         $creados[] = [
-            "id_personal" => $id_personal,
+            "id_personal" => $id_supabase,
             "nombre_apellido" => $nombre,
             "id_te" => $id_te
         ];
     }
-
-    $stmt->close();
 
     echo json_encode([
         "status" => "success",
@@ -102,10 +106,11 @@ try {
     ]);
 
 } catch (Exception $e) {
-    http_response_code(500);
+    http_response_code(400);
     echo json_encode([
         "status" => "error",
         "message" => $e->getMessage()
     ]);
 }
 $conexion->close();
+?>

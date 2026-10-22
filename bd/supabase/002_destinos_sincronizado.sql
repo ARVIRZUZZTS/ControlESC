@@ -6,3 +6,4 @@
 ALTER TABLE public.destinos ADD COLUMN IF NOT EXISTS sincronizado int NOT NULL DEFAULT 1;
 
 UPDATE public.destinos SET sincronizado = 1 WHERE sincronizado IS NULL;
+ 
