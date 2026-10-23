@@ -1,7 +1,7 @@
-﻿import { flotasListView } from "../flotasListView.js";
+import { flotasListView } from "../flotasListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
-import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase } from "../../utils.js";
+import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase, flotaGradiente, colorTextoFlota } from "../../utils.js";
 import { cargarSeccionRuedasFlota } from "./ruedasFlota.js";
 
 export async function flota(placa) {
@@ -44,7 +44,7 @@ export async function flota(placa) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="pb t8"><span class="flota-color-dot" style="background:${dt.color2 && dt.color2 !== dt.color1 ? `linear-gradient(135deg, ${dt.color1}, ${dt.color2})` : (dt.color1 || '#6366f1')}"></span>${dt.placa}</td>
+                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span></td>
                         <td class="pb pm t10">${dt.propietario}</td>
                         <td class="pb pm t10">${dt.chofer1_nombre}</td>
                         <td class="pb pm t10">${dt.chofer2_nombre}</td>
@@ -136,6 +136,13 @@ async function editarFlota(placa) {
             <label>Color 2 (opcional):</label>
             <input type="color" id="edColor2" value="${dt.color2 || dt.color1 || '#6366f1'}">
         </div>
+        <div class="modal-fila">
+            <label><input type="checkbox" id="edColorTextoAuto" ${dt.color_texto ? '' : 'checked'}> Color de texto automático</label>
+        </div>
+        <div class="modal-fila" id="edColorTextoWrap" style="display:${dt.color_texto ? 'flex' : 'none'};">
+            <label>Color texto:</label>
+            <input type="color" id="edColorTexto" value="${dt.color_texto || '#ffffff'}">
+        </div>
     `;
 
     window.exePlacaFilter = (event) => placaFilter(event);
@@ -177,7 +184,8 @@ async function editarFlota(placa) {
                 id_fe: Number(nEstado),
                 id_u: u.tocado ? (Number(u.id) || 0) : origUbi,
                 color1: document.getElementById("edColor1").value,
-                color2: (document.getElementById("edColor2").value === document.getElementById("edColor1").value) ? '' : document.getElementById("edColor2").value
+                color2: (document.getElementById("edColor2").value === document.getElementById("edColor1").value) ? '' : document.getElementById("edColor2").value,
+                color_texto: document.getElementById("edColorTextoAuto").checked ? null : document.getElementById("edColorTexto").value
             };
 
             const res = await fetch("php/api/store/flotaEditar/route.php", {
@@ -216,6 +224,14 @@ async function editarFlota(placa) {
         valorActual: dt.ubicacion === 'Sin ubicacion' ? "" : dt.ubicacion,
         onCambio: null
     });
+    const autoCbEd = resultado.overlay.querySelector("#edColorTextoAuto");
+    const wrapEd = resultado.overlay.querySelector("#edColorTextoWrap");
+    if (autoCbEd && wrapEd) {
+        autoCbEd.addEventListener("change", () => {
+            wrapEd.style.display = autoCbEd.checked ? "none" : "flex";
+        });
+    }
 }
+
 
 

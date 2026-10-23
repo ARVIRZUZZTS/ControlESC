@@ -56,6 +56,13 @@ export async function newFlotaView() {
             <label>Color 2 (opcional):</label>
             <input type="color" id="nuColor2" value="#6366f1">
         </div>
+        <div class="modal-fila">
+            <label><input type="checkbox" id="nuColorTextoAuto" checked> Color de texto automático</label>
+        </div>
+        <div class="modal-fila" id="nuColorTextoWrap" style="display:none;">
+            <label>Color texto:</label>
+            <input type="color" id="nuColorTexto" value="#ffffff">
+        </div>
     `;
 
     window.exePlacaFilter = (event) => placaFilter(event);
@@ -148,7 +155,8 @@ export async function newFlotaView() {
                     id_fe: Number(nEstado),
                     id_u: u.tocado ? (Number(u.id) || 0) : 0,
                     color1: document.getElementById("nuColor1").value,
-                    color2: (document.getElementById("nuColor2").value === document.getElementById("nuColor1").value) ? '' : document.getElementById("nuColor2").value
+                    color2: (document.getElementById("nuColor2").value === document.getElementById("nuColor1").value) ? '' : document.getElementById("nuColor2").value,
+                    color_texto: document.getElementById("nuColorTextoAuto").checked ? null : document.getElementById("nuColorTexto").value
                 };
 
                 const res = await fetch("php/api/store/flotaNueva/route.php", {
@@ -190,4 +198,11 @@ export async function newFlotaView() {
         valorActual: "",
         onCambio: null
     });
+    const autoCbNu = resultado.overlay.querySelector("#nuColorTextoAuto");
+    const wrapNu = resultado.overlay.querySelector("#nuColorTextoWrap");
+    if (autoCbNu && wrapNu) {
+        autoCbNu.addEventListener("change", () => {
+            wrapNu.style.display = autoCbNu.checked ? "none" : "flex";
+        });
+    }
 }

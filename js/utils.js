@@ -125,12 +125,6 @@ export function fechaMask(event) {
 }
 
 /*------------ESTADO DEL ACEITE------------*/
-/* Color del badge con los viajes desde el ultimo cambio de aceite:
-     0 a 10  -> verde   (el aceite todavia aguanta)
-     11 a 14 -> amarillo (se esta acercando al cambio)
-     15 o mas -> rojo    (cambio urgente)
-   Son umbrales solo de presentacion. Los umbrales con los que el sistema
-   genera avisos son los de php/constantes.php (14 aviso / 17 cambio). */
 const UMBRAL_ACEITE_AMARILLO = 11;
 const UMBRAL_ACEITE_ROJO = 15;
 
@@ -139,4 +133,33 @@ export function estadoAceiteClase(viajes) {
     if (v >= UMBRAL_ACEITE_ROJO) return "estadoAceite-critico";
     if (v >= UMBRAL_ACEITE_AMARILLO) return "estadoAceite-cambio";
     return "estadoAceite-normal";
+}
+
+export function flotaGradiente(color1, color2) {
+    const c1 = color1 || "#6366f1";
+    const c2 = color2;
+    return (c2 && c2 !== c1) ? `linear-gradient(135deg, ${c1}, ${c2})` : c1;
+}
+
+export function colorTextoFlota(color1, color2, override) {
+    if (override && /^#[0-9a-fA-F]{6}$/.test(String(override).trim())) {
+        return String(override).trim();
+    }
+    function lum(hex) {
+        if (!hex || typeof hex !== "string") return 0;
+        const h = hex.replace("#", "");
+        if (h.length !== 6) return 0;
+        const r = parseInt(h.substring(0, 2), 16) / 255;
+        const g = parseInt(h.substring(2, 4), 16) / 255;
+        const b = parseInt(h.substring(4, 6), 16) / 255;
+        const toLin = (v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b);
+    }
+    const l1 = lum(color1 || "#6366f1");
+    const l2 = color2 ? lum(color2) : l1;
+    const maxL = Math.max(l1, l2);
+    const minL = Math.min(l1, l2);
+    const contrasteBlanco = (1.0 + 0.05) / (maxL + 0.05);
+    const contrasteNegro = (minL + 0.05) / 0.05;
+    return contrasteBlanco >= contrasteNegro ? "#ffffff" : "#000000";
 }

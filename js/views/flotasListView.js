@@ -1,5 +1,6 @@
 import { flota } from "./entitie/flota.js";
 import { newFlotaView } from "./new/newFlotasView.js";
+import { flotaGradiente, colorTextoFlota } from "../utils.js";
 
 export async function flotasListView() {
 
@@ -44,7 +45,7 @@ export async function flotasListView() {
         data.forEach(flota => {
             html += `
                 <tr>
-                    <td class="pb t8"><span class="flota-color-dot" style="background:${flota.color2 && flota.color2 !== flota.color1 ? `linear-gradient(135deg, ${flota.color1}, ${flota.color2})` : (flota.color1 || '#6366f1')}"></span>${flota.placa}</td>
+                    <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></td>
                     <td class="pb pm t10">${flota.propietario}</td>
                     <td class="pb pm t10">${flota.chofer1}</td>
                     <td class="pb pm t10">${flota.chofer2}</td>

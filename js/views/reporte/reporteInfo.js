@@ -1,5 +1,5 @@
-﻿import { reportesView } from "../reportesView.js";
-import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter } from "../../utils.js";
+import { reportesView } from "../reportesView.js";
+import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter, flotaGradiente, colorTextoFlota } from "../../utils.js";
 import { crearCampoFecha } from "../../components/fechaCampo.js";
 import { historialReporteView } from "./historialReporte.js";
 import { imprimirParte } from "./imprimirReporte.js";
@@ -77,7 +77,7 @@ export async function reporteViaje(placa) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2>Reporte de ${flota.placa}</h2>
+                <h2>Reporte de <span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
@@ -168,7 +168,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                     <span>Dia:</span>
                     <span id="diaLlegada" class="rep-dia">-</span>
                     <span>Placa:</span>
-                    <strong>${flota.placa}</strong>
+                    <strong><span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></strong>
                 </div>
             </div>
 
@@ -842,6 +842,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
         console.error(error);
     }
 }
+
 
 
 

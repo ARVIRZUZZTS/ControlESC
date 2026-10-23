@@ -12,6 +12,7 @@ try {
 
     $sqlFlota = "SELECT f.placa, f.id_fe, f.id_destino AS id_u,
                         f.viajes, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite,
+                        f.color1, f.color2, f.color_texto,
                         COALESCE(fe.nombre_estado_flota, 'Sin estado') AS estado,
                         COALESCE(u.nombre_destino, 'Sin ubicacion') AS ubicacion
                  FROM flota f

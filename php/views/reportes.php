@@ -5,11 +5,12 @@ header('Content-Type: application/json');
 
 try {
     $sql = "SELECT f.placa,
-                   IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado,
-                   IFNULL(u.nombre_destino, 'Sin ubicacion') AS ubicacion,
-                   f.id_fe, f.id_destino AS id_u,
-                   r.id_reporte, r.estado AS estado_reporte, r.fecha_partida,
-                   (SELECT COUNT(*) FROM reporte rt WHERE rt.placa = f.placa AND rt.estado = 'Finalizado') AS finalizados
+                    IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado,
+                    IFNULL(u.nombre_destino, 'Sin ubicacion') AS ubicacion,
+                    f.id_fe, f.id_destino AS id_u,
+                    r.id_reporte, r.estado AS estado_reporte, r.fecha_partida,
+                    f.color1, f.color2, f.color_texto,
+                    (SELECT COUNT(*) FROM reporte rt WHERE rt.placa = f.placa AND rt.estado = 'Finalizado') AS finalizados
             FROM flota f
             LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
             LEFT JOIN destinos u ON u.id = f.id_destino

@@ -22,17 +22,20 @@ try {
     $id_u = (int)($data['id_u'] ?? 0);
     $color1 = isset($data['color1']) ? trim($data['color1']) : '';
     $color2 = isset($data['color2']) ? trim($data['color2']) : '';
+    $color_texto = isset($data['color_texto']) ? trim($data['color_texto']) : '';
     if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color1)) { $color1 = '#6366f1'; }
     if ($color2 !== '' && !preg_match('/^#[0-9a-fA-F]{6}$/', $color2)) { $color2 = ''; }
     if ($color2 === '') { $color2 = null; }
+    if ($color_texto !== '' && !preg_match('/^#[0-9a-fA-F]{6}$/', $color_texto)) { $color_texto = ''; }
+    if ($color_texto === '') { $color_texto = null; }
 
-    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_destino = ?, color1 = ?, color2 = ? WHERE placa = ?";
+    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_destino = ?, color1 = ?, color2 = ?, color_texto = ? WHERE placa = ?";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("siiiisss",
+    $stmt->bind_param("siiiissss",
         $propietario,
         $chofer1,
         $chofer2,
@@ -40,6 +43,7 @@ try {
         $id_u,
         $color1,
         $color2,
+        $color_texto,
         $data['placa']
     );
 

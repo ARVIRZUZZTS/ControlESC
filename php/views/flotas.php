@@ -4,7 +4,7 @@ require_once("../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT f.placa, f.propietario, IFNULL(p1.nombre_apellido, 'Sin Asignar') AS chofer1, IFNULL(p2.nombre_apellido, 'Sin Asignar') AS chofer2, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado, IFNULL(u.nombre_destino, 'Sin ubicacion') AS ubicacion, f.viajes, f.color1, f.color2
+    $sql = "SELECT f.placa, f.propietario, IFNULL(p1.nombre_apellido, 'Sin Asignar') AS chofer1, IFNULL(p2.nombre_apellido, 'Sin Asignar') AS chofer2, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado, IFNULL(u.nombre_destino, 'Sin ubicacion') AS ubicacion, f.viajes, f.color1, f.color2, f.color_texto
             FROM flota f
             LEFT JOIN personal p1 ON p1.id_personal = f.chofer1
             LEFT JOIN personal p2 ON p2.id_personal = f.chofer2

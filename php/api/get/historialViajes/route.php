@@ -17,7 +17,7 @@ try {
 
     $sql = "SELECT r.id_reporte, r.placa, r.estado, r.fecha_partida, r.fecha_retorno, r.fecha_llegada,
                     r.ubicacion_retorno, r.ubicacion_llegada, r.viajes,
-                    f.color1, f.color2
+                    f.color1, f.color2, f.color_texto
              FROM reporte r
              LEFT JOIN flota f ON f.placa = r.placa
              WHERE (r.fecha_partida BETWEEN ? AND ?)

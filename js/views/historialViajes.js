@@ -143,7 +143,7 @@ export async function historialViajesView() {
                             const c1 = ev.reporte?.color1 || '#6366f1';
                             const c2 = ev.reporte?.color2;
                             const grad = c2 && c2 !== c1 ? `linear-gradient(135deg, ${c1}, ${c2})` : c1;
-                            const txt = colorTextoFlota(c1, c2);
+                            const txt = colorTextoFlota(c1, c2, ev.reporte?.color_texto);
                             const extra = ev.tipo === "estimado" ? 'border:1px dashed var(--accent);font-style:italic;' : '';
                             return `<div class="hist-evento" style="background:${grad};color:${txt};${extra};text-shadow:0 0 2px rgba(0,0,0,0.6),0 0 2px rgba(255,255,255,0.6);font-weight:bold;">${label}: ${ev.placa}</div>`;
                         }).join("")}
@@ -215,7 +215,10 @@ function luminanciaHex(hex) {
     return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b);
 }
 
-function colorTextoFlota(c1, c2) {
+function colorTextoFlota(c1, c2, override) {
+    if (override && /^#[0-9a-fA-F]{6}$/.test(String(override).trim())) {
+        return String(override).trim();
+    }
     const l1 = luminanciaHex(c1);
     const l2 = c2 ? luminanciaHex(c2) : l1;
     const maxL = Math.max(l1, l2);

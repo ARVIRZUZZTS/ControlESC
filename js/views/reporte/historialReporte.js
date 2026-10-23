@@ -1,4 +1,4 @@
-import { fechaISOToDMY, estadoAceiteClase } from "../../utils.js";
+import { fechaISOToDMY, estadoAceiteClase, flotaGradiente, colorTextoFlota } from "../../utils.js";
 import { reportesView } from "../reportesView.js";
 import { abrirHojaImpresion, imprimirParte, datosDesdeReporte } from "./imprimirReporte.js";
 import { reporteFinalizadoView } from "./reporteFinalizadoView.js";
@@ -73,6 +73,11 @@ export async function historialReporteView({ placa, onBack = reportesView } = {}
 
         const reportes = data.reportes || [];
         const flota = data.flota;
+
+        const h2Hist = title.querySelector("h2");
+        if (h2Hist && flota) {
+            h2Hist.innerHTML = `HISTORIAL de <span class="placa-badge" style="background:${flota ? flotaGradiente(flota.color1, flota.color2) : '#6366f1'};color:${flota ? colorTextoFlota(flota.color1, flota.color2, flota.color_texto) : '#ffffff'}">${esc(placa)}</span>`;
+        }
 
         cont.innerHTML = `
             <div class="hist-cabecera">
@@ -160,3 +165,4 @@ async function imprimirDesdeHistorial(btn) {
         btn.disabled = false;
     }
 }
+

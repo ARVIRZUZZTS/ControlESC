@@ -36,7 +36,7 @@ try {
     }
     $stmt->close();
 
-    $sqlF = "SELECT placa, viajes, viajes_aceite, aceite_actual, capacidad_aceite
+    $sqlF = "SELECT placa, viajes, viajes_aceite, aceite_actual, capacidad_aceite, color1, color2, color_texto
              FROM flota WHERE placa = ?";
     $stmtF = $conexion->prepare($sqlF);
     if ($stmtF) {

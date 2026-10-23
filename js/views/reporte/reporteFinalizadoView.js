@@ -1,4 +1,4 @@
-import { fechaISOToDMY } from "../../utils.js";
+import { fechaISOToDMY, flotaGradiente, colorTextoFlota } from "../../utils.js";
 import { diaDeFechaISO } from "../../components/fechaCampo.js";
 import { abrirHojaImpresion, imprimirParte, datosDesdeReporte } from "./imprimirReporte.js";
 import { abrirAlert } from "../../components/modal.js";
@@ -104,7 +104,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2>Reporte #${esc(rep.id_reporte)} - ${esc(rep.placa)}</h2>
+                <h2>Reporte #${esc(rep.id_reporte)} - <span class="placa-badge" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
@@ -158,7 +158,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
                     <span>Dia:</span>
                     <span class="rep-dia">${esc(diaDeFechaISO(rep.fecha_llegada))}</span>
                     <span>Placa:</span>
-                    <strong>${esc(rep.placa)}</strong>
+                    <strong><span class="placa-badge" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></strong>
                 </div>
             </div>
 
@@ -221,3 +221,4 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
         }
     }
 }
+
