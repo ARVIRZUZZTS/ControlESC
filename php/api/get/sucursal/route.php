@@ -5,35 +5,48 @@ require_once("../../../supabase.php");
 header('Content-Type: application/json');
 
 $sucursales = [];
-$origen = "supabase";
+$origen = "local";
 
+// Si hay red, sincronizar espejo local desde Supabase
+$remotas = null;
 try {
-    $filas = supabaseSucursalListar();
-    foreach ($filas as $s) {
-        $sucursales[] = [
-            "id_sucursal" => (int)$s['id_sucursal'],
-            "nombre" => $s['nombre']
-        ];
-    }
+    $remotas = supabaseSucursalListar();
 } catch (Exception $e) {
-    /* Sin red: se lee del espejo local */
-    $origen = "local";
-    if ($conexion) {
-        try {
-            $res = $conexion->query("SELECT id_sucursal, nombre FROM sucursal ORDER BY id_sucursal ASC");
-            while ($row = $res->fetch_assoc()) {
-                $sucursales[] = [
-                    "id_sucursal" => (int)$row['id_sucursal'],
-                    "nombre" => $row['nombre']
-                ];
+    $remotas = null;
+}
+
+if (is_array($remotas)) {
+    $origen = "supabase";
+    foreach ($remotas as $s) {
+        $id = (string)($s['id_sucursal'] ?? $s['id'] ?? '');
+        $nombre = $s['nombre'] ?? '';
+        if ($id === '') continue;
+        if ($conexion) {
+            $stmt = $conexion->prepare("INSERT INTO sucursal (id_sucursal, nombre) VALUES (?, ?) ON DUPLICATE KEY UPDATE nombre = VALUES(nombre)");
+            if ($stmt) {
+                $stmt->bind_param("ss", $id, $nombre);
+                $stmt->execute();
+                $stmt->close();
             }
-        } catch (Exception $e2) {
-            echo json_encode([
-                "status" => "error",
-                "message" => "Error al cargar sucursales: " . $e2->getMessage()
-            ]);
-            exit;
         }
+    }
+}
+
+if ($conexion) {
+    try {
+        $res = $conexion->query("SELECT id_sucursal, nombre FROM sucursal ORDER BY id_sucursal ASC");
+        while ($row = $res->fetch_assoc()) {
+            $sucursales[] = [
+                "id_sucursal" => (int)$row['id_sucursal'],
+                "nombre" => $row['nombre']
+            ];
+        }
+    } catch (Exception $e2) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Error al cargar sucursales: " . $e2->getMessage()
+        ]);
+        exit;
     }
 }
 
@@ -43,3 +56,5 @@ echo json_encode([
     "origen" => $origen,
     "data" => $sucursales
 ]);
+if ($conexion) $conexion->close();
+?>

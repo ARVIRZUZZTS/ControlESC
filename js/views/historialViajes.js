@@ -136,12 +136,16 @@ export async function historialViajesView() {
                     <div class="hist-dia-eventos">
                         ${eventos.length === 0 ? '<span class="hist-sin-eventos">-</span>' : eventos.map(ev => {
                             let label = "";
-                            let clase = "";
-                            if (ev.tipo === "partio") { label = "Partió"; clase = "hist-ev-partio"; }
-                            else if (ev.tipo === "llego") { label = "Llegó"; clase = "hist-ev-llego"; }
-                            else if (ev.tipo === "retorno") { label = "Retornó"; clase = "hist-ev-retorno"; }
-                            else if (ev.tipo === "estimado") { label = "Llegada Est."; clase = "hist-ev-estimado"; }
-                            return `<div class="hist-evento ${clase}">${label}: ${ev.placa}</div>`;
+                            if (ev.tipo === "partio") { label = "Partió"; }
+                            else if (ev.tipo === "llego") { label = "Llegó"; }
+                            else if (ev.tipo === "retorno") { label = "Retornó"; }
+                            else if (ev.tipo === "estimado") { label = "Llegada Est."; }
+                            const c1 = ev.reporte?.color1 || '#6366f1';
+                            const c2 = ev.reporte?.color2;
+                            const grad = c2 && c2 !== c1 ? `linear-gradient(135deg, ${c1}, ${c2})` : c1;
+                            const txt = colorTextoFlota(c1, c2);
+                            const extra = ev.tipo === "estimado" ? 'border:1px dashed var(--accent);font-style:italic;' : '';
+                            return `<div class="hist-evento" style="background:${grad};color:${txt};${extra};text-shadow:0 0 2px rgba(0,0,0,0.6),0 0 2px rgba(255,255,255,0.6);font-weight:bold;">${label}: ${ev.placa}</div>`;
                         }).join("")}
                     </div>
                 </div>
@@ -198,4 +202,27 @@ export async function historialViajesView() {
         const day = String(d.getDate()).padStart(2, "0");
         return `${y}-${m}-${day}`;
     }
+}
+
+function luminanciaHex(hex) {
+    if (!hex || typeof hex !== "string") return 0;
+    const h = hex.replace("#", "");
+    if (h.length !== 6) return 0;
+    const r = parseInt(h.substring(0, 2), 16) / 255;
+    const g = parseInt(h.substring(2, 4), 16) / 255;
+    const b = parseInt(h.substring(4, 6), 16) / 255;
+    const toLin = (v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b);
+}
+
+function colorTextoFlota(c1, c2) {
+    const l1 = luminanciaHex(c1);
+    const l2 = c2 ? luminanciaHex(c2) : l1;
+    const maxL = Math.max(l1, l2);
+    const minL = Math.min(l1, l2);
+    // contraste minimo para texto blanco vs parte mas clara
+    const contrasteBlanco = (1.0 + 0.05) / (maxL + 0.05);
+    // contraste minimo para texto negro vs parte mas oscura
+    const contrasteNegro = (minL + 0.05) / (0.0 + 0.05);
+    return contrasteBlanco >= contrasteNegro ? "#ffffff" : "#000000";
 }

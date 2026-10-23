@@ -1493,10 +1493,13 @@ textarea {
     color: var(--text-dark);
     font-style: italic;
 }
-.hist-sin-eventos {
-    font-size: 1.8vh;
-    color: var(--text-dark);
-    opacity: 0.5;
-    text-align: center;
+.flota-color-dot {
+    display: inline-block;
+    width: 1.2vh;
+    height: 1.2vh;
+    border-radius: 50%;
+    margin-right: 0.4vh;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.2);
 }
 

@@ -126,6 +126,11 @@ export async function newPersonalView() {
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
+                if (result.status === "offline") {
+                    if (btnAc) { btnAc.disabled = false; btnAc.style.opacity = ""; btnAc.style.cursor = ""; }
+                    abrirAlert({ mensaje: "Necesita conexion a internet." });
+                    return;
+                }
                 if (result.status !== "success") {
                     if(btnAc){ btnAc.disabled=false; btnAc.style.opacity=""; btnAc.style.cursor=""; }
                     abrirAlert({ mensaje: "Error al guardar: " + result.message });
@@ -134,8 +139,8 @@ export async function newPersonalView() {
                 cerrar();
                 personalListView();
             } catch (error) {
-                if(btnAc){ btnAc.disabled=false; btnAc.style.opacity=""; btnAc.style.cursor=""; }
-                abrirAlert({ mensaje: "Error al guardar el personal." });
+                if (btnAc) { btnAc.disabled = false; btnAc.style.opacity = ""; btnAc.style.cursor = ""; }
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
             }
         }
     });

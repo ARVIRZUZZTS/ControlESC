@@ -48,6 +48,14 @@ export async function newFlotaView() {
             <label>Ubicacion:</label>
             <input type="text" id="nuUbicacion" value="" autocomplete="off" placeholder="Seleccione o escriba">
         </div>
+        <div class="modal-fila">
+            <label>Color 1:</label>
+            <input type="color" id="nuColor1" value="#6366f1">
+        </div>
+        <div class="modal-fila">
+            <label>Color 2 (opcional):</label>
+            <input type="color" id="nuColor2" value="#6366f1">
+        </div>
     `;
 
     window.exePlacaFilter = (event) => placaFilter(event);
@@ -138,7 +146,9 @@ export async function newFlotaView() {
                     chofer1: chofer1Id || 0,
                     chofer2: chofer2Id || 0,
                     id_fe: Number(nEstado),
-                    id_u: u.tocado ? (Number(u.id) || 0) : 0
+                    id_u: u.tocado ? (Number(u.id) || 0) : 0,
+                    color1: document.getElementById("nuColor1").value,
+                    color2: (document.getElementById("nuColor2").value === document.getElementById("nuColor1").value) ? '' : document.getElementById("nuColor2").value
                 };
 
                 const res = await fetch("php/api/store/flotaNueva/route.php", {

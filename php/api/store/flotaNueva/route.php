@@ -17,6 +17,11 @@ try {
     $chofer2 = isset($data['chofer2']) ? intval($data['chofer2']) : 0;
     $id_fe = isset($data['id_fe']) ? intval($data['id_fe']) : 0;
     $id_u = isset($data['id_u']) ? intval($data['id_u']) : 0;
+    $color1 = isset($data['color1']) ? trim($data['color1']) : '#6366f1';
+    $color2 = isset($data['color2']) ? trim($data['color2']) : '';
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color1)) { $color1 = '#6366f1'; }
+    if ($color2 !== '' && !preg_match('/^#[0-9a-fA-F]{6}$/', $color2)) { $color2 = ''; }
+    if ($color2 === '') { $color2 = null; }
 
     if (!preg_match('/^\d{3,5}-[A-Z]{3}$/', $placa)) {
         throw new Exception("Placa invalida. Formato: 3-5 numeros, guion y 3 letras (ej: 3056-EAY)");
@@ -32,13 +37,13 @@ try {
     }
     $stmt->close();
 
-    $sql = "INSERT INTO flota (placa, propietario, chofer1, chofer2, id_fe, id_destino, viajes) VALUES (?,?,?,?,?,?,0)";
+    $sql = "INSERT INTO flota (placa, propietario, chofer1, chofer2, id_fe, id_destino, viajes, color1, color2) VALUES (?,?,?,?,?,?,0,?,?)";
     $stmt = $conexion->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
     }
 
-    $stmt->bind_param("ssiiii", $placa, $propietario, $chofer1, $chofer2, $id_fe, $id_u);
+    $stmt->bind_param("ssiiisss", $placa, $propietario, $chofer1, $chofer2, $id_fe, $id_u, $color1, $color2);
 
     if (!$stmt->execute()) {
         throw new Exception("Error al guardar la flota: " . $stmt->error);

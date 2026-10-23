@@ -203,17 +203,21 @@ function newDestinoModal(destino, onSave) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-            const result = await res.json();
-            if (result.status === "success") {
+                const result = await res.json();
+                if (result.status === "offline") {
+                    abrirAlert({ mensaje: "Necesita conexion a internet." });
+                    return;
+                }
+                if (result.status === "success") {
                 resultado.cerrar();
                 showToast({ type: "success", title: "Guardado", description: result.message });
                 onSave();
             } else {
                 showToast({ type: "error", title: "Error", description: result.message });
             }
-        } catch (error) {
-            showToast({ type: "error", title: "Error", description: "Error al guardar el destino." });
-        }
+            } catch (error) {
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
+            }
     });
 }
 
@@ -227,8 +231,12 @@ function eliminarDestino(id) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: id })
             });
-            const result = await res.json();
-            if (result.status === "success") {
+                const result = await res.json();
+                if (result.status === "offline") {
+                    abrirAlert({ mensaje: "Necesita conexion a internet." });
+                    return;
+                }
+                if (result.status === "success") {
                 showToast({ type: "success", title: "Eliminado", description: result.message });
                 destinosView();
             } else {

@@ -128,6 +128,10 @@ function newSucursalModal(sucursal, onSave) {
                 body: JSON.stringify(payload)
             });
             const result = await res.json();
+            if (result.status === "offline") {
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
+                return;
+            }
             if (result.status === "success") {
                 resultado.cerrar();
                 showToast({ type: "success", title: "Guardado", description: result.message });
@@ -136,7 +140,7 @@ function newSucursalModal(sucursal, onSave) {
                 showToast({ type: "error", title: "Error", description: result.message });
             }
         } catch (error) {
-            showToast({ type: "error", title: "Error", description: "Error al guardar la sucursal." });
+            abrirAlert({ mensaje: "Necesita conexion a internet." });
         }
     });
 }
@@ -152,6 +156,10 @@ function eliminarSucursal(id_sucursal) {
                 body: JSON.stringify({ id_sucursal: id_sucursal })
             });
             const result = await res.json();
+            if (result.status === "offline") {
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
+                return;
+            }
             if (result.status === "success") {
                 showToast({ type: "success", title: "Eliminado", description: result.message });
                 sucursalesView();

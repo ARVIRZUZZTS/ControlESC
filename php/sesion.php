@@ -1,6 +1,6 @@
 <?php
 
-/* Sesiones y roles. El login vive 100% contra el espejo local (usuarios_rol).
+/* Sesiones y roles. El login vive 100% contra el espejo local (usuarios_acceso).
    No toca Supabase. Solo admins tienen acceso. */
 
 function authSesionIniciada() {
@@ -36,18 +36,18 @@ function authExigirAdmin() {
 function authUpsertEspejoLocal($nombre, $rol, $contrasena, $ubicacion_actual = null) {
     global $conexion;
     if (!$conexion) return;
-    // Solo admins se guardan en usuarios_rol
+    // Solo admins se guardan en usuarios_acceso
     if ($rol !== 'admin') return;
     try {
         if ($ubicacion_actual !== null) {
             $stmt = $conexion->prepare(
-                "INSERT INTO usuarios_rol (nombre, rol, contrasena, ubicacion_actual) VALUES (?, ?, ?, ?)
+                "INSERT INTO usuarios_acceso (nombre, rol, contrasena, ubicacion_actual) VALUES (?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE rol = ?, contrasena = ?, ubicacion_actual = ?"
             );
             $stmt->bind_param("sssssss", $nombre, $rol, $contrasena, $ubicacion_actual, $rol, $contrasena, $ubicacion_actual);
         } else {
             $stmt = $conexion->prepare(
-                "INSERT INTO usuarios_rol (nombre, rol, contrasena) VALUES (?, ?, ?)
+                "INSERT INTO usuarios_acceso (nombre, rol, contrasena) VALUES (?, ?, ?)
                  ON DUPLICATE KEY UPDATE rol = ?, contrasena = ?"
             );
             $stmt->bind_param("sssss", $nombre, $rol, $contrasena, $rol, $contrasena);
@@ -59,13 +59,13 @@ function authUpsertEspejoLocal($nombre, $rol, $contrasena, $ubicacion_actual = n
     }
 }
 
-/* Login 100% local contra usuarios_rol */
+/* Login 100% local contra usuarios_acceso */
 function authLoginLocal($nombre, $contrasena) {
     global $conexion;
     if (!$conexion) {
         throw new Exception("Base local no disponible. Verifica que MySQL este corriendo.");
     }
-    $stmt = $conexion->prepare("SELECT nombre, rol, contrasena FROM usuarios_rol WHERE nombre = ? LIMIT 1");
+    $stmt = $conexion->prepare("SELECT nombre, rol, contrasena FROM usuarios_acceso WHERE nombre = ? LIMIT 1");
     $stmt->bind_param("s", $nombre);
     $stmt->execute();
     $res = $stmt->get_result();

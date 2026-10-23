@@ -87,7 +87,7 @@ try {
             error_log("Replica MySQL personal (crear) fallo: " . $e->getMessage());
         }
 
-        // Solo admins se agregan al espejo local (usuarios_rol)
+        // Solo admins se agregan al espejo local (usuarios_acceso)
         if ($nombre_tipo === 'admin') {
             authUpsertEspejoLocal($nombre, $nombre_tipo, $contrasena);
         }
@@ -106,11 +106,19 @@ try {
     ]);
 
 } catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => $e->getMessage()
-    ]);
+    if ($e instanceof SupabaseOfflineException) {
+        http_response_code(200);
+        echo json_encode([
+            "status" => "offline",
+            "message" => "Necesita conexion a internet."
+        ]);
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "status" => "error",
+            "message" => $e->getMessage()
+        ]);
+    }
 }
 $conexion->close();
 ?>

@@ -15,24 +15,31 @@ try {
         throw new Exception("La placa es obligatoria.");
     }
 
-    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_destino = ? WHERE placa = ?";
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
-    }
-
     $propietario = $data['propietario'] ?? '';
     $chofer1 = (int)($data['chofer1'] ?? 0);
     $chofer2 = (int)($data['chofer2'] ?? 0);
     $id_fe = (int)($data['id_fe'] ?? 0);
     $id_u = (int)($data['id_u'] ?? 0);
+    $color1 = isset($data['color1']) ? trim($data['color1']) : '';
+    $color2 = isset($data['color2']) ? trim($data['color2']) : '';
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color1)) { $color1 = '#6366f1'; }
+    if ($color2 !== '' && !preg_match('/^#[0-9a-fA-F]{6}$/', $color2)) { $color2 = ''; }
+    if ($color2 === '') { $color2 = null; }
 
-    $stmt->bind_param("siiiis",
+    $sql = "UPDATE flota SET propietario = ?, chofer1 = ?, chofer2 = ?, id_fe = ?, id_destino = ?, color1 = ?, color2 = ? WHERE placa = ?";
+    $stmt = $conexion->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Error en la preparacion de la consulta: " . $conexion->error);
+    }
+
+    $stmt->bind_param("siiiisss",
         $propietario,
         $chofer1,
         $chofer2,
         $id_fe,
         $id_u,
+        $color1,
+        $color2,
         $data['placa']
     );
 

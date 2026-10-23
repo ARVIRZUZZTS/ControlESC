@@ -243,7 +243,9 @@ CREATE TABLE `flota` (
   `viajes` int(11) DEFAULT NULL,
   `viajes_aceite` int(11) NOT NULL,
   `capacidad_aceite` decimal(10,3) NOT NULL DEFAULT 0.000,
-  `aceite_actual` decimal(10,3) NOT NULL DEFAULT 0.000
+  `aceite_actual` decimal(10,3) NOT NULL DEFAULT 0.000,
+  `color1` varchar(7) DEFAULT '#6366f1',
+  `color2` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

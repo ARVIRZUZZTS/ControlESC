@@ -8,6 +8,25 @@ $destinos = [];
 
 try {
     $filas = supabaseDestinoListar();
+    // Upsert local (preservando precio_peaje)
+    if ($conexion) {
+        foreach ($filas as $d) {
+            $id = (string)($d['id'] ?? '');
+            if ($id === '') continue;
+            $nombre = $d['nombre_destino'] ?? '';
+            $tiene = !empty($d['tiene_tramos']) ? 1 : 0;
+            $suc = isset($d['sucursal']) && $d['sucursal'] !== null ? (string)$d['sucursal'] : null;
+            $abrev = $d['abrev'] ?? null;
+            $info = $d['informacion'] ?? null;
+            $tel = $d['telefono'] ?? null;
+            $stmt = $conexion->prepare("INSERT INTO destinos (id, nombre_destino, tiene_tramos, sucursal, abrev, informacion, telefono) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nombre_destino = VALUES(nombre_destino), tiene_tramos = VALUES(tiene_tramos), sucursal = VALUES(sucursal), abrev = VALUES(abrev), informacion = VALUES(informacion), telefono = VALUES(telefono)");
+            if ($stmt) {
+                $stmt->bind_param("ssissss", $id, $nombre, $tiene, $suc, $abrev, $info, $tel);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+    }
     // Obtener precio_peaje local para cada destino (campo local-only)
     $precioMap = [];
     if ($conexion) {

@@ -16,9 +16,11 @@ try {
     }
 
     $sql = "SELECT r.id_reporte, r.placa, r.estado, r.fecha_partida, r.fecha_retorno, r.fecha_llegada,
-                   r.ubicacion_retorno, r.ubicacion_llegada, r.viajes
-            FROM reporte r
-            WHERE (r.fecha_partida BETWEEN ? AND ?)
+                    r.ubicacion_retorno, r.ubicacion_llegada, r.viajes,
+                    f.color1, f.color2
+             FROM reporte r
+             LEFT JOIN flota f ON f.placa = r.placa
+             WHERE (r.fecha_partida BETWEEN ? AND ?)
                OR (r.fecha_retorno BETWEEN ? AND ?)
                OR (r.fecha_llegada BETWEEN ? AND ?)
             ORDER BY r.fecha_partida ASC, r.id_reporte ASC";

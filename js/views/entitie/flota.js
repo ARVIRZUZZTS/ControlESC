@@ -44,7 +44,7 @@ export async function flota(placa) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="pb t8">${dt.placa}</td>
+                        <td class="pb t8"><span class="flota-color-dot" style="background:${dt.color2 && dt.color2 !== dt.color1 ? `linear-gradient(135deg, ${dt.color1}, ${dt.color2})` : (dt.color1 || '#6366f1')}"></span>${dt.placa}</td>
                         <td class="pb pm t10">${dt.propietario}</td>
                         <td class="pb pm t10">${dt.chofer1_nombre}</td>
                         <td class="pb pm t10">${dt.chofer2_nombre}</td>
@@ -128,6 +128,14 @@ async function editarFlota(placa) {
             <label>Ubicacion:</label>
             <input type="text" id="edUbicacion" value="" autocomplete="off" placeholder="${dt.ubicacion === 'Sin ubicacion' ? '' : dt.ubicacion}">
         </div>
+        <div class="modal-fila">
+            <label>Color 1:</label>
+            <input type="color" id="edColor1" value="${dt.color1 || '#6366f1'}">
+        </div>
+        <div class="modal-fila">
+            <label>Color 2 (opcional):</label>
+            <input type="color" id="edColor2" value="${dt.color2 || dt.color1 || '#6366f1'}">
+        </div>
     `;
 
     window.exePlacaFilter = (event) => placaFilter(event);
@@ -167,7 +175,9 @@ async function editarFlota(placa) {
                 chofer1: c1.tocado ? (Number(c1.id) || 0) : origChofer1,
                 chofer2: c2.tocado ? (Number(c2.id) || 0) : origChofer2,
                 id_fe: Number(nEstado),
-                id_u: u.tocado ? (Number(u.id) || 0) : origUbi
+                id_u: u.tocado ? (Number(u.id) || 0) : origUbi,
+                color1: document.getElementById("edColor1").value,
+                color2: (document.getElementById("edColor2").value === document.getElementById("edColor1").value) ? '' : document.getElementById("edColor2").value
             };
 
             const res = await fetch("php/api/store/flotaEditar/route.php", {

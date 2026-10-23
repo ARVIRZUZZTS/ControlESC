@@ -66,11 +66,19 @@ try {
         "message" => "Destino actualizado correctamente"
     ]);
 } catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => $e->getMessage()
-    ]);
+    if ($e instanceof SupabaseOfflineException) {
+        http_response_code(200);
+        echo json_encode([
+            "status" => "offline",
+            "message" => "Necesita conexion a internet."
+        ]);
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "status" => "error",
+            "message" => $e->getMessage()
+        ]);
+    }
 }
 $conexion->close();
 ?>

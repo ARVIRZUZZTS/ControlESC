@@ -9,6 +9,19 @@ $origen = "supabase";
 
 try {
     $filas = supabaseSucursalListar();
+    if ($conexion) {
+        foreach ($filas as $s) {
+            $id = (string)($s['id_sucursal'] ?? $s['id'] ?? '');
+            $nombre = $s['nombre'] ?? '';
+            if ($id === '') continue;
+            $stmt = $conexion->prepare("INSERT INTO sucursal (id_sucursal, nombre) VALUES (?, ?) ON DUPLICATE KEY UPDATE nombre = VALUES(nombre)");
+            if ($stmt) {
+                $stmt->bind_param("ss", $id, $nombre);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+    }
     foreach ($filas as $s) {
         $sucursales[] = [
             "id_sucursal" => (int)$s['id_sucursal'],

@@ -89,6 +89,10 @@ export async function editarPersonal(id_personal) {
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
+                if (result.status === "offline") {
+                    abrirAlert({ mensaje: "Necesita conexion a internet." });
+                    return;
+                }
                 if (result.status !== "success") {
                     abrirAlert({ mensaje: "Error al actualizar: " + result.message });
                     return;
@@ -96,7 +100,7 @@ export async function editarPersonal(id_personal) {
                 cerrar();
                 personal(id_personal);
             } catch (error) {
-                abrirAlert({ mensaje: "Error al actualizar el personal." });
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
             }
         }
     });

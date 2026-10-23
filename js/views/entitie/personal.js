@@ -121,13 +121,17 @@ export async function personal(id_personal) {
                     body: JSON.stringify({ id_personal: parseInt(id), estado: nuevoEstado })
                 });
                 const result = await res.json();
+                if (result.status === "offline") {
+                    abrirAlert({ mensaje: "Necesita conexion a internet." });
+                    return;
+                }
                 if (result.status === "success") {
                     personal(id);
                 } else {
                     abrirAlert({ mensaje: "Error: " + result.message });
                 }
             } catch (error) {
-                abrirAlert({ mensaje: "Error al actualizar estado." });
+                abrirAlert({ mensaje: "Necesita conexion a internet." });
             }
         });
 
