@@ -36,7 +36,7 @@ if (is_array($remotos) && $conexion) {
 
 if ($conexion) {
     try {
-        $sql = "SELECT id, nombre_destino, tiene_tramos, sucursal, abrev, informacion, telefono, precio_peaje FROM destinos ORDER BY id";
+        $sql = "SELECT id, nombre_destino, tiene_tramos, sucursal, abrev, informacion, telefono FROM destinos ORDER BY id";
         $stmt = $conexion->prepare($sql);
         if (!$stmt) {
             throw new Exception("Error al preparar la consulta: " . $conexion->error);
@@ -52,8 +52,7 @@ if ($conexion) {
                 "sucursal" => $row['sucursal'],
                 "abrev" => $row['abrev'],
                 "informacion" => $row['informacion'],
-                "telefono" => $row['telefono'],
-                "precio_peaje" => $row['precio_peaje']
+                "telefono" => $row['telefono']
             ];
         }
         $stmt->close();

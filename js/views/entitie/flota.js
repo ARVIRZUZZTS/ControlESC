@@ -28,6 +28,12 @@ export async function flota(placa) {
             return;
         }
 
+        const h2Flota = title.querySelector("h2");
+        if (h2Flota) {
+            h2Flota.classList.add("titulo-placa");
+            h2Flota.innerHTML = `DETALLE de FLOTA <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span>`;
+        }
+
         let html = `
             <table id="tbFlotaEnt">
                 <thead>
@@ -60,7 +66,10 @@ export async function flota(placa) {
                 <p>ACEITE:</p>
                 <p>Capacidad Maxima: ${dt.capacidad_aceite} lt</p>
                 <p>Aceite Actual ${dt.aceite_actual} lt</p>
-                <label class="estadoAceite ${estadoAceiteClase(dt.viajes_aceite)}">${dt.viajes_aceite}v.</label>
+                <div class="aceite-viajes-row">
+                    <label class="estadoAceite ${estadoAceiteClase(dt.viajes_aceite)}">${dt.viajes_aceite}v.</label>
+                    <button class="btnEditarAceite listBtn" data-placa="${dt.placa}" title="Editar aceite"><img src="img/edit.svg" alt="editar"></button>
+                </div>
             </div>
             <hr>
             <div id="seccionRuedasFlota"></div>
@@ -72,6 +81,11 @@ export async function flota(placa) {
         document.querySelector("#tbFlotaEnt .btnEditar").addEventListener("click", function() {
             editarFlota(this.dataset.id);
         });
+
+        const btnAceite = document.querySelector(".btnEditarAceite");
+        if (btnAceite) {
+            btnAceite.addEventListener("click", () => editarAceiteFlota(dt.placa, dt));
+        }
 
     } catch (error) {
         cont.innerHTML = "<p>Error al Cargar Flotas</p>";
@@ -230,6 +244,79 @@ async function editarFlota(placa) {
         autoCbEd.addEventListener("change", () => {
             wrapEd.style.display = autoCbEd.checked ? "none" : "flex";
         });
+    }
+}
+
+async function editarAceiteFlota(placa, dt) {
+    const contenido = `
+        <div class="modal-fila">
+            <label>Capacidad maxima (lt):</label>
+            <input type="number" id="edCapacidadAceite" value="${dt.capacidad_aceite}" step="0.001" min="0">
+        </div>
+        <div class="modal-fila">
+            <label>Viajes desde cambio:</label>
+            <input type="number" id="edViajesAceite" value="${dt.viajes_aceite}" step="1" min="0">
+        </div>
+        <div class="modal-fila">
+            <label>Aceite actual (lt):</label>
+            <input type="text" id="edAceiteActual" value="${dt.aceite_actual}" readonly>
+        </div>
+    `;
+
+    const resultado = abrirModal({
+        titulo: `EDITAR ACEITE ${placa}`,
+        contenidoHTML: contenido,
+        onSubmit: async (cerrar) => {
+            const capacidad = parseFloat(document.getElementById("edCapacidadAceite").value);
+            const viajes = parseInt(document.getElementById("edViajesAceite").value, 10);
+
+            if (isNaN(capacidad) || capacidad < 0) {
+                abrirAlert({ mensaje: "Capacidad invalida." });
+                return;
+            }
+            if (isNaN(viajes) || viajes < 0) {
+                abrirAlert({ mensaje: "Viajes invalidos." });
+                return;
+            }
+
+            const res = await fetch("php/api/store/flotaAceiteEditar/route.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    placa: placa,
+                    capacidad_aceite: capacidad,
+                    viajes_aceite: viajes
+                })
+            });
+
+            const result = await res.json();
+            if (result.status === "success") {
+                cerrar();
+                flota(placa);
+            } else {
+                abrirAlert({ mensaje: "Error al guardar: " + result.message });
+            }
+        }
+    });
+
+    const capInput = resultado.overlay.querySelector("#edCapacidadAceite");
+    const viajesInput = resultado.overlay.querySelector("#edViajesAceite");
+    const actualInput = resultado.overlay.querySelector("#edAceiteActual");
+
+    const recalcular = () => {
+        const cap = parseFloat(capInput.value) || 0;
+        const v = parseInt(viajesInput.value, 10) || 0;
+        const lpv = cap > 0 ? cap / 17 : 0;
+        let actual = cap - (lpv * v);
+        if (actual < 0) actual = 0;
+        if (actual > cap) actual = cap;
+        actualInput.value = Number(actual.toFixed(3));
+    };
+
+    if (capInput && viajesInput && actualInput) {
+        capInput.addEventListener("input", recalcular);
+        viajesInput.addEventListener("input", recalcular);
+        recalcular();
     }
 }
 

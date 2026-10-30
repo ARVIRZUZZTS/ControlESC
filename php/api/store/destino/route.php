@@ -29,8 +29,6 @@ try {
     }
     $informacion = isset($data['informacion']) ? trim($data['informacion']) : '';
     $telefono = isset($data['telefono']) ? trim($data['telefono']) : '';
-    $precio_peaje = isset($data['precio_peaje']) && $data['precio_peaje'] !== '' && $data['precio_peaje'] !== null
-        ? (float)$data['precio_peaje'] : null;
 
     /* Fuente de verdad: Supabase */
     if (supabaseDestinoNombreExiste($nombre)) {
@@ -56,8 +54,8 @@ try {
     /* Replica local (best effort) */
     try {
         if ($conexion) {
-            $stmt = $conexion->prepare("INSERT INTO destinos (id, nombre_destino, tiene_tramos, sucursal, abrev, informacion, telefono, precio_peaje) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("isissssd", $idSupabase, $nombre, $tiene_tramos, $sucursal, $abrev, $informacion, $telefono, $precio_peaje);
+            $stmt = $conexion->prepare("INSERT INTO destinos (id, nombre_destino, tiene_tramos, sucursal, abrev, informacion, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isissss", $idSupabase, $nombre, $tiene_tramos, $sucursal, $abrev, $informacion, $telefono);
             $stmt->execute();
             $stmt->close();
         }

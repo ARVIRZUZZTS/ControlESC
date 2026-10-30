@@ -6,6 +6,7 @@ import { ubicacionesLlegadaView } from "./ajustes/ubicacionesLlegada.js";
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { marcasRuedasView } from "./marcas/ruedas.js";
 import { sucursalesView } from "./ajustes/sucursales.js";
+import { peajesView } from "./ajustes/peajes.js";
 
 export function ajustesView() {
     const cont = document.getElementById("contDin");
@@ -24,6 +25,7 @@ export function ajustesView() {
                 <button id="ajMarcaAceite" class="ajustesBtn">MARCA ACEITE</button>
                 <button id="ajMarcaRueda" class="ajustesBtn">MARCA RUEDA</button>
                 <button id="ajSucursales" class="ajustesBtn">SUCURSALES</button>
+                <button id="ajPeajes" class="ajustesBtn">PEAJES</button>
             </div>
             <div class="ajustesRow center">
                 <button id="ajDiesel" class="ajustesBtn">DIESEL</button>
@@ -38,6 +40,7 @@ export function ajustesView() {
     document.getElementById("ajMarcaAceite").addEventListener("click", () => marcasAceitesView({ onBack: ajustesView }));
     document.getElementById("ajMarcaRueda").addEventListener("click", () => marcasRuedasView({ onBack: ajustesView }));
     document.getElementById("ajSucursales").addEventListener("click", sucursalesView);
+    document.getElementById("ajPeajes").addEventListener("click", peajesView);
     document.getElementById("ajDiesel").addEventListener("click", dieselView);
     document.getElementById("ajUbicacionLlegada").addEventListener("click", ubicacionesLlegadaView);
 

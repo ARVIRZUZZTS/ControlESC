@@ -53,7 +53,6 @@ function renderDestinos(lista, cont, esAdmin) {
                     <th class="th t5">Sucursal</th>
                     <th class="th t15">Informacion</th>
                     <th class="th t10">Telefono</th>
-                    <th class="th t8">Peaje</th>
                     <th class="thr t8">Acciones</th>
                 </tr>
             </thead>
@@ -67,9 +66,8 @@ function renderDestinos(lista, cont, esAdmin) {
                 <td class="pb pm t5">${d.tiene_tramos ? "Si" : "No"}</td>
                 <td class="pb pm t5">${d.sucursal || "-"}</td>
                 <td class="pb pm t15">${d.informacion || "-"}</td>
-                <td class="pb pm t10">${d.telefono || "-"}</td>
-                <td class="pb pm t8">${d.precio_peaje !== null && d.precio_peaje !== undefined ? `Bs. ${d.precio_peaje}` : "-"}</td>
-                <td class="pb t8">
+                    <td class="pb pm t10">${d.telefono || "-"}</td>
+                    <td class="pb t8">
                     <button class="btnEditar listBtn" data-id="${d.id}"><img src="img/edit.svg" alt="editar"></button>
                     ${esAdmin ? `<button class="btnEliminar listBtn" data-id="${d.id}"><img src="img/trash.svg" alt="eliminar"></button>` : ""}
                 </td>
@@ -120,15 +118,10 @@ function newDestinoModal(destino, onSave) {
                 <label>Informacion:</label>
                 <textarea name="informacion" rows="3" maxlength="255" placeholder="Direccion, terminal, etc.">${editando ? (destino.informacion || "") : ""}</textarea>
             </div>
-            <div class="modal-fila">
-                <label>Telefono:</label>
-                <input type="text" name="telefono" value="${editando ? (destino.telefono || "") : ""}" maxlength="20" placeholder="Ej: 73794391">
-            </div>
-            <div class="modal-fila">
-                <label>Precio Peaje Bs. (local):</label>
-                <input type="number" name="precio_peaje" step="0.01" min="0" placeholder="0.00" value="${editando && destino.precio_peaje !== null && destino.precio_peaje !== undefined ? destino.precio_peaje : ""}">
-            </div>
-        </form>
+        <div class="modal-fila">
+            <label>Telefono:</label>
+            <input type="text" name="telefono" value="${editando ? (destino.telefono || "") : ""}" maxlength="20" placeholder="Ej: 73794391">
+        </div>
     `;
 
     const resultado = abrirModal({
@@ -181,18 +174,15 @@ function newDestinoModal(destino, onSave) {
         const sucursal = sucursalVal ? parseInt(sucursalVal) : null;
         const informacion = form.querySelector('textarea[name="informacion"]').value.trim();
         const telefono = form.querySelector('input[name="telefono"]').value.trim();
-        const precioRaw = form.querySelector('input[name="precio_peaje"]').value.trim();
-        const precio_peaje = precioRaw !== "" ? parseFloat(precioRaw) : null;
 
         const payload = {
-            nombre_destino: nombre,
-            tiene_tramos,
-            sucursal,
-            abrev: abrev || null,
-            informacion: informacion || null,
-            telefono: telefono || null,
-            precio_peaje
-        };
+                nombre_destino: nombre,
+                tiene_tramos,
+                sucursal,
+                abrev: abrev || null,
+                informacion: informacion || null,
+                telefono: telefono || null
+            };
         if (editando) payload.id = destino.id;
 
         const url = editando ? "php/api/store/destinoEditar/route.php" : "php/api/store/destino/route.php";

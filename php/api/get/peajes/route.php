@@ -4,17 +4,11 @@ require_once("../../../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id, nombre_destino, precio_peaje
-            FROM destinos
-            WHERE precio_peaje IS NOT NULL
-            ORDER BY id";
-
+    $sql = "SELECT id_peaje, nombre_peaje, peaje FROM peajes ORDER BY nombre_peaje";
     $stmt = $conexion->prepare($sql);
-
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conexion->error);
     }
-
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -22,8 +16,8 @@ try {
     while ($row = $result->fetch_assoc()) {
         $peajes[] = $row;
     }
-
     $stmt->close();
+
     echo json_encode([
         "status" => "success",
         "message" => "Peajes obtenidos correctamente",

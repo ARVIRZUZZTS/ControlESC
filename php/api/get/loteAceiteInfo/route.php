@@ -66,9 +66,11 @@ try {
     }
     $stmtDetalle->close();
 
-    $sqlFlotas = "SELECT af.id_af, af.placa, af.cantidad, af.estado, af.fecha_uso
+    $sqlFlotas = "SELECT af.id_af, af.placa, af.cantidad, af.estado, af.fecha_uso,
+                         f.color1, f.color2, f.color_texto
                   FROM aceite_flota af
                   INNER JOIN aceite_detalle ad ON af.id_ad = ad.id_ad
+                  LEFT JOIN flota f ON f.placa = af.placa
                   WHERE ad.id_al = ?
                   ORDER BY af.fecha_uso DESC";
 

@@ -4,8 +4,10 @@ require_once("../conexion.php");
 header('Content-Type: application/json');
 
 try {
-    $sql = "SELECT id_pr AS id, nombre_posicion AS nombrePosicion, placa
-            FROM posicion_rueda";
+    $sql = "SELECT pr.id_pr AS id, pr.nombre_posicion AS nombrePosicion, pr.placa,
+                   f.color1, f.color2, f.color_texto
+            FROM posicion_rueda pr
+            LEFT JOIN flota f ON f.placa = pr.placa";
 
     $stmt = $conexion->prepare($sql);
     $stmt->execute();

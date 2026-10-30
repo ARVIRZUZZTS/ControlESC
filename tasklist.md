@@ -26,19 +26,17 @@
     - [/] Vista de Ruedas Lote en Menu
     - [/] Fix de la vista en backend
     - [/] Nueva Rueda
-    - [-] Info Rueda
+    - [/] Info Rueda
     - [/] Nueva Marca Rueda
     - [ ] Editar Rueda codigo
     - [/] Eliminar Lote Rueda
-    - [ ] Ordenar Rueda x Placa
-    - [ ] Ordenar Rueda x Condicion
 - ### Aceite
     - [/] Vista de Aceite en Menu
     - [/] Nueva Lote Aceite
     - [/] Vista de Marcas de Aceite
     - [/] Nueva Marcas de Aceite
-    - [ ] Editar Aceite
-    - [ ] Eliminar Aceite
+    - [/] Editar Aceite
+    - [/] Eliminar Aceite
 - ### Configuracion
     - [-] Vista de Configuracion
     - [-] Vista de Planilla de Posicion de Ruedas

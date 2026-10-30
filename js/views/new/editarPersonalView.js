@@ -44,6 +44,14 @@ export async function editarPersonal(id_personal) {
                 <option value="Baja" ${dt.estado === "Baja" ? "selected" : ""}>Baja</option>
             </select>
         </div>
+        <div class="modal-fila">
+            <label>Nueva contraseña (opcional):</label>
+            <input type="password" id="eeContrasena" maxlength="20" placeholder="Dejar vacio para no cambiar">
+        </div>
+        <div class="modal-fila">
+            <label>Repetir contraseña:</label>
+            <input type="password" id="eeContrasena2" maxlength="20" placeholder="Repetir">
+        </div>
     `;
 
     let acTipo = null;
@@ -73,6 +81,19 @@ export async function editarPersonal(id_personal) {
                 return;
             }
 
+            const pw1 = document.getElementById("eeContrasena").value;
+            const pw2 = document.getElementById("eeContrasena2").value;
+            if (pw1 !== "" || pw2 !== "") {
+                if (pw1 !== pw2) {
+                    abrirAlert({ mensaje: "Las contrasenas no coinciden." });
+                    return;
+                }
+                if (pw1.length < 1 || pw1.length > 20) {
+                    abrirAlert({ mensaje: "La contrasena debe tener entre 1 y 20 caracteres." });
+                    return;
+                }
+            }
+
             const payload = {
                 id_personal: Number(id_personal),
                 nombre: nNombre,
@@ -81,6 +102,7 @@ export async function editarPersonal(id_personal) {
                 fecha_contrato: fechaDMYToISO(nFecha) || null,
                 estado: nEstado
             };
+            if (pw1 !== "") payload.contrasena = pw1;
 
             try {
                 const res = await fetch("php/api/store/personalEditar/route.php", {

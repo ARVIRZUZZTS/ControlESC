@@ -249,6 +249,9 @@ ${bloque(datos)}
                 win.document.head.appendChild(critico);
             }
             win.focus();
+            win.addEventListener("afterprint", () => {
+                try { win.close(); } catch (e) { }
+            }, { once: true });
             win.print();
         } catch (e) {
             console.error(e);

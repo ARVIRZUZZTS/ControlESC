@@ -725,19 +725,18 @@ INSERT INTO `tipo_personal` (`id_te`, `nombre_tipo_personal`, `sucursal`) VALUES
 
 CREATE TABLE `ubicacion` (
   `id_ubicacion` int(11) NOT NULL,
-  `nombre_ubicacion` varchar(25) DEFAULT NULL,
-  `precio_peaje` decimal(10,2) DEFAULT NULL
+  `nombre_ubicacion` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `ubicacion`
 --
 
-INSERT INTO `ubicacion` (`id_ubicacion`, `nombre_ubicacion`, `precio_peaje`) VALUES
-(1, 'Cochabamba', 150.00),
-(2, 'La Paz', 250.00),
-(3, 'Santa Cruz', 250.00),
-(4, 'Montero', NULL);
+INSERT INTO `ubicacion` (`id_ubicacion`, `nombre_ubicacion`) VALUES
+(1, 'Cochabamba'),
+(2, 'La Paz'),
+(3, 'Santa Cruz'),
+(4, 'Montero');
 
 -- --------------------------------------------------------
 

@@ -1,4 +1,4 @@
-import { fechaISOToDMY } from "../utils.js";
+import { fechaISOToDMY, flotaGradiente, colorTextoFlota } from "../utils.js";
 
 const RUEDA_AVISO_PORC = 0.8;
 const ACEITE_AVISO_VIAJES = 14;
@@ -42,6 +42,9 @@ function listarAvisos(data) {
             tipo: "Rueda",
             nivel: nivel,
             placa: r.placa,
+            color1: r.color1,
+            color2: r.color2,
+            color_texto: r.color_texto,
             detalle: `${r.nombre_marca_rueda} - ${r.posicion}`,
             viajes: v,
             limite: m,
@@ -62,6 +65,9 @@ function listarAvisos(data) {
             tipo: "Aceite",
             nivel: nivel,
             placa: a.placa,
+            color1: a.color1,
+            color2: a.color2,
+            color_texto: a.color_texto,
             detalle: `Cambio de aceite: ${ultimo}`,
             viajes: v,
             limite: criticoAceite,
@@ -77,6 +83,9 @@ function listarAvisos(data) {
             tipo: a.tipo,
             nivel: "anomalia",
             placa: a.placa,
+            color1: a.color1,
+            color2: a.color2,
+            color_texto: a.color_texto,
             detalle: `${a.evento}${extra}`,
             viajes: a.viajes,
             limite: a.limite,
@@ -173,7 +182,7 @@ export async function avisosView() {
                     <tr class="aviso-fila ${n.clase}">
                         <td class="pb pm t5"><span class="aviso-badge ${n.clase}">${n.etiqueta}</span></td>
                         <td class="pb pm t5">${a.tipo}</td>
-                        <td class="pb t8">${esc(a.placa)}</td>
+                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(a.color1, a.color2)};color:${colorTextoFlota(a.color1, a.color2, a.color_texto)}">${esc(a.placa)}</span></td>
                         <td class="pb pm t20">${esc(a.detalle)}</td>
                         <td class="pb pm t5">${a.viajes === null || a.viajes === undefined ? "-" : a.viajes}</td>
                         <td class="pb pm t5">${a.limite === null || a.limite === undefined ? "-" : a.limite}</td>

@@ -26,9 +26,11 @@ try {
     $stmt->close();
 
     $sql = "SELECT rf.placa, pr.nombre_posicion, rf.viajes_hechos, rf.estado,
-                   rf.fecha_instalacion, rf.id_rf
+                   rf.fecha_instalacion, rf.id_rf,
+                   f.color1, f.color2, f.color_texto
             FROM rueda_flota rf
             LEFT JOIN posicion_rueda pr ON pr.id_pr = rf.id_pr AND pr.placa = rf.placa
+            LEFT JOIN flota f ON f.placa = rf.placa
             WHERE rf.id_rd = ?
             ORDER BY rf.fecha_instalacion DESC, rf.id_rf DESC";
 

@@ -11,12 +11,14 @@ try {
                          COALESCE(p.nombre_posicion, '-') AS posicion,
                          rd.id_rd, rd.codigo,
                          mr.nombre_marca_rueda, mr.media_viajes,
-                         rd.viajes_hechos, rl.fecha_compra
+                         rd.viajes_hechos, rl.fecha_compra,
+                         f.color1, f.color2, f.color_texto
                   FROM rueda_flota rf
                   INNER JOIN rueda_detalle rd ON rd.id_rd = rf.id_rd
                   INNER JOIN rueda_lote rl ON rl.id_rl = rd.id_rl
                   INNER JOIN marca_rueda mr ON mr.id_marca_rueda = rd.id_marca_rueda
                   LEFT JOIN posicion_rueda p ON p.id_pr = rf.id_pr
+                  LEFT JOIN flota f ON f.placa = rf.placa
                   WHERE rf.estado = 'Operativa'
                     AND mr.media_viajes IS NOT NULL
                     AND mr.media_viajes > 0
@@ -37,6 +39,7 @@ try {
     $stmt->close();
 
     $sqlAceite = "SELECT f.placa, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite,
+                         f.color1, f.color2, f.color_texto,
                          (SELECT MAX(af.fecha_uso) FROM aceite_flota af
                           WHERE af.placa = f.placa AND af.fecha_uso > '0000-00-00') AS ultimo_cambio
                   FROM flota f
@@ -57,10 +60,12 @@ try {
     $stmt->close();
 
     $sqlAnom = "SELECT a.id_as, a.placa, a.tipo, a.evento, a.viajes, a.limite, a.fecha, a.detalle,
-                       rd.codigo, mr.nombre_marca_rueda
+                       rd.codigo, mr.nombre_marca_rueda,
+                       f.color1, f.color2, f.color_texto
                 FROM anomalia_sistema a
                 LEFT JOIN rueda_detalle rd ON rd.id_rd = a.id_rd
                 LEFT JOIN marca_rueda mr ON mr.id_marca_rueda = rd.id_marca_rueda
+                LEFT JOIN flota f ON f.placa = a.placa
                 ORDER BY a.fecha DESC, a.id_as DESC";
 
     $stmt = $conexion->prepare($sqlAnom);

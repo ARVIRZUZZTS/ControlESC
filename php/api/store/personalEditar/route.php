@@ -31,6 +31,8 @@ try {
         ? $data["estado"]
         : "Activo";
 
+    $contrasena = isset($data["contrasena"]) ? trim($data["contrasena"]) : "";
+
     // Normalize estado
     if ($estado === "Activo") $estado = "activo";
     if ($estado === "Baja") $estado = "inactivo";
@@ -47,7 +49,20 @@ try {
     }
     $stmt->close();
 
-    // Sync to Supabase
+    // Si se envio nueva contraseña, actualizarla
+    if ($contrasena !== "") {
+        if (mb_strlen($contrasena) > 20) {
+            throw new Exception("La contrasena debe tener maximo 20 caracteres.");
+        }
+        $stmtPw = $conexion->prepare("UPDATE personal SET contrasena = ? WHERE id_personal = ?");
+        if ($stmtPw) {
+            $stmtPw->bind_param("si", $contrasena, $id_personal);
+            if (!$stmtPw->execute()) {
+                throw new Exception("Error al actualizar la contrasena: " . $stmtPw->error);
+            }
+            $stmtPw->close();
+        }
+    }
     try {
         $nombre_tipo = "";
         $stmtTipo = $conexion->prepare("SELECT nombre_tipo_personal FROM tipo_personal WHERE id_te = ? LIMIT 1");
@@ -67,12 +82,17 @@ try {
         $stmtSuc->close();
         if ($rowSuc) $sucursal = $rowSuc["sucursal"];
 
-        supabaseUsuarioEditar($id_personal, [
+        $datosSupabase = [
             "nombre" => $nombre,
             "rol" => $nombre_tipo,
             "estado" => $estado,
             "sucursal" => $sucursal
-        ]);
+        ];
+        if ($contrasena !== "") {
+            $datosSupabase["contraseña"] = $contrasena;
+        }
+
+        supabaseUsuarioEditar($id_personal, $datosSupabase);
     } catch (Exception $e) {
         if ($e instanceof SupabaseOfflineException) {
             throw $e;

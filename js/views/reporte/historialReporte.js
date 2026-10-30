@@ -75,8 +75,9 @@ export async function historialReporteView({ placa, onBack = reportesView } = {}
         const flota = data.flota;
 
         const h2Hist = title.querySelector("h2");
+        if (h2Hist) h2Hist.classList.add("titulo-placa");
         if (h2Hist && flota) {
-            h2Hist.innerHTML = `HISTORIAL de <span class="placa-badge" style="background:${flota ? flotaGradiente(flota.color1, flota.color2) : '#6366f1'};color:${flota ? colorTextoFlota(flota.color1, flota.color2, flota.color_texto) : '#ffffff'}">${esc(placa)}</span>`;
+            h2Hist.innerHTML = `HISTORIAL de <span class="placa-badge placa-badge-titulo" style="background:${flota ? flotaGradiente(flota.color1, flota.color2) : '#6366f1'};color:${flota ? colorTextoFlota(flota.color1, flota.color2, flota.color_texto) : '#ffffff'}">${esc(placa)}</span>`;
         }
 
         cont.innerHTML = `

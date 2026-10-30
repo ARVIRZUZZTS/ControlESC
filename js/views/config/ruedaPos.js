@@ -1,3 +1,5 @@
+import { flotaGradiente, colorTextoFlota } from "../../utils.js";
+
 export async function ruedaPos() {
     const cont = document.getElementById("contDin");
     const title = document.getElementById("titleDin");
@@ -32,7 +34,7 @@ export async function ruedaPos() {
                 <tr>
                     <td class="pb t8">${planilla.id}</td>
                     <td class="pb pm t10">${planilla.nombrePosicion}</td>
-                    <td class="pb pm t10">${planilla.placa}</td>
+                    <td class="pb pm t10"><span class="placa-badge" style="background:${flotaGradiente(planilla.color1, planilla.color2)};color:${colorTextoFlota(planilla.color1, planilla.color2, planilla.color_texto)}">${planilla.placa}</span></td>
                     <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${planilla.id}"><img src="img/edit.svg" alt="reporte"></button></td>
                     <td class="pb t3"><button class="btnEliminar listBtn" data-id="${planilla.id}"><img src="img/trash.svg" alt="reporte"></button></td>
                 </tr>

@@ -3,7 +3,7 @@ import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter, flotaGradient
 import { crearCampoFecha } from "../../components/fechaCampo.js";
 import { historialReporteView } from "./historialReporte.js";
 import { imprimirParte } from "./imprimirReporte.js";
-import { abrirAlert, abrirConfirmation } from "../../components/modal.js";
+import { abrirModal, abrirAlert, abrirConfirmation, abrirEliminar } from "../../components/modal.js";
 
 function num(v) {
     if (v === null || v === undefined || v === "") return null;
@@ -77,7 +77,7 @@ export async function reporteViaje(placa) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2>Reporte de <span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></h2>
+                <h2 class="titulo-placa">Reporte de <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
@@ -118,7 +118,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
             .join("");
 
         const optPeajes = peajes.map(p =>
-            `<option value="${esc(p.precio_peaje)}" data-precio="${esc(p.precio_peaje)}">Bs. ${esc(p.precio_peaje)} - ${esc(p.nombre_destino)}</option>`
+            `<option value="${esc(p.peaje)}" data-precio="${esc(p.peaje)}">Bs. ${esc(p.peaje)} - ${esc(p.nombre_peaje)}</option>`
         ).join("");
         const optPeajesIda = peajes.length > 0 ? `<option value="">-</option>${optPeajes}` : `<option value="">-</option>`;
         const optPeajesRetorno = `<option value="">-</option>${optPeajes}`;
@@ -254,7 +254,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                             <h2 class="rep-otros-titulo">Otros</h2>
                             <div class="rep-botones">
                                 <button id="addGastoBtn" class="btnAddDetalle">Agregar Gasto</button>
-                                <button id="addAnomaliaBtn" class="btnAddDetalle">Agregar Anomalia</button>
+                                <button id="addDetalleBtn" class="btnAddDetalle">Agregar Detalles</button>
                             </div>
                         </div>
                         <div id="listaGastos"></div>
@@ -475,8 +475,281 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
         document.querySelectorAll("#inpDieselPartida, #inpDieselLlegada, .inpPeaje")
             .forEach(inp => inp.addEventListener("input", actualizarTotalGastosOtros));
 
-        const mapaDetalles = new Map(gastosEstimados.filter(g => (g.detalles || []).length > 0)
+         const mapaDetalles = new Map(gastosEstimados.filter(g => (g.detalles || []).length > 0)
             .map(g => [String(g.id_gasto_estimado), g.detalles]));
+
+        function nombreResponsable(id) {
+            if (!id) return "";
+            const p = personal.find(x => Number(x.id_personal) === Number(id));
+            return p ? p.nombre_apellido : "";
+        }
+
+        function construirFilaGastoGuardado(datos) {
+            const fila = document.createElement("div");
+            fila.className = "filaGastoGuardado";
+            const gasto = esc(datos.gasto || datos.titulo || "");
+            const detalle = esc(datos.detalle || "");
+            const responsableId = datos.id_personal ? String(datos.id_personal) : (datos.responsable_id ? String(datos.responsable_id) : "");
+            const responsable = esc(datos.responsable || nombreResponsable(responsableId));
+            const monto = datos.gasto_generico !== undefined && datos.gasto_generico !== null ? datos.gasto_generico : (datos.monto !== undefined ? datos.monto : "");
+
+            fila.dataset.gasto = gasto;
+            fila.dataset.detalle = detalle;
+            fila.dataset.responsableId = responsableId;
+            fila.dataset.responsable = responsable;
+            fila.dataset.monto = monto === null || monto === undefined ? "" : monto;
+
+            const texto = `${gasto}${detalle ? " - " + detalle : ""}${responsable ? `-${responsable}` : ""}:`;
+
+            fila.innerHTML = `
+                <span class="filaGastoGuardado-texto">${esc(texto)}</span>
+                <div class="gastobuttons">
+                    <button type="button" class="btnEditarFilaGasto" title="Editar"><img src="img/edit.svg" alt="editar"></button>
+                    <button type="button" class="btnEliminarFilaGasto" title="Eliminar"><img src="img/trash.svg" alt="eliminar"></button>
+                    <input type="number" class="repInput inpPrecio" disabled value="${esc(monto)}">
+                </div>
+            `;
+
+            fila.querySelector(".btnEditarFilaGasto").addEventListener("click", () => abrirModalGasto(fila));
+            fila.querySelector(".btnEliminarFilaGasto").addEventListener("click", () => {
+                abrirEliminar({
+                    titulo: "Eliminar gasto",
+                    mensaje: "Esta seguro que quiere eliminar este gasto?",
+                    botonEliminar: "ELIMINAR",
+                    onConfirmar: () => {
+                        fila.remove();
+                        actualizarTotalGastosOtros();
+                    }
+                });
+            });
+
+            return fila;
+        }
+
+        function construirFilaDetalleGuardado(datos) {
+            const fila = document.createElement("div");
+            fila.className = "filaDetalleGuardado";
+            const detalle = esc(datos.detalle || datos.detalle_anomalia || "");
+            const monto = datos.gasto_subanomalia !== undefined ? datos.gasto_subanomalia : (datos.monto !== undefined ? datos.monto : "");
+
+            fila.dataset.detalle = detalle;
+            fila.dataset.monto = monto === null || monto === undefined ? "" : monto;
+
+            fila.innerHTML = `
+                <span class="filaDetalleGuardado-texto">${detalle ? esc(detalle) + ":" : "Detalle:"}</span>
+                <div>
+                    <button type="button" class="btnEditarFilaDetalle" title="Editar"><img src="img/edit.svg" alt="editar"></button>
+                    <button type="button" class="btnEliminarFilaDetalle" title="Eliminar"><img src="img/trash.svg" alt="eliminar"></button>
+                    <input type="number" class="repInput inpMontoAnomalia" disabled value="${esc(monto)}">
+                </div>
+            `;
+
+            fila.querySelector(".btnEditarFilaDetalle").addEventListener("click", () => abrirModalDetalle(fila));
+            fila.querySelector(".btnEliminarFilaDetalle").addEventListener("click", () => {
+                abrirEliminar({
+                    titulo: "Eliminar detalle",
+                    mensaje: "Esta seguro que quiere eliminar este detalle?",
+                    botonEliminar: "ELIMINAR",
+                    onConfirmar: () => {
+                        fila.remove();
+                        actualizarTotalGastosOtros();
+                    }
+                });
+            });
+
+            return fila;
+        }
+
+        function aplicarGastoModal(selG, selD, inpP) {
+            const id = selG.value;
+            selD.innerHTML = `<option value="">Detalle...</option>`;
+            selD.style.display = "none";
+            inpP.value = "";
+            if (id === "") return;
+
+            const opt = selG.options[selG.selectedIndex];
+            const generico = opt.dataset.generico;
+
+            const detalles = mapaDetalles.get(id);
+            if (detalles && detalles.length > 0) {
+                selD.innerHTML = `<option value="">Detalle...</option>` +
+                    detalles.map(d => `<option value="${esc(d.gasto_particular)}">${esc(d.detalle)}</option>`).join("");
+                selD.style.display = "";
+                selD.value = "";
+                inpP.value = generico || "";
+            } else {
+                inpP.value = generico || "";
+            }
+        }
+
+        function abrirModalGasto(editRow) {
+            const editando = !!editRow;
+            const gastoActual = editando ? editRow.dataset.gasto : "";
+            const detalleActual = editando ? editRow.dataset.detalle : "";
+            const responsableActual = editando ? editRow.dataset.responsableId : "";
+            const montoActual = editando ? editRow.dataset.monto : "";
+
+            const contenido = `
+                <div class="modal-fila">
+                    <label>Gasto:</label>
+                    <select id="mgGasto">
+                        <option value="">Gasto...</option>
+                        ${selGastos}
+                    </select>
+                </div>
+                <div class="modal-fila">
+                    <label>Detalle:</label>
+                    <select id="mgDetalle" style="display:none;">
+                        <option value="">Detalle...</option>
+                    </select>
+                </div>
+                <div class="modal-fila">
+                    <label>Responsable:</label>
+                    <select id="mgResponsable">${optResponsable}</select>
+                </div>
+                <div class="modal-fila">
+                    <label>Monto:</label>
+                    <input type="number" id="mgMonto" min="0" step="0.01" placeholder="0.00" value="${esc(montoActual)}">
+                </div>
+            `;
+
+            const resultado = abrirModal({
+                titulo: editando ? "EDITAR GASTO" : "AGREGAR GASTO",
+                contenidoHTML: contenido,
+                onSubmit: async (cerrar) => {
+                    const selG = document.getElementById("mgGasto");
+                    const selD = document.getElementById("mgDetalle");
+                    const selR = document.getElementById("mgResponsable");
+                    const inpM = document.getElementById("mgMonto");
+
+                    const gasto = selG.selectedIndex > 0 ? selG.options[selG.selectedIndex].text : "";
+                    if (gasto === "") {
+                        abrirAlert({ mensaje: "Seleccione un gasto." });
+                        return;
+                    }
+
+                    const detalle = (selD.style.display !== "none" && selD.selectedIndex > 0)
+                        ? selD.options[selD.selectedIndex].text
+                        : "";
+                    const responsableId = selR.value || "";
+                    const responsable = selR.selectedIndex > 0 ? selR.options[selR.selectedIndex].text : "";
+                    const monto = inpM.value.trim();
+
+                    if (monto === "" || isNaN(parseFloat(monto)) || parseFloat(monto) < 0) {
+                        abrirAlert({ mensaje: "Monto invalido." });
+                        return;
+                    }
+
+                    if (editando) {
+                        editRow.dataset.gasto = gasto;
+                        editRow.dataset.detalle = detalle;
+                        editRow.dataset.responsableId = responsableId;
+                        editRow.dataset.responsable = responsable;
+                        editRow.dataset.monto = monto;
+                    } else {
+                        const nueva = construirFilaGastoGuardado({
+                            gasto: gasto,
+                            detalle: detalle,
+                            id_personal: responsableId ? parseInt(responsableId) : 0,
+                            responsable: responsable,
+                            gasto_generico: parseFloat(monto)
+                        });
+                        document.getElementById("listaGastos").appendChild(nueva);
+                    }
+
+                    // actualizar texto e input de la fila editada
+                    if (editando) {
+                        const texto = `${gasto}${detalle ? " - " + detalle : ""}${responsable ? `-${responsable}` : ""}:`;
+                        editRow.querySelector(".filaGastoGuardado-texto").textContent = texto;
+                        editRow.querySelector(".inpPrecio").value = monto;
+                    }
+
+                    actualizarTotalGastosOtros();
+                    cerrar();
+                }
+            });
+
+            const selG = resultado.overlay.querySelector("#mgGasto");
+            const selD = resultado.overlay.querySelector("#mgDetalle");
+            const selR = resultado.overlay.querySelector("#mgResponsable");
+            const inpM = resultado.overlay.querySelector("#mgMonto");
+
+            // preseleccionar gasto
+            if (gastoActual) {
+                const opt = Array.from(selG.options).find(o => o.text === gastoActual);
+                if (opt) selG.value = opt.value;
+            }
+            aplicarGastoModal(selG, selD, inpM);
+
+            // preseleccionar detalle
+            if (detalleActual && selD.style.display !== "none") {
+                const optD = Array.from(selD.options).find(o => o.text === detalleActual);
+                if (optD) selD.value = optD.value;
+            }
+            if (montoActual !== "") inpM.value = montoActual;
+
+            // preseleccionar responsable
+            if (responsableActual) {
+                const optR = Array.from(selR.options).find(o => o.value === String(responsableActual));
+                if (optR) selR.value = String(responsableActual);
+            }
+
+            selG.addEventListener("change", () => aplicarGastoModal(selG, selD, inpM));
+            selD.addEventListener("change", () => {
+                if (selD.value !== "") inpM.value = selD.value;
+            });
+        }
+
+        function abrirModalDetalle(editRow) {
+            const editando = !!editRow;
+            const detalleActual = editando ? editRow.dataset.detalle : "";
+            const montoActual = editando ? editRow.dataset.monto : "";
+
+            const contenido = `
+                <div class="modal-fila">
+                    <label>Detalle:</label>
+                    <input type="text" id="mdDetalle" maxlength="150" placeholder="Detalle" value="${esc(detalleActual)}">
+                </div>
+                <div class="modal-fila">
+                    <label>Monto:</label>
+                    <input type="number" id="mdMonto" min="0" step="0.01" placeholder="0.00" value="${esc(montoActual)}">
+                </div>
+            `;
+
+            const resultado = abrirModal({
+                titulo: editando ? "EDITAR DETALLE" : "AGREGAR DETALLE",
+                contenidoHTML: contenido,
+                onSubmit: async (cerrar) => {
+                    const detalle = document.getElementById("mdDetalle").value.trim();
+                    const monto = document.getElementById("mdMonto").value.trim();
+
+                    if (detalle === "" && (monto === "" || isNaN(parseFloat(monto)))) {
+                        abrirAlert({ mensaje: "Completa el detalle o el monto." });
+                        return;
+                    }
+                    if (monto !== "" && (isNaN(parseFloat(monto)) || parseFloat(monto) < 0)) {
+                        abrirAlert({ mensaje: "Monto invalido." });
+                        return;
+                    }
+
+                    if (editando) {
+                        editRow.dataset.detalle = detalle;
+                        editRow.dataset.monto = monto;
+                        editRow.querySelector(".filaDetalleGuardado-texto").textContent = detalle ? detalle + ":" : "Detalle:";
+                        editRow.querySelector(".inpMontoAnomalia").value = monto;
+                    } else {
+                        const nueva = construirFilaDetalleGuardado({
+                            detalle: detalle,
+                            monto: monto === "" ? null : parseFloat(monto)
+                        });
+                        document.getElementById("listaAnomalias").appendChild(nueva);
+                    }
+
+                    actualizarTotalGastosOtros();
+                    cerrar();
+                }
+            });
+        }
 
         function actualizarBalance(totalIngresos) {
             const el = document.getElementById("totalBalance");
@@ -602,16 +875,14 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
         }
 
         document.getElementById("addGastoBtn").addEventListener("click", () => {
-            document.getElementById("listaGastos").appendChild(construirFilaGasto(null));
-            actualizarTotalGastosOtros();
+            abrirModalGasto();
         });
-        document.getElementById("addAnomaliaBtn").addEventListener("click", () => {
-            document.getElementById("listaAnomalias").appendChild(construirFilaAnomalia(null));
-            actualizarTotalGastosOtros();
+        document.getElementById("addDetalleBtn").addEventListener("click", () => {
+            abrirModalDetalle();
         });
 
-        gastosBD.forEach(g => document.getElementById("listaGastos").appendChild(construirFilaGasto(g)));
-        anomaliasBD.forEach(a => document.getElementById("listaAnomalias").appendChild(construirFilaAnomalia(a)));
+        gastosBD.forEach(g => document.getElementById("listaGastos").appendChild(construirFilaGastoGuardado(g)));
+        anomaliasBD.forEach(a => document.getElementById("listaAnomalias").appendChild(construirFilaDetalleGuardado(a)));
         actualizarTotalGastosOtros();
 
         document.getElementById("guardarReporteBtn").addEventListener("click", guardarReporte);
@@ -628,7 +899,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
         }
 
         function opcionSel(sel, indice) {
-            const el = document.querySelector(sel);
+            const el = (typeof sel === "string") ? document.querySelector(sel) : sel;
             if (!el) return "";
             return el.selectedIndex > indice ? el.options[el.selectedIndex].text : "";
         }
@@ -666,11 +937,11 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                 { texto: `Peaje de: ${retorno} a: Cochabamba`, monto: datoInput("#inpPeajeRetorno") }
             ];
 
-            document.querySelectorAll(".filaGasto").forEach(f => {
+            document.querySelectorAll(".filaGastoGuardado").forEach(f => {
                 const monto = num(f.querySelector(".inpPrecio").value);
-                const titulo = opcionSel(f.querySelector(".selGasto"), 0);
-                const detalle = opcionSel(f.querySelector(".selDetalle"), 0);
-                const responsable = opcionSel(f.querySelector(".selResponsable"), 0);
+                const titulo = f.dataset.gasto || "";
+                const detalle = f.dataset.detalle || "";
+                const responsable = f.dataset.responsable || "";
                 if (titulo === "" && detalle === "" && monto === null) return;
                 egresos.push({
                     texto: [titulo, detalle, responsable].filter(Boolean).join(" - "),
@@ -678,12 +949,12 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                 });
             });
 
-            document.querySelectorAll(".filaAnomalia").forEach(f => {
-                const detalle = f.querySelector(".inpDetAnomalia").value.trim();
+            document.querySelectorAll(".filaDetalleGuardado").forEach(f => {
+                const detalle = (f.dataset.detalle || "").trim();
                 const monto = num(f.querySelector(".inpMontoAnomalia").value);
                 if (detalle === "" && monto === null) return;
                 egresos.push({
-                    texto: detalle === "" ? "Anomalia" : `Anomalia - ${detalle}`,
+                    texto: detalle === "" ? "Detalle" : `Detalle - ${detalle}`,
                     monto: monto || 0
                 });
             });
@@ -709,21 +980,21 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
         }
 
         function construirPayload() {
-            const gastos = Array.from(document.querySelectorAll(".filaGasto")).map(fila => {
-                const selG = fila.querySelector(".selGasto");
-                const selR = fila.querySelector(".selResponsable");
-                const titulo = selG.selectedIndex > 0 ? selG.options[selG.selectedIndex].text : "";
+            const gastos = Array.from(document.querySelectorAll(".filaGastoGuardado")).map(fila => {
+                const tituloBase = fila.dataset.gasto || "";
+                const detalle = fila.dataset.detalle || "";
+                const titulo = detalle ? `${tituloBase} - ${detalle}` : tituloBase;
                 const precio = num(fila.querySelector(".inpPrecio").value);
                 if (titulo === "" && precio === null) return null;
                 return {
                     titulo: titulo,
                     gasto_generico: precio,
-                    id_personal: selR.value ? parseInt(selR.value) : 0
+                    id_personal: fila.dataset.responsableId ? parseInt(fila.dataset.responsableId) : 0
                 };
             }).filter(Boolean);
 
-            const anomalias = Array.from(document.querySelectorAll(".filaAnomalia")).map(fila => {
-                const detalle = fila.querySelector(".inpDetAnomalia").value.trim();
+            const anomalias = Array.from(document.querySelectorAll(".filaDetalleGuardado")).map(fila => {
+                const detalle = (fila.dataset.detalle || "").trim();
                 const monto = num(fila.querySelector(".inpMontoAnomalia").value);
                 if (detalle === "" && monto === null) return null;
                 return { detalle_anomalia: detalle, gasto_subanomalia: monto };

@@ -1,4 +1,5 @@
 import { abrirModal, abrirAlert } from "../../components/modal.js";
+import { flotaGradiente, colorTextoFlota } from "../../utils.js";
 
 export async function abrirInfoRueda(id_rd) {
     if (!id_rd) return;
@@ -16,7 +17,7 @@ export async function abrirInfoRueda(id_rd) {
 
         const filas = records.map(r => `
             <tr>
-                <td class="pb pm t8">${r.placa || "-"}</td>
+                <td class="pb pm t8"><span class="placa-badge" style="background:${flotaGradiente(r.color1, r.color2)};color:${colorTextoFlota(r.color1, r.color2, r.color_texto)}">${r.placa || "-"}</span></td>
                 <td class="pb pm t15">${r.nombre_posicion || "-"}</td>
                 <td class="pb pm t8">${r.viajes_hechos ?? 0}</td>
                 <td class="pb pm t8">${r.estado}</td>

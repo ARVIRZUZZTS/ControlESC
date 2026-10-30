@@ -30,8 +30,6 @@ try {
     }
     $informacion = isset($data['informacion']) ? trim($data['informacion']) : '';
     $telefono = isset($data['telefono']) ? trim($data['telefono']) : '';
-    $precio_peaje = isset($data['precio_peaje']) && $data['precio_peaje'] !== '' && $data['precio_peaje'] !== null
-        ? (float)$data['precio_peaje'] : null;
 
     /* Fuente de verdad: Supabase */
     if (supabaseDestinoNombreExiste($nombre, $id)) {
@@ -52,8 +50,8 @@ try {
     /* Replica local (best effort) */
     try {
         if ($conexion) {
-            $stmt = $conexion->prepare("UPDATE destinos SET nombre_destino = ?, tiene_tramos = ?, sucursal = ?, abrev = ?, informacion = ?, telefono = ?, precio_peaje = ? WHERE id = ?");
-            $stmt->bind_param("siisssds", $nombre, $tiene_tramos, $sucursal, $abrev, $informacion, $telefono, $precio_peaje, $id);
+            $stmt = $conexion->prepare("UPDATE destinos SET nombre_destino = ?, tiene_tramos = ?, sucursal = ?, abrev = ?, informacion = ?, telefono = ? WHERE id = ?");
+            $stmt->bind_param("siissss", $nombre, $tiene_tramos, $sucursal, $abrev, $informacion, $telefono, $id);
             $stmt->execute();
             $stmt->close();
         }

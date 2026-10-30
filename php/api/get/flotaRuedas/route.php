@@ -75,11 +75,30 @@ try {
     }
     $stmt->close();
 
+    $color1 = null; $color2 = null; $color_texto = null;
+    if ($conexion) {
+        $stmtC = $conexion->prepare("SELECT color1, color2, color_texto FROM flota WHERE placa = ?");
+        if ($stmtC) {
+            $stmtC->bind_param("s", $placa);
+            $stmtC->execute();
+            $resC = $stmtC->get_result();
+            if ($rowC = $resC->fetch_assoc()) {
+                $color1 = $rowC['color1'];
+                $color2 = $rowC['color2'];
+                $color_texto = $rowC['color_texto'];
+            }
+            $stmtC->close();
+        }
+    }
+
     echo json_encode([
         "status" => "success",
         "message" => "Ruedas de flota obtenidas correctamente",
         "data" => [
             "placa" => $placa,
+            "color1" => $color1,
+            "color2" => $color2,
+            "color_texto" => $color_texto,
             "posiciones" => $posiciones,
             "ruedas" => $ruedas,
             "nombres" => $nombres

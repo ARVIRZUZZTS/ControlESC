@@ -104,7 +104,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2>Reporte #${esc(rep.id_reporte)} - <span class="placa-badge" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></h2>
+                <h2 class="titulo-placa">Reporte #${esc(rep.id_reporte)} - <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>

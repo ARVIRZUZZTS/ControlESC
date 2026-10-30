@@ -145,7 +145,7 @@ export async function historialViajesView() {
                             const grad = c2 && c2 !== c1 ? `linear-gradient(135deg, ${c1}, ${c2})` : c1;
                             const txt = colorTextoFlota(c1, c2, ev.reporte?.color_texto);
                             const extra = ev.tipo === "estimado" ? 'border:1px dashed var(--accent);font-style:italic;' : '';
-                            return `<div class="hist-evento" style="background:${grad};color:${txt};${extra};text-shadow:0 0 2px rgba(0,0,0,0.6),0 0 2px rgba(255,255,255,0.6);font-weight:bold;">${label}: ${ev.placa}</div>`;
+                            return `<div class="hist-evento" style="background:${grad};color:${txt};${extra};font-weight:bold;">${label}: ${ev.placa}</div>`;
                         }).join("")}
                     </div>
                 </div>
