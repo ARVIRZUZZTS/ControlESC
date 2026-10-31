@@ -1,5 +1,5 @@
 import { reportesView } from "../reportesView.js";
-import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter, flotaGradiente, colorTextoFlota } from "../../utils.js";
+import { strFechaDMY, fechaISOToDMY, fechaDMYToISO, decimalFilter, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 import { crearCampoFecha } from "../../components/fechaCampo.js";
 import { historialReporteView } from "./historialReporte.js";
 import { imprimirParte } from "./imprimirReporte.js";
@@ -77,7 +77,7 @@ export async function reporteViaje(placa) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2 class="titulo-placa">Reporte de <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></h2>
+                <h2 class="titulo-placa">Reporte de <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span><img id="accidenteIcon" src="img/accidente.svg" alt="Accidentada" style="display:${(flota.estado === "Accidente" || Number(flota.id_fe) === 4) ? "inline-block" : "none"}; height:3vh; vertical-align:middle; margin-left:1vh;"></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
@@ -168,7 +168,7 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                     <span>Dia:</span>
                     <span id="diaLlegada" class="rep-dia">-</span>
                     <span>Placa:</span>
-                    <strong><span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span></strong>
+                    <strong><span class="placa-badge" style="background:${flotaGradiente(flota.color1, flota.color2)};color:${colorTextoFlota(flota.color1, flota.color2, flota.color_texto)}">${flota.placa}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(flota) ? "inline-block" : "none"}; height:2.4vh; vertical-align:middle; margin-left:.6vh;"></strong>
                 </div>
             </div>
 
@@ -272,6 +272,13 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                 <div class="sba">
                     <h4>Resultado (Ingresos - Gastos):</h4>
                     <input type="number" class="repInput" id="totalBalance" disabled placeholder="0.00">
+                </div>
+
+                <div class="sba" style="justify-content:flex-end; margin-top:2vh;">
+                    <button id="accidentadoBtn" class="btnAddDetalle" type="button">
+                        <img src="img/accidente.svg" alt="Accidentado" style="height:2.4vh; vertical-align:middle; margin-right:.5vh;">
+                        Accidentado
+                    </button>
                 </div>
             </div>
         `;
@@ -881,6 +888,17 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
             abrirModalDetalle();
         });
 
+        const accidentadoBtn = document.getElementById("accidentadoBtn");
+        if (accidentadoBtn) {
+            if (flota.estado === "Accidente" || Number(flota.id_fe) === 4) {
+                accidentadoBtn.disabled = true;
+                accidentadoBtn.textContent = "Marcada como accidentada";
+                const ic = document.getElementById("accidenteIcon");
+                if (ic) ic.style.display = "inline-block";
+            }
+            accidentadoBtn.addEventListener("click", () => abrirModalAccidente());
+        }
+
         gastosBD.forEach(g => document.getElementById("listaGastos").appendChild(construirFilaGastoGuardado(g)));
         anomaliasBD.forEach(a => document.getElementById("listaAnomalias").appendChild(construirFilaDetalleGuardado(a)));
         actualizarTotalGastosOtros();
@@ -975,7 +993,8 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                 otros_ingresos: document.getElementById("inpOtros").value.trim(),
                 total_ingresos: totalIngresos,
                 total_egresos: totalEgresos,
-                balance: totalIngresos - totalEgresos
+                balance: totalIngresos - totalEgresos,
+                viajes_aceite: parseInt(aceite.viajes_aceite, 10) || 0
             };
         }
 
@@ -1028,6 +1047,81 @@ const sel = valLlegada !== "" && esc(u.nombre_ubicaciones_llegada) === valLlegad
                 anomalias: anomalias,
                 viajes: viajesRep
             };
+        }
+
+        function abrirModalAccidente() {
+            const hoyISO = fechaDMYToISO(hoy);
+            let campoFecha = null;
+
+            const contenido = `
+                <div class="modal-fila">
+                    <label>Fecha del accidente:</label>
+                    <div id="accFecha"></div>
+                </div>
+                <div class="modal-fila">
+                    <label>Detalle:</label>
+                    <textarea id="accDetalle" maxlength="300" rows="3" placeholder="Detalle del accidente" style="width:100%;"></textarea>
+                </div>
+            `;
+
+            const resultado = abrirModal({
+                titulo: "MARCAR FLOTA COMO ACCIDENTADA",
+                contenidoHTML: contenido,
+                botonGuardar: "MARCAR COMO ACCIDENTADA",
+                onSubmit: async (cerrar) => {
+                    const fecha = campoFecha ? campoFecha.getISO() : "";
+                    const detalle = document.getElementById("accDetalle").value.trim();
+
+                    if (!fecha) {
+                        abrirAlert({ mensaje: "Seleccione una fecha valida." });
+                        return;
+                    }
+                    if (detalle === "") {
+                        abrirAlert({ mensaje: "El detalle es obligatorio." });
+                        return;
+                    }
+
+                    const res = await fetch("php/api/store/flotaEstado/route.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            placa: flota.placa,
+                            id_fe: 4
+                        })
+                    });
+
+                    const result = await res.json();
+                    if (result.status !== "success") {
+                        abrirAlert({ mensaje: result.message || "Error al marcar la flota." });
+                        return;
+                    }
+
+                    const otros = document.getElementById("inpOtros");
+                    const texto = `Accidente ${campoFecha.getDMY()}: ${detalle}`;
+                    otros.value = otros.value ? otros.value + "\\n" + texto : texto;
+
+                    cerrar();
+                    const btn = document.getElementById("accidentadoBtn");
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.textContent = "Marcada como accidentada";
+                    }
+                    const ic = document.getElementById("accidenteIcon");
+                    if (ic) ic.style.display = "inline-block";
+                    abrirAlert({ mensaje: "Flota marcada como accidentada." });
+                }
+            });
+
+            const panel = resultado.overlay.querySelector(".modal-panel");
+            const btn = resultado.overlay.querySelector(".modal-accept");
+            if (panel) panel.classList.add("modal-danger");
+            if (btn) btn.classList.add("modal-danger-accept");
+
+            const contFecha = resultado.overlay.querySelector("#accFecha");
+            if (contFecha) {
+                campoFecha = crearCampoFecha(hoyISO);
+                contFecha.appendChild(campoFecha);
+            }
         }
 
         function guardarReporte() {

@@ -36,8 +36,9 @@ try {
     }
     $stmt->close();
 
-    $sqlF = "SELECT placa, viajes, viajes_aceite, aceite_actual, capacidad_aceite, color1, color2, color_texto
-             FROM flota WHERE placa = ?";
+    $sqlF = "SELECT f.placa, f.viajes, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite, f.color1, f.color2, f.color_texto, f.id_fe, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado
+             FROM flota f LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
+             WHERE f.placa = ?";
     $stmtF = $conexion->prepare($sqlF);
     if ($stmtF) {
         $stmtF->bind_param("s", $placa);

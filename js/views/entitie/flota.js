@@ -1,7 +1,7 @@
 import { flotasListView } from "../flotasListView.js";
 import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
-import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase, flotaGradiente, colorTextoFlota } from "../../utils.js";
+import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 import { cargarSeccionRuedasFlota } from "./ruedasFlota.js";
 
 export async function flota(placa) {
@@ -31,7 +31,7 @@ export async function flota(placa) {
         const h2Flota = title.querySelector("h2");
         if (h2Flota) {
             h2Flota.classList.add("titulo-placa");
-            h2Flota.innerHTML = `DETALLE de FLOTA <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span>`;
+            h2Flota.innerHTML = `DETALLE de FLOTA <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(dt) ? "inline-block" : "none"}; height:3vh; vertical-align:middle; margin-left:1vh;">`;
         }
 
         let html = `
@@ -50,7 +50,7 @@ export async function flota(placa) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span></td>
+                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(dt.color1, dt.color2)};color:${colorTextoFlota(dt.color1, dt.color2, dt.color_texto)}">${dt.placa}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(dt) ? "inline-block" : "none"}; height:2.4vh; vertical-align:middle; margin-left:.6vh;"></td>
                         <td class="pb pm t10">${dt.propietario}</td>
                         <td class="pb pm t10">${dt.chofer1_nombre}</td>
                         <td class="pb pm t10">${dt.chofer2_nombre}</td>

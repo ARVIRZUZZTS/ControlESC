@@ -1,4 +1,4 @@
-import { fechaISOToDMY, flotaGradiente, colorTextoFlota } from "../../utils.js";
+import { fechaISOToDMY, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 import { diaDeFechaISO } from "../../components/fechaCampo.js";
 import { abrirHojaImpresion, imprimirParte, datosDesdeReporte } from "./imprimirReporte.js";
 import { abrirAlert } from "../../components/modal.js";
@@ -93,7 +93,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
         const anomalias = data.anomalias || [];
 
         /* La misma hoja que se imprime, para mostrar los mismos totales. */
-        const paraImprimir = datosDesdeReporte(rep, gastos, anomalias);
+        const paraImprimir = datosDesdeReporte(rep, gastos, anomalias, rep.viajes_aceite);
         datos = { rep, gastos, anomalias, paraImprimir };
 
         const ruta = esc(rep.ubicacion_llegada) || "-";
@@ -104,7 +104,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
         title.innerHTML = `
             <div class="backTitle">
                 <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-                <h2 class="titulo-placa">Reporte #${esc(rep.id_reporte)} - <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></h2>
+                <h2 class="titulo-placa">Reporte #${esc(rep.id_reporte)} - <span class="placa-badge placa-badge-titulo" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(rep) ? "inline-block" : "none"}; height:3vh; vertical-align:middle; margin-left:1vh;"></h2>
             </div>
             <div class="btnsTitle">
                 <button id="imprimirReporteBtn"><img src="img/print.svg" alt="Imprimir">Imprimir</button>
@@ -158,7 +158,7 @@ export async function reporteFinalizadoView({ idReporte, onBack = null } = {}) {
                     <span>Dia:</span>
                     <span class="rep-dia">${esc(diaDeFechaISO(rep.fecha_llegada))}</span>
                     <span>Placa:</span>
-                    <strong><span class="placa-badge" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span></strong>
+                    <strong><span class="placa-badge" style="background:${flotaGradiente(rep.color1, rep.color2)};color:${colorTextoFlota(rep.color1, rep.color2, rep.color_texto)}">${esc(rep.placa)}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(rep) ? "inline-block" : "none"}; height:2.4vh; vertical-align:middle; margin-left:.6vh;"></strong>
                 </div>
             </div>
 

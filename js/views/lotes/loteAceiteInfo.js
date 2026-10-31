@@ -1,6 +1,6 @@
 import { aceitesListView } from "../aceitesListView.js";
 import { abrirAlert, abrirEliminar } from "../../components/modal.js";
-import { fechaISOToDMY, flotaGradiente, colorTextoFlota } from "../../utils.js";
+import { fechaISOToDMY, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 
 export async function loteAceiteInfo(id_lote) {
     const cont = document.getElementById("contDin");
@@ -142,7 +142,7 @@ export async function loteAceiteInfo(id_lote) {
                 const fechaUso = af.fecha_uso && af.fecha_uso !== '0000-00-00' ? fechaISOToDMY(af.fecha_uso) : '-';
                 html += `
                     <tr>
-                        <td class="pb t10"><span class="placa-badge" style="background:${flotaGradiente(af.color1, af.color2)};color:${colorTextoFlota(af.color1, af.color2, af.color_texto)}">${af.placa}</span></td>
+                        <td class="pb t10"><span class="placa-badge" style="background:${flotaGradiente(af.color1, af.color2)};color:${colorTextoFlota(af.color1, af.color2, af.color_texto)}">${af.placa}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(af) ? "inline-block" : "none"}; height:2.4vh; vertical-align:middle; margin-left:.6vh;"></td>
                         <td class="pb pm t8">${(parseFloat(af.cantidad) || 0).toFixed(3)}</td>
                         <td class="pb pm t8">${af.estado}</td>
                         <td class="pb pm t10">${fechaUso}</td>

@@ -141,6 +141,12 @@ export function flotaGradiente(color1, color2) {
     return (c2 && c2 !== c1) ? `linear-gradient(135deg, ${c1}, ${c2})` : c1;
 }
 
+export function flotaAccidentada(flota) {
+    if (!flota) return false;
+    const estado = flota.estado || flota.estado_flota || flota.flota_estado || "";
+    return String(estado).trim() === "Accidente" || Number(flota.id_fe) === 4;
+}
+
 export function colorTextoFlota(color1, color2, override) {
     if (override && /^#[0-9a-fA-F]{6}$/.test(String(override).trim())) {
         return String(override).trim();

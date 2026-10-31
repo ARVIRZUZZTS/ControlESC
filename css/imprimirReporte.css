@@ -107,3 +107,15 @@ body {
 
 .pg-tot { font-weight: bold; }
 .pg-nota { font-style: italic; }
+
+/*------------BADGE DE VIAJES DE ACEITE (junto al titulo)------------*/
+.pg-badge-viajes {
+    display: inline-block;
+    margin-left: 2mm;
+    padding: 0.2mm 2mm;
+    border: 1px solid #000;
+    border-radius: 3mm;
+    font-size: 10pt;
+    font-weight: bold;
+    vertical-align: middle;
+}

@@ -1,5 +1,5 @@
 import { ajustesView } from "../ajustes.js";
-import { abrirModal, abrirAlert, abrirEliminar } from "../../components/modal.js";
+import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { comillasFilter } from "../../utils.js";
 
 export async function tiposPersonalView() {
@@ -33,9 +33,7 @@ export async function tiposPersonalView() {
                     <tr>
                         <th class="thl t5">ID</th>
                         <th class="th t10">Nombre Tipo Personal</th>
-                        <th class="th t5">Requiere Sucursal</th>
-                        <th class="th t3">Editar</th>
-                        <th class="thr t3">Eliminar</th>
+                    <th class="thr t5">Requiere Sucursal</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,8 +44,6 @@ export async function tiposPersonalView() {
                     <td class="pb t5">${t.id_te}</td>
                     <td class="pb pm t10">${t.nombre_tipo_personal}</td>
                     <td class="pb pm t5">${Number(t.sucursal) === 1 ? "Sí" : "No"}</td>
-                    <td class="pb pm t3"><button class="btnEditar listBtn" data-id="${t.id_te}"><img src="img/edit.svg" alt="editar"></button></td>
-                    <td class="pb t3"><button class="btnEliminar listBtn" data-id="${t.id_te}"><img src="img/trash.svg" alt="eliminar"></button></td>
                 </tr>
             `;
         });
@@ -57,15 +53,6 @@ export async function tiposPersonalView() {
         `;
 
         cont.innerHTML = html;
-
-        const byId = new Map(data.map(t => [String(t.id_te), t]));
-
-        document.querySelectorAll("#tbTiposPersonal .btnEditar").forEach(btn => {
-            btn.addEventListener("click", () => newTipoPersonalModal(byId.get(btn.dataset.id), tiposPersonalView));
-        });
-        document.querySelectorAll("#tbTiposPersonal .btnEliminar").forEach(btn => {
-            btn.addEventListener("click", () => eliminarTipoPersonal(btn.dataset.id));
-        });
 
     } catch (error) {
         cont.innerHTML = "<p>Error cargando tipos de personal</p>";
@@ -131,26 +118,6 @@ function newTipoPersonalModal(tipo, onSave) {
             }
         } catch (error) {
             abrirAlert({ mensaje: "Error al guardar el tipo de personal." });
-        }
-    });
-}
-
-function eliminarTipoPersonal(id_te) {
-    abrirEliminar({
-        titulo: "Eliminar Tipo de Personal",
-        mensaje: "Esta seguro que quiere eliminar este tipo de personal?",
-        onConfirmar: async () => {
-            const res = await fetch("php/api/store/tipoPersonalEliminar/route.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id_te: parseInt(id_te) })
-            });
-            const result = await res.json();
-            if (result.status === "success") {
-                tiposPersonalView();
-            } else {
-                abrirAlert({ mensaje: "Error: " + result.message });
-            }
         }
     });
 }

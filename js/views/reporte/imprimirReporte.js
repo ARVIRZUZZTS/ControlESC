@@ -76,7 +76,7 @@ function bloque(d) {
     egresos.push(celda({ texto: `<span class="pg-tot">TOTAL EGRESOS</span>`, egreso: d.total_egresos }));
 
     return `
-<div class="pg-tit">LINEA DE BUSES EXPRESSO SANTA CRUZ</div>
+<div class="pg-tit">LINEA DE BUSES EXPRESSO SANTA CRUZ <span class="pg-badge-viajes">${esc(d.viajes_aceite ?? 0)}.</span></div>
 <div class="pg-sub">PARTE DE LLEGADAS DE BUSES</div>
 
 <div class="pg-cab">
@@ -114,7 +114,7 @@ function bloque(d) {
    en la base (historico). Lo que no se guarda al crear el reporte no se puede
    reimprimir: la ubicacion de la liquidacion auxiliar y el tipo de pago no
    quedan almacenados, asi que se deducen de los montos que si se guardaron. */
-export function datosDesdeReporte(rep, gastos = [], anomalias = []) {
+export function datosDesdeReporte(rep, gastos = [], anomalias = [], viajesAceite = null) {
 
     const d = (v) => num(v) || 0;
     const txt = (v) => (v === null || v === undefined || String(v).trim() === "" ? "-" : String(v).trim());
@@ -181,7 +181,8 @@ export function datosDesdeReporte(rep, gastos = [], anomalias = []) {
         otros_ingresos: (rep.otros || "").trim(),
         total_ingresos: totalIngresos,
         total_egresos: totalEgresos,
-        balance: totalIngresos - totalEgresos
+        balance: totalIngresos - totalEgresos,
+        viajes_aceite: (viajesAceite === null || viajesAceite === undefined) ? (Number(rep.viajes_aceite) || 0) : (Number(viajesAceite) || 0)
     };
 }
 

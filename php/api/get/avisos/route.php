@@ -12,13 +12,15 @@ try {
                          rd.id_rd, rd.codigo,
                          mr.nombre_marca_rueda, mr.media_viajes,
                          rd.viajes_hechos, rl.fecha_compra,
-                         f.color1, f.color2, f.color_texto
+                         f.color1, f.color2, f.color_texto, f.id_fe,
+                         IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado_flota
                   FROM rueda_flota rf
                   INNER JOIN rueda_detalle rd ON rd.id_rd = rf.id_rd
                   INNER JOIN rueda_lote rl ON rl.id_rl = rd.id_rl
                   INNER JOIN marca_rueda mr ON mr.id_marca_rueda = rd.id_marca_rueda
                   LEFT JOIN posicion_rueda p ON p.id_pr = rf.id_pr
                   LEFT JOIN flota f ON f.placa = rf.placa
+                  LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
                   WHERE rf.estado = 'Operativa'
                     AND mr.media_viajes IS NOT NULL
                     AND mr.media_viajes > 0
@@ -39,10 +41,12 @@ try {
     $stmt->close();
 
     $sqlAceite = "SELECT f.placa, f.viajes_aceite, f.aceite_actual, f.capacidad_aceite,
-                         f.color1, f.color2, f.color_texto,
+                         f.color1, f.color2, f.color_texto, f.id_fe,
+                         IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado_flota,
                          (SELECT MAX(af.fecha_uso) FROM aceite_flota af
                           WHERE af.placa = f.placa AND af.fecha_uso > '0000-00-00') AS ultimo_cambio
                   FROM flota f
+                  LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
                   WHERE f.viajes_aceite > 0
                   ORDER BY f.viajes_aceite DESC, f.placa ASC";
 
@@ -61,11 +65,13 @@ try {
 
     $sqlAnom = "SELECT a.id_as, a.placa, a.tipo, a.evento, a.viajes, a.limite, a.fecha, a.detalle,
                        rd.codigo, mr.nombre_marca_rueda,
-                       f.color1, f.color2, f.color_texto
+                       f.color1, f.color2, f.color_texto, f.id_fe,
+                       IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado_flota
                 FROM anomalia_sistema a
                 LEFT JOIN rueda_detalle rd ON rd.id_rd = a.id_rd
                 LEFT JOIN marca_rueda mr ON mr.id_marca_rueda = rd.id_marca_rueda
                 LEFT JOIN flota f ON f.placa = a.placa
+                LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
                 ORDER BY a.fecha DESC, a.id_as DESC";
 
     $stmt = $conexion->prepare($sqlAnom);

@@ -1,4 +1,4 @@
-import { fechaISOToDMY, estadoAceiteClase, flotaGradiente, colorTextoFlota } from "../../utils.js";
+import { fechaISOToDMY, estadoAceiteClase, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 import { reportesView } from "../reportesView.js";
 import { abrirHojaImpresion, imprimirParte, datosDesdeReporte } from "./imprimirReporte.js";
 import { reporteFinalizadoView } from "./reporteFinalizadoView.js";
@@ -77,7 +77,7 @@ export async function historialReporteView({ placa, onBack = reportesView } = {}
         const h2Hist = title.querySelector("h2");
         if (h2Hist) h2Hist.classList.add("titulo-placa");
         if (h2Hist && flota) {
-            h2Hist.innerHTML = `HISTORIAL de <span class="placa-badge placa-badge-titulo" style="background:${flota ? flotaGradiente(flota.color1, flota.color2) : '#6366f1'};color:${flota ? colorTextoFlota(flota.color1, flota.color2, flota.color_texto) : '#ffffff'}">${esc(placa)}</span>`;
+            h2Hist.innerHTML = `HISTORIAL de <span class="placa-badge placa-badge-titulo" style="background:${flota ? flotaGradiente(flota.color1, flota.color2) : '#6366f1'};color:${flota ? colorTextoFlota(flota.color1, flota.color2, flota.color_texto) : '#ffffff'}">${esc(placa)}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(flota) ? "inline-block" : "none"}; height:3vh; vertical-align:middle; margin-left:1vh;">`;
         }
 
         cont.innerHTML = `
@@ -157,7 +157,7 @@ async function imprimirDesdeHistorial(btn) {
         const res = await fetch(`php/api/get/reporteDetalle/route.php?id_reporte=${encodeURIComponent(btn.dataset.printRep)}`);
         const data = await res.json();
         if (data.status === "error") throw new Error(data.message);
-        imprimirParte(datosDesdeReporte(data.reporte, data.gastos, data.anomalias), win);
+        imprimirParte(datosDesdeReporte(data.reporte, data.gastos, data.anomalias, data.flota?.viajes_aceite), win);
     } catch (error) {
         win.close();
         abrirAlert({ mensaje: error.message || "Error al cargar el reporte para imprimir." });

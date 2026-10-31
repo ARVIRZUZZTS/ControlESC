@@ -9,7 +9,7 @@ try {
     }
     $id_reporte = (int)$_GET['id_reporte'];
 
-    $stmt = $conexion->prepare("SELECT r.*, f.color1, f.color2, f.color_texto FROM reporte r LEFT JOIN flota f ON f.placa = r.placa WHERE r.id_reporte = ?");
+    $stmt = $conexion->prepare("SELECT r.*, f.color1, f.color2, f.color_texto, f.id_fe, f.viajes_aceite, IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado FROM reporte r LEFT JOIN flota f ON f.placa = r.placa LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe WHERE r.id_reporte = ?");
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conexion->error);
     }

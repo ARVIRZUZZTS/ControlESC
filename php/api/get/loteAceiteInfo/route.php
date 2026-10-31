@@ -67,10 +67,12 @@ try {
     $stmtDetalle->close();
 
     $sqlFlotas = "SELECT af.id_af, af.placa, af.cantidad, af.estado, af.fecha_uso,
-                         f.color1, f.color2, f.color_texto
+                         f.color1, f.color2, f.color_texto, f.id_fe,
+                         IFNULL(fe.nombre_estado_flota, 'Sin estado') AS estado_flota
                   FROM aceite_flota af
                   INNER JOIN aceite_detalle ad ON af.id_ad = ad.id_ad
                   LEFT JOIN flota f ON f.placa = af.placa
+                  LEFT JOIN flota_estados fe ON fe.id_fe = f.id_fe
                   WHERE ad.id_al = ?
                   ORDER BY af.fecha_uso DESC";
 

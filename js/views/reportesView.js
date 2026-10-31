@@ -1,6 +1,6 @@
 import { reporteViaje } from "./reporte/reporteInfo.js";
 import { historialReporteView } from "./reporte/historialReporte.js";
-import { fechaISOToDMY, flotaGradiente, colorTextoFlota } from "../utils.js";
+import { fechaISOToDMY, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../utils.js";
 
 export async function reportesView() {
 
@@ -100,7 +100,7 @@ export async function reportesView() {
                     : "Sin reporte abierto";
                 html += `
                     <tr>
-                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(f.color1, f.color2)};color:${colorTextoFlota(f.color1, f.color2, f.color_texto)}">${f.placa}</span></td>
+                        <td class="pb t8"><span class="placa-badge" style="background:${flotaGradiente(f.color1, f.color2)};color:${colorTextoFlota(f.color1, f.color2, f.color_texto)}">${f.placa}</span><img src="img/accidente.svg" alt="Accidentada" style="display:${flotaAccidentada(f) ? "inline-block" : "none"}; height:2.4vh; vertical-align:middle; margin-left:.6vh;"></td>
                         <td class="pb pm t8">${f.estado}</td>
                         <td class="pb pm t10">${rep}</td>
                         <td class="pb pm t3">
