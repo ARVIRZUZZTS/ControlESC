@@ -1,0 +1,197 @@
+body{
+    margin: 0;
+    background-image: url('../img/f1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    height: 100vh;
+    position: relative;
+    color: #0a1f44;
+    font-family: monospace;
+}
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    filter: blur(8px);
+    z-index: -1; 
+}
+header {
+    background: rgba(255, 255, 255, 0.500);
+    border-radius: 5px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 20px;
+    font-size: large;
+}
+header h1 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0px;
+}
+header img {
+    width: 300px;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+}
+
+main {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px 0px 20px;
+}
+#botones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(255,255,255,0.5);
+    border-radius: 5px;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 15px;
+    min-width: 120px;
+}
+.bot {
+    padding: 0;
+    width: 100%;
+}
+.bot button { width: 100%; }
+.bot button .emoji {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-block;
+}
+#lista {
+    padding: 3px 20px;
+    background-color: rgb(255,255,255,0.5);
+    border-radius: 5px;
+    width: 100%;
+    height: 800px;
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#back {
+    background-color: rgb(255, 0, 0);
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    transition: 300ms;
+    width: 100%;
+    box-sizing: border-box;
+}
+#back:hover {
+    background-color: rgb(158, 0, 0);
+}
+#foo {
+    display: flex;
+    gap: 10px;
+}
+#foo h3 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+.grupo-buses {
+    width: 100%;
+}
+.bus-container {
+    width: 440px !important;
+}
+.bus {
+  position: relative;
+  width: 440px;
+  height: 700px;
+  font-size: xx-large;
+  border-radius: 5px;
+  background-color: #eee;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.bus-container h3 {
+    font-size: x-large;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 1px 0px;
+    text-align: center;
+    width: 438px !important;
+    max-width: 438px;
+    margin: 0px;
+}
+.busButt {
+    display: flex;
+    width: 440px;
+    justify-content: space-between;
+}
+.asiento {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: default; /* Cambiado de grab a default para que no sea arrastrable */
+  transition: all 0.3s ease;
+  background-color: #4CAF50;
+}
+.asOcu {
+    background-color: red;
+}
+.asLib {
+    background-color: #4CAF50;
+}
+.asLib:hover {
+    background-color: rgb(4, 148, 4);
+}
+.extra {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: default; /* Cambiado de grab a default para que no sea arrastrable */
+  overflow: hidden;
+}
+.elePue {padding: 5px; border-radius: 5px; background-color: rgb(0, 145, 170); width: 30px !important; height:  30px !important;}
+.eleBan {padding: 5px; border-radius: 5px; background-color: rgb(0, 60, 224); width: 30px !important; height:  30px !important;}
+.eleTv {padding: 5px; border-radius: 5px; background-color: rgb(255, 153, 0); width: 30px !important; height:  30px !important;}
+.ele2 {padding: 5px; border-radius: 5px; background-color: rgb(17, 124, 65); width: 300px !important; height:  10px !important;}
+
+.extra img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  padding: 5px;
+}

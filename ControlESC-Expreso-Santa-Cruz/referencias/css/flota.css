@@ -1,0 +1,266 @@
+body{
+    margin: 0;
+    background-image: url('../img/f1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    min-height: 100vh;
+    position: relative;
+    color: #0a1f44;
+    font-family: monospace;
+}
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    filter: blur(8px);
+    z-index: -1;
+}
+header {
+    background: rgba(255, 255, 255, 0.500);
+    border-radius: 5px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 20px;
+    font-size: large;
+}
+header div {
+    display: flex;
+    gap: 10px;
+}
+header h1 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0px;
+}
+header h3 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+header img {
+    width: 300px;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+}
+
+main {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    width: 95%;
+}
+#botones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 15px;
+    gap: 8px;
+    min-width: 120px;
+}
+.bot {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.bot button { width: 100%; }
+.bot button .emoji {
+    font-size: 24px;
+    line-height: 1;
+}
+#crear, #back, #chofer {
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    transition: 300ms;
+    width: 100%;
+    box-sizing: border-box;
+}
+#crear {
+    background-color: rgb(255, 136, 0);
+}
+#crear:hover {
+    background-color: rgb(204, 109, 0);
+}
+#back {
+    background-color: rgb(255, 0, 0);
+}
+#back:hover {
+    background-color: rgb(158, 0, 0);
+}
+#chofer {
+    background-color: rgb(225, 0, 255);
+}
+#chofer:hover {
+    background-color: rgb(240, 126, 255);
+}
+
+#formFlota {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    min-width: 350px;
+    max-height: 800px;
+    overflow-y: auto;
+}
+#formFlota h2 {
+    margin: 0 0 10px 0;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+.field-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #0a1f44;
+}
+#formFlota input,
+#formFlota select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+#formFlota select {
+    cursor: pointer;
+}
+#formFlota .error {
+    color: red;
+    font-size: 12px;
+    min-height: 16px;
+}
+.formButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+#guardarFlota {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    transition: 300ms;
+}
+#guardarFlota:hover {
+    background-color: rgb(2, 117, 2);
+}
+#cancelarFlota {
+    background-color: rgb(255, 0, 0);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    transition: 300ms;
+}
+#cancelarFlota:hover {
+    background-color: rgb(158, 0, 0);
+}
+
+#lista {
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    height: 800px;
+    max-height: 800px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.flota-card {
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 300ms;
+}
+.flota-card:hover {
+    background-color: rgb(240, 240, 240);
+}
+.flota-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.flota-info .placa {
+    font-size: 20px;
+    font-weight: bold;
+}
+.flota-info .detalle {
+    font-size: 14px;
+    color: #555;
+}
+.flota-actions {
+    display: flex;
+    gap: 8px;
+}
+.flota-actions button {
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 300ms;
+}
+.flota-actions .editBtn {
+    background-color: rgb(0, 119, 255);
+}
+.flota-actions .editBtn:hover {
+    background-color: rgb(0, 67, 145);
+}
+.flota-actions .delBtn {
+    background-color: rgb(43, 43, 43);
+}
+.flota-actions .delBtn:hover {
+    background-color: rgb(0, 0, 0);
+}

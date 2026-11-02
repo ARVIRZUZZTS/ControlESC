@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NUEVO PASAJERO</title>
+    <link rel="stylesheet" href="css/pasajero.css">    
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h1>NUEVO PASAJERO</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>
+    </header>
+
+    <main>
+        <div id="botones">
+            <div class="bot">
+            <button id="crear" onclick="crear()">
+                <span class="emoji">💾</span>
+                <span>GUARDAR</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="back" onclick="back()">
+                <span class="emoji">⬅</span>
+                <span>ATRAS</span>
+            </button>
+            </div>
+        </div>
+        <div id="superBus">
+            <div id="bus"></div>
+        </div>
+        <div id="lista">
+            <div id="title"></div>
+            <div id="allDina">
+		        <div id="dinamic"></div>
+                <div class="flexiDat">
+                    <h2>PRECIO POR ASIENTO:</h2>
+                    <input type="number" placeholder="PRECIO" name="pr" maxlength="5" oninput="this.value = this.value.replace(/[^0-9]/g, '')" list="l2-list" required>
+                </div>
+                <div class="flexiDat">
+                    <h2>DESTINO:</h2>
+                    <input id="dest" type="text" placeholder="DESTINO" name="ds" maxlength="25">
+                </div>
+                <div class="flexiDat">
+                    <h2>ASIENTO:</h2>
+                    <input id="asH" type="text" placeholder="ASIENTO" name="as" oninput="this.value = this.value.replace(/[^0-9]/g, ',')" list="l2-list" autocomplete="off">
+                </div>                    
+            </div>
+    </main>
+    <div id="printP" style="display: none;"></div>
+
+    <script src="js/pasajero.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ import { destinosView } from "./ajustes/destinos.js";
 import { tiposPersonalView } from "./ajustes/tiposPersonal.js";
 import { dieselView } from "./ajustes/diesel.js";
 import { ubicacionesLlegadaView } from "./ajustes/ubicacionesLlegada.js";
+import { planillasView } from "./ajustes/planillas.js";
 import { marcasAceitesView } from "./marcas/marcasAceitesView.js";
 import { marcasRuedasView } from "./marcas/ruedas.js";
 import { sucursalesView } from "./ajustes/sucursales.js";
@@ -29,6 +30,7 @@ export function ajustesView() {
             </div>
             <div class="ajustesRow center">
                 <button id="ajDiesel" class="ajustesBtn">DIESEL</button>
+                <button id="ajPlanillas" class="ajustesBtn">PLANILLAS</button>
                 <button id="ajUbicacionLlegada" class="ajustesBtn">UBIC. LLEGADA</button>
             </div>
         </div>
@@ -42,6 +44,7 @@ export function ajustesView() {
     document.getElementById("ajSucursales").addEventListener("click", sucursalesView);
     document.getElementById("ajPeajes").addEventListener("click", peajesView);
     document.getElementById("ajDiesel").addEventListener("click", dieselView);
+    document.getElementById("ajPlanillas").addEventListener("click", planillasView);
     document.getElementById("ajUbicacionLlegada").addEventListener("click", ubicacionesLlegadaView);
 
 }    

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu Pasajeros</title>
+    <link rel="stylesheet" href="css/menu.css">    
+    <link rel="stylesheet" href="libs/flatpickr/flatpickr.min.css">
+    <script src="libs/flatpickr/flatpickr.min.js"></script>
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h1>MENU DE PASAJEROS</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>
+    </header>
+
+    <main>
+        <div id="botones">
+            <div class="bot">
+                <button id="crear" onclick="crear()">
+                    <span class="emoji">📋</span>
+                    <span>NOMINA</span>
+                </button>
+            </div>
+            
+            <div class="bot">
+                <button id="diario" onclick="diario()">
+                    <span class="emoji">📅</span>
+                    <span>DIARIO</span>
+                </button>
+            </div>
+            <div class="bot">
+                <button id="marca" onclick="planilla()">
+                    <span class="emoji">🗂</span>
+                    <span>PLANILLA</span>
+                </button>
+            </div>
+            <div class="bot">
+                <button id="flota" onclick="flota()">
+                    <span class="emoji">🚌</span>
+                    <span>FLOTA</span>
+                </button>
+            </div>
+            <div class="bot">
+                <button id="chofer" onclick="chofer()">
+                    <span class="emoji">👤</span>
+                    <span>CHOFER</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="lista">
+            <div id="title">
+                <h2>REPORTE</h2>
+                <h2>PLACA</h2>
+                <h2>FECHA</h2>
+            </div>
+            <div id="dinamic"></div>
+        </div>
+        <div id="fechaBox">
+            <div id="calendario"></div>
+        </div>
+    </main>
+
+    <script src="js/menu.js"></script>
+    <script src="libs/flatpickr/es.js"></script>
+</body>
+</html>

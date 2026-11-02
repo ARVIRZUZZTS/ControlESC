@@ -368,6 +368,9 @@
     gap: 6vh;
     align-items: flex-start;
 }
+.modal-panel-planillaEditor {
+    max-width: min-content;
+}
 .posCol {
     flex: 1;
     min-width: 0;

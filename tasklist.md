@@ -37,9 +37,6 @@
     - [/] Nueva Marcas de Aceite
     - [/] Editar Aceite
     - [/] Eliminar Aceite
-- ### Configuracion
-    - [-] Vista de Configuracion
-    - [-] Vista de Planilla de Posicion de Ruedas
 ### Supabase (sucursal + login)
 - [/] SQL Supabase: tabla sucursal, tipo_empleado -> rol, usuario admin
 - [/] Migracion local: tabla usuarios_rol (login sin internet)

@@ -1,0 +1,208 @@
+body{
+    margin: 0;
+    background-image: url('../img/f1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    height: 100vh;
+    position: relative;
+    color: #0a1f44;
+    font-family: monospace;
+}
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    filter: blur(8px);
+    z-index: -1; 
+}
+header {
+    background: rgba(255, 255, 255, 0.500);
+    border-radius: 5px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 20px;
+    font-size: large;
+}
+header div {
+    display: flex;
+    gap: 10px;
+}
+header h1 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0px;
+}
+header h3 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+header img {
+    width: 300px;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+}
+
+main {
+    display: flex;
+    gap: 50px;
+    padding: 20px 10%;
+}
+#botones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(255,255,255,0.5);
+    border-radius: 5px;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 15px;
+    min-width: 120px;
+}
+.bot {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.bot button {
+    width: 100%;
+}
+.bot button .emoji {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-block;
+}
+#lista {
+    padding: 20px;
+    background-color: rgb(255,255,255,0.5);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#crear , #diario, #marca, #flota, #chofer{
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    transition: 300ms;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+#crear {
+    background-color: rgb(0, 170, 0);
+}
+#crear:hover {
+    background-color: rgb(2, 117, 2);
+}
+#diario {
+    background-color: rgb(0, 119, 255);
+}
+#diario:hover {
+    background-color: rgb(0, 67, 145);
+}
+#marca {
+    background-color: rgb(132, 0, 255);
+}
+#marca:hover {
+    background-color: rgb(79, 0, 153);
+}
+#flota {
+    background-color: rgb(255, 136, 0);
+}
+#flota:hover {
+    background-color: rgb(204, 109, 0);
+}
+#chofer {
+    background-color: rgb(225, 0, 255);
+}
+#chofer:hover {
+    background-color: rgb(240, 126, 255);
+}
+
+
+#title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: large;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    
+}
+#title h2 {
+    margin: 0px;
+    padding: 20px 30px;
+}
+#dinamic {
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    width: 100%;
+    max-width: 100%;    
+    height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#dinamic h2 {
+    text-align: center;
+}
+
+.reporte-boton {
+    background-color: white;
+    display: flex;
+    width: 100%;
+    margin: auto;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: 300ms;
+}
+.reporte-boton:hover {
+    background-color: rgb(212, 212, 212);
+}
+.reporte-boton div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.reporte-boton:first-child {
+    margin-top: 10px;
+}
+#fechaBox {
+    margin: auto;
+}
+.flatpickr-weekdaycontainer { 
+    font-size: x-large;
+}
+.dayContainer {
+    font-size: x-large;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>ADMINISTRAR FLOTA</title>
+    <link rel="stylesheet" href="css/flota.css">
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h1>ADMINISTRAR FLOTA</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>
+    </header>
+
+    <main>
+        <div id="botones">
+            <div class="bot">
+                <button id="crear" onclick="mostrarForm()">
+                    <span class="emoji">🚌</span>
+                    <span>NUEVA</span>
+                </button>
+            </div>
+            <div class="bot">
+                <button id="back" onclick="back()">
+                    <span class="emoji">⬅️</span>
+                    <span>ATRAS</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="formFlota" style="display:none;">
+            <h2 id="formTitle">NUEVA FLOTA</h2>
+            <input type="hidden" id="editOriginal">
+            <div class="field-group">
+                <label>PLACA</label>
+                <input type="text" id="placa" placeholder="1234-ABC" maxlength="8" style="text-transform:uppercase" oninput="validarPlaca()">
+                <div id="placaError" class="error"></div>
+            </div>
+            <div class="field-group">
+                <label>PROPIETARIO</label>
+                <input type="text" id="propietario" placeholder="PROPIETARIO">
+            </div>
+            <div class="field-group">
+                <label>MARCA</label>
+                <input type="text" id="marca" placeholder="MARCA">
+            </div>
+            <datalist id="listaChoferes"></datalist>
+            <div class="field-group">
+                <label>CONDUCTOR 1</label>
+                <input type="text" id="conductor1" placeholder="CONDUCTOR 1" list="listaChoferes" oninput="autocompletarLicencia(1)">
+            </div>
+            <div class="field-group">
+                <label>LICENCIA 1</label>
+                <input type="text" id="licencia1" placeholder="LICENCIA 1">
+            </div>
+            <div class="field-group">
+                <label>CONDUCTOR 2</label>
+                <input type="text" id="conductor2" placeholder="CONDUCTOR 2" list="listaChoferes" oninput="autocompletarLicencia(2)">
+            </div>
+            <div class="field-group">
+                <label>LICENCIA 2</label>
+                <input type="text" id="licencia2" placeholder="LICENCIA 2">
+            </div>
+            <div class="field-group">
+                <label>PLANILLA</label>
+                <select id="nombre_planilla">
+                    <option value="">SIN PLANILLA</option>
+                </select>
+            </div>
+            <div class="formButtons">
+                <button id="guardarFlota" onclick="guardarFlota()">GUARDAR</button>
+                <button id="cancelarFlota" onclick="cancelarForm()">CANCELAR</button>
+            </div>
+        </div>
+
+        <div id="lista"></div>
+    </main>
+
+    <script src="js/flota.js"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+﻿body{
+    margin: 0;
+    background-image: url('../img/f1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    height: 100vh;
+    position: relative;
+    color: #0a1f44;
+    font-family: monospace;
+
+}
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    filter: blur(8px);
+    z-index: -1; 
+}
+header {
+    background: rgba(255, 255, 255, 0.500);
+    border-radius: 5px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 20px;
+    font-size: large;
+}
+header div {
+    display: flex;
+    gap: 10px;
+}
+header h1 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0px;
+}
+header h3 {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+header img {
+    width: 300px;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+}
+main {
+    display: flex;
+    gap: 50px;
+    padding: 20px 10%;
+}
+input {
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: large;
+    border-radius: 5px;
+    border: 1px solid black;
+    width: 370px;
+    height: 30px;
+}
+.botones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    gap: 8px;
+    padding: 15px;
+    min-width: 120px;
+}
+.bot {
+    padding: 5px;
+    width: 100%;
+}
+.bot button { width: 100%; }
+.bot button .emoji {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-block;
+}
+#asiento , #puerta , #banio , #tv, #piso2, #reset, #back, #del {
+    background-color: rgb(0, 145, 170);
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    transition: 300ms;
+    width: 100%;
+    box-sizing: border-box;
+}
+#back {
+    background-color: red !important;
+}
+#back:hover {
+    background-color: rgb(146, 0, 0) !important;
+}
+#puerta:hover {
+    background-color: rgb(0, 88, 104);
+}
+#asiento {
+    background-color: rgb(19, 0, 129) !important;
+}
+#asiento:hover {
+    background-color: rgb(10, 0, 70) !important;
+}
+#reset {
+    background-color: rgb(0, 196, 179) !important;
+}
+#reset:hover {
+    background-color: rgb(2, 128, 117) !important;
+}
+#banio {
+    background-color: rgb(0, 60, 224) !important;
+}
+#banio:hover {
+    background-color: rgb(0, 43, 160) !important;
+}
+#tv {
+    background-color: rgb(255, 153, 0) !important;
+}
+#tv:hover {
+    background-color: rgb(199, 119, 0) !important;
+}
+#piso2 {
+    background-color: rgb(17, 124, 65) !important;
+}
+#piso2:hover {
+    background-color: rgb(12, 90, 47) !important;
+}
+#del {
+    background-color: rgb(43, 43, 43) !important;
+}
+#del:hover {
+    background-color: rgb(0, 0, 0) !important;
+}
+
+
+#bus {
+  position: relative;
+  width: 440px;   /* o lo que uses */
+  height: 700px;
+  font-size: xx-large;
+  border-radius: 5px;
+  background-color: #eee;
+  margin: 0 auto; /* esto centra horizontalmente el bus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* esto evita que se "salga" visualmente */
+}
+
+
+.asiento {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: grab;
+}
+.asiento, .extra {
+  user-select: none; /* Evita la selección de texto al arrastrar */
+  touch-action: none; /* Mejora el comportamiento en dispositivos táctiles */
+}
+#fh2o {
+    margin-top: 0px;
+}
+.extra img {
+  pointer-events: none; /* Esto hace que los clicks pasen a través de la imagen al contenedor */
+}
+.extra {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: grab;
+  overflow: hidden; /* Para que las imágenes no sobresalgan */
+}
+
+.extra img {
+  object-fit: contain; /* Para que la imagen se ajuste manteniendo proporciones */
+  width: 100%;
+  height: 100%;
+}
+.elePue {padding: 5px; border-radius: 5px; background-color: rgb(0, 145, 170); width: 30px !important; height:  30px !important;}
+.eleBan {padding: 5px; border-radius: 5px; background-color: rgb(0, 60, 224); width: 30px !important; height:  30px !important;}
+.eleTv {padding: 5px; border-radius: 5px; background-color: rgb(255, 153, 0); width: 30px !important; height:  30px !important;}
+.ele2 {padding: 5px; border-radius: 5px; background-color: rgb(17, 124, 65); width: 300px !important; height:  10px !important;}
+
+.biAsi {background-color: rgb(19, 0, 129);}
+.biAsi:hover {background-color: rgb(10, 0, 70);}
+.biPue {background-color: rgb(0, 145, 170);}
+.biPue:hover {background-color: rgb(0, 88, 104);}
+.biBan {background-color: rgb(0, 60, 224) !important;}
+.biBan:hover {background-color: rgb(0, 43, 160) !important;}
+.biTv {background-color: rgb(255, 153, 0) !important;}
+.biTv:hover {background-color: rgb(199, 119, 0) !important;}
+
+.butOps {
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+  margin: 2px;
+  padding: 8px 12px;
+  transition: 300ms;
+    cursor: pointer;
+}
+#options {
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+}
+#options h2 {
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+}
+#options div div button {
+    padding: 5px;
+    border-radius: 5px;
+    width: 100px;
+    color: white;
+    border: 1px white solid;
+    font-size: x-large;
+}
+#bus.modo-eliminar {
+  border: 5px solid red;
+}
+#sav {
+    background-color: rgb(0, 170, 0);
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0px;
+    cursor: pointer;
+    transition: 300ms;
+    width: 100%;
+    box-sizing: border-box;
+}
+#sav:hover {
+    background-color: rgb(2, 117, 2);
+}

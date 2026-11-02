@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editor de Bus</title>
+  <link rel="stylesheet" href="css/asientos.css">
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+<header>
+    <img src="img/logoX.png" alt="Logo">
+    <div>
+        <h1>DISEÑO DE ASIENTOS DEL BUS</h1>
+        <h3 id="fecha"></h3>
+        <h3 id="hora"></h3>
+    </div>
+</header>
+<main>
+    <div class="botones">
+        <div class="bot">
+            <button id="asiento" onclick="agregarAsiento()">
+                <span class="emoji">💺</span>
+                <span>ASIENTO</span>
+            </button>
+        </div>
+        <div class="bot">
+            <button id="puerta" onclick="agregarElemento('puerta')">
+                <span class="emoji">🚪</span>
+                <span>PUERTA</span>
+            </button>
+        </div>
+        <div class="bot">
+            <button id="banio" onclick="agregarElemento('baño')">
+                <span class="emoji">🚽</span>
+                <span>BAÑO</span>
+            </button>
+        </div>
+        <div class="bot">
+            <button id="tv" onclick="agregarElemento('tv')">
+                <span class="emoji">📺</span>
+                <span>TV</span>
+            </button>
+        </div>
+    </div>
+    <div>
+        <div id="bus"></div>
+    </div>
+    <div class="botones">
+        <div class="bot">
+            <button id="piso2" onclick="agregarElemento('2do piso')">
+                <span class="emoji">🏗</span>
+                <span>PISO</span>
+            </button>
+        </div>        
+        <div class="bot">
+            <button id="reset" onclick="reset()">
+                <span class="emoji">🔄</span>
+                <span>RESTAURAR</span>
+            </button>
+        </div>
+        <div class="bot">
+            <button id="del" onclick="activarModoEliminar()">
+                <span class="emoji">🗑</span>
+                <span>ELIMINAR</span>
+            </button>
+        </div>
+        <div class="bot">
+            <button id="back" onclick="back()">
+                <span class="emoji">⬅</span>
+                <span>ATRAS</span>
+            </button>
+        </div>
+    </div>
+    <div id="options">
+        <div>
+            <h2 id="fh2o">N° de FILA de ASIENTOS</h2>
+            <div class="butOps">
+                <button class="biAsi" onclick="asi(3)">3</button>
+                <button class="biAsi" onclick="asi(4)">4</button>
+            </div>
+        </div>
+        <div>
+            <h2>N° de PUERTAS</h2>
+            <div class="butOps">
+                <button class="biPue" onclick="pue(1)">1</button>
+                <button class="biPue" onclick="pue(2)">2</button>
+                <button class="biPue" onclick="pue(3)">3</button>
+            </div>
+        </div>
+        <div>
+            <h2>N° de BAÑOS</h2>
+            <div class="butOps">
+                <button class="biBan" onclick="ban(1)">1</button>
+                <button class="biBan" onclick="ban(2)">2</button>
+            </div>
+        </div>
+        <div>
+            <h2>N° de TV</h2>
+            <div class="butOps">
+                <button class="biTv" onclick="tv(1)">1</button>
+                <button class="biTv" onclick="tv(2)">2</button>
+                <button class="biTv" onclick="tv(3)">3</button>
+            </div>
+        </div>
+        <br>
+        <input id="busName" type="text" placeholder="Ingrese el nombre de la PLANILLA">
+        <button id="sav" onclick="guardarPosiciones()">
+            <span class="emoji">💾</span>
+            <span>GUARDAR</span>
+        </button>
+    </div>
+    
+</main>
+    <script src="js/asientos.js"></script>
+</body>
+</html>

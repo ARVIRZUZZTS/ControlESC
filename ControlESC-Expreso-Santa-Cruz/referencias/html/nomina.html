@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CREAR VIAJE</title>
+    <link rel="stylesheet" href="css/nomina.css">
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h1>CREAR VIAJE</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>        
+    </header>
+
+    <main>
+        <div id="botones">
+            <div class="bot">
+            <button id="save" onclick="save()">
+                <span class="emoji">💾</span>
+                <span>GUARDAR</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="back" onclick="back()">
+                <span class="emoji">⬅</span>
+                <span>ATRAS</span>
+            </button>
+            </div>
+        </div>
+
+        <div id="lista">
+            <input type="hidden" id="pl">
+
+            <div id="step1">
+                <h2>?? SELECCIONE PLACA</h2>
+                <input type="text" id="pl-input" list="pl-list" placeholder="SELECCIONE PLACA" autocomplete="off">
+                <datalist id="pl-list"></datalist>
+                <p>Seleccione una placa para autocompletar los datos del viaje</p>
+            </div>
+
+            <div id="step2" style="display:none;">
+                <div class="card">
+                    <div class="card-section">
+                        <h3>?? VEHÍCULO</h3>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>PLACA</label>
+                                <div class="field-with-btn">
+                                    <input type="text" id="pl-display">
+                                    <button type="button" class="btn-small" onclick="resetPlaca()" title="Cambiar placa">??</button>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>PLANILLA</label>
+                                <input type="text" id="placa">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-section">
+                        <h3>?? CONDUCTORES</h3>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>PROPIETARIO</label>
+                                <input type="text" id="propietario">
+                            </div>
+                            <div class="field">
+                                <label>MARCA</label>
+                                <input type="text" id="marca">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>CONDUCTOR 1</label>
+                                <input type="text" id="c1" list="chofer-list" autocomplete="off">
+                            </div>
+                            <div class="field">
+                                <label>LICENCIA 1</label>
+                                <input type="text" id="l1">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>CONDUCTOR 2</label>
+                                <input type="text" id="c2" list="chofer-list" autocomplete="off">
+                            </div>
+                            <div class="field">
+                                <label>LICENCIA 2</label>
+                                <input type="text" id="l2">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>AYUDANTE</label>
+                                <input type="text" id="ay" placeholder="AYUDANTE (opcional)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-section">
+                        <h3>?? VIAJE</h3>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>DESTINO</label>
+                                <input type="text" id="dt" list="dt-list" placeholder="DESTINO" autocomplete="off">
+                                <datalist id="chofer-list"></datalist>
+                                <datalist id="dt-list"></datalist>
+                            </div>
+                            <div class="field">
+                                <label>CARRIL</label>
+                                <input type="text" id="ca" placeholder="30" list="ca-list" oninput="this.value = this.value.replace(/[^0-9]/g, '')" autocomplete="off">
+                                <datalist id="ca-list"></datalist>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>FECHA</label>
+                                <input type="text" id="fe">
+                            </div>
+                            <div class="field">
+                                <label>HORA</label>
+                                <input type="text" id="hr" placeholder="HH:MM" list="hr-list" autocomplete="off">
+                                <datalist id="hr-list"></datalist>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/nomina.js"></script>
+</body>
+</html>

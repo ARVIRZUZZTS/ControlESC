@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>VENTA DIARIA</title>
+    <link rel="stylesheet" href="css/diario.css">    
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h3 id="tota">TOTAL: 0BS</h3>
+            <h1>VENTA DIARIA</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>      
+    </header>
+
+    <main>
+        <div id="botones">
+            <div class="bot">
+            <button id="crear" onclick="crear()">
+                <span class="emoji">➕</span>
+                <span>PASAJERO</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="new" onclick="printy(0)">
+                <span class="emoji">📄</span>
+                <span>VACIO</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="back" onclick="back()">
+                <span class="emoji">⬅️</span>
+                <span>ATRAS</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="buses" onclick="buses()">
+                <span class="emoji">🚌</span>
+                <span>BUSES</span>
+            </button>
+            </div>
+        </div>
+
+        <div id="lista">
+            <div id="title">
+                <h2 id="hrp">REPORTE</h2>
+                <h2 id="hsv">GUARDAR</h2>
+                <h2 id="hnm">NOMBRE</h2>
+                <h2 id="hci">CI</h2>
+                <h2 id="hdt">DESTINO</h2>
+                <h2 id="has">ASIENTO</h2>
+                <h2 id="hpr">TOTAL</h2>
+                <h2 id="him">IMPRIMIR</h2>
+            </div>
+            <div id="dinamic"></div>
+        </div>
+    </main>
+    
+    <div id="printP"></div>
+
+    <script src="js/diario.js"></script>
+</body>
+</html>

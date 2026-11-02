@@ -1,0 +1,156 @@
+﻿/* Editor de planillas (ControlESC) - acotado */
+#bus {
+  position: relative;
+  width: 440px;
+  height: 700px;
+  font-size: xx-large;
+  border-radius: 5px;
+  background-color: #eee;
+  margin: 0 auto;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.asiento, .extra {
+  user-select: none;
+  touch-action: none;
+}
+.asiento {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: grab;
+}
+.extra {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: grab;
+  overflow: hidden;
+}
+.extra img {
+  pointer-events: none;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+.elePue { background-color: rgb(0, 145, 170); width: 30px !important; height: 30px !important; }
+.eleBan { background-color: rgb(0, 60, 224); width: 30px !important; height: 30px !important; }
+.eleTv { background-color: rgb(255, 153, 0); width: 30px !important; height: 30px !important; }
+.ele2 { background-color: rgb(17, 124, 65); width: 300px !important; height: 10px !important; }
+#bus.modo-eliminar { border: 5px solid red; }
+.butOps {
+  display: flex;
+  justify-content: space-around;
+  gap: 0.5vh;
+}
+.biAsi, .biPue, .biBan, .biTv {
+  border-radius: 5px;
+  padding: 0.5vh 1vh;
+  min-height: 4vh;
+  font-weight: bold;
+  cursor: pointer;
+}
+.biAsi { background-color: rgb(19, 0, 129); }
+.biPue { background-color: rgb(0, 145, 170); }
+.biBan { background-color: rgb(0, 60, 224); }
+.biTv { background-color: rgb(255, 153, 0); }
+#busName {
+    width: 10vw;
+}
+/* Diagrama */
+#bus .asiento {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #4CAF50;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    cursor: grab;
+}
+#bus .extra {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    cursor: grab;
+    overflow: hidden;
+}
+#bus .extra img {
+    pointer-events: none;
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+#bus .elePue { background-color: rgb(0, 145, 170); width: 30px !important; height: 30px !important; }
+#bus .eleBan { background-color: rgb(0, 60, 224); width: 30px !important; height: 30px !important; }
+#bus .eleTv { background-color: rgb(255, 153, 0); width: 30px !important; height: 30px !important; }
+#bus .ele2 { background-color: rgb(17, 124, 65); width: 300px !important; height: 10px !important; }
+
+/* Layout editor nativo */
+.editor-planilla {
+    display: flex;
+    gap: 1vh;
+    align-items: flex-start;
+}
+.editor-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+    width: min-content;
+}
+.editor-center {
+    flex: 0 0 auto;
+    width: 440px;
+    height: 560px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+}
+#bus {
+    position: relative;
+    width: 440px;
+    height: 700px;
+    transform: scale(0.8);
+    transform-origin: top center;
+    background: #fff;
+    border: 1px solid var(--text-primary);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.editor-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    width: 22vh;
+}
+.editor-prefab {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+}
+.editor-prefab-label {
+    font-size: 1.8vh;
+    font-weight: bold;
+}
+.editor-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5vh;
+    padding: 0.5vh 1vh;
+}
+.editor-icon {
+    font-size: 2vh;
+}

@@ -1,6 +1,7 @@
 import { abrirAlert } from "../../components/modal.js";
 import { fechaISOToDMY } from "../../utils.js";
 import { diaDeFechaISO } from "../../components/fechaCampo.js";
+import { abrirHojaImpresion as abrirVentana, imprimirHTML } from "../../print/imprimirHoja.js";
 
 /* Si la hoja de estilos no llegara a cargar (por ejemplo si se abre el reporte
    desde otra carpeta), al menos se conservan los margenes de la hoja. */
@@ -186,85 +187,18 @@ export function datosDesdeReporte(rep, gastos = [], anomalias = [], viajesAceite
     };
 }
 
-/* Abre la hoja en blanco. Tiene que llamarse desde el mismo clic del usuario:
-   si se espera un fetch antes de abrirla, el navegador la bloquea. */
+/* Abre la hoja en blanco. Delegado al modulo generico. */
 export function abrirHojaImpresion() {
-    const win = window.open("", "_blank", "width=1000,height=1300");
-    if (!win) {
-        abrirAlert({ mensaje: "El navegador bloqueo la ventana de impresion. Permite las ventanas emergentes para este sitio e intenta de nuevo." });
-        return null;
-    }
-    win.document.open();
-    win.document.write(`<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="utf-8"><title>Cargando...</title></head>
-<body style="font-family:'Times New Roman',Times,serif;font-size:12pt;padding:1cm;">Cargando la parte de llegadas...</body>
-</html>`);
-    win.document.close();
-    return win;
+    return abrirVentana({ preset: "a4", titulo: "Cargando..." });
 }
 
-/* Dibuja la hoja y la manda a imprimir. Si winAbierta viene null, abre una nueva.
-   datos = {
-     placa,
-     partida: { lugar, fecha, dia },
-     retorno: { lugar, fecha, dia },
-     llegada: { lugar, fecha, dia },
-     llegada_cbba,
-     ingresos: [{ texto, monto }],
-     egresos: [{ texto, monto }],
-     otros_ingresos,
-     total_ingresos, total_egresos, balance
-   } */
+/* Dibuja la hoja y la manda a imprimir. Delegado al modulo generico. */
 export function imprimirParte(datos, winAbierta = null) {
-
-    const win = winAbierta || abrirHojaImpresion();
-    if (!win) return;
-
-    const html = `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<title>Parte de llegadas - ${esc(datos.placa)}</title>
-<link rel="stylesheet" href="${CSS_HOJA}">
-</head>
-<body>
-${bloque(datos)}
-</body>
-</html>`;
-
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
-
-    const link = win.document.querySelector(`link[rel="stylesheet"]`);
-    let impreso = false;
-
-    const lanzar = () => {
-        if (impreso) return;
-        impreso = true;
-        try {
-            if (link && !link.sheet) {
-                const critico = win.document.createElement("style");
-                critico.textContent = CSS_CRITICO;
-                win.document.head.appendChild(critico);
-            }
-            win.focus();
-            win.addEventListener("afterprint", () => {
-                try { win.close(); } catch (e) { }
-            }, { once: true });
-            win.print();
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const esperar = () => setTimeout(lanzar, 120);
-
-    if (link) {
-        link.addEventListener("load", esperar, { once: true });
-        link.addEventListener("error", esperar, { once: true });
-    }
-    /* red de seguridad: si el evento de la hoja de estilos no llega, se imprime igual */
-    setTimeout(lanzar, 3000);
+    return imprimirHTML({
+        win: winAbierta,
+        titulo: `Parte de llegadas - ${esc(datos.placa)}`,
+        cssHref: CSS_HOJA,
+        cssCritico: CSS_CRITICO,
+        html: bloque(datos)
+    });
 }

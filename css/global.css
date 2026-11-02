@@ -541,6 +541,8 @@ textarea {
 .estadoAceite-cambio { background: rgba(240, 200, 0, 0.92); color: #000 !important; }
 .estadoAceite-critico { background: rgba(200, 0, 0, 0.9); }
 .aceite-viajes-row { display: flex; align-items: center; gap: 1vh; }
+.btnCopiarPlanilla svg { width: 30px; height: 30px; color: var(--text-primary); }
+.planilla-diagrama { position: relative; background: #f0f0f0; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; }
 .btnEditarAceite { background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
 .btnEditarAceite img { width: 2.4vh; height: 2.4vh; filter: brightness(0) invert(1); }
 /*------------AVISOS------------*/

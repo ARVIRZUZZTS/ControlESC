@@ -3,6 +3,7 @@ import { abrirModal, abrirAlert } from "../../components/modal.js";
 import { autocompleteSeleccion } from "../../components/autocomplete.js";
 import { validarPlaca, validarPropietario, placaFilter, estadoAceiteClase, flotaGradiente, colorTextoFlota, flotaAccidentada } from "../../utils.js";
 import { cargarSeccionRuedasFlota } from "./ruedasFlota.js";
+import { abrirEditorPlanilla } from "../ajustes/planillas.js";
 
 export async function flota(placa) {
 
@@ -10,9 +11,12 @@ export async function flota(placa) {
     const title = document.getElementById("titleDin");
     title.innerHTML = ``;
     let titleHtml = `
-        <div class="backTitle">
-            <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
-            <h2>DETALLE de FLOTA ${placa}</h2>
+        <div class="backTitle" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <div style="display:flex; align-items:center; gap:1vh;">
+                <button id="backBtn"><img src="img/back.svg" alt="Atras"></button>
+                <h2>DETALLE de FLOTA ${placa}</h2>
+            </div>
+            <button id="asignarPlanillaBtn" class="btnAddDetalle" type="button">Asignar Planilla</button>
         </div>
     `;
     title.innerHTML = titleHtml;
@@ -26,6 +30,11 @@ export async function flota(placa) {
             cont.innerHTML = `<p>${data.message}</p>`;
             console.error(data.message);
             return;
+        }
+
+        const asignarBtn = document.getElementById("asignarPlanillaBtn");
+        if (asignarBtn) {
+            asignarBtn.addEventListener("click", () => abrirModalAsignarPlanilla(placa, dt));
         }
 
         const h2Flota = title.querySelector("h2");
@@ -45,6 +54,7 @@ export async function flota(placa) {
                         <th class="t5">Estado</th>
                         <th class="t10">Ubicacion</th>
                         <th class="t5">Viajes</th>
+                        <th class="t10">Planilla</th>
                         <th class="thr t3">Editar</th>
                     </tr>
                 </thead>
@@ -57,6 +67,7 @@ export async function flota(placa) {
                         <td class="pb pm t5">${dt.estado}</td>
                         <td class="pb pm t10">${dt.ubicacion}</td>
                         <td class="pb pm t5">${dt.viajes}</td>
+                        <td class="pb pm t10">${dt.nombre_planilla ? dt.nombre_planilla : "Sin Asignar"}</td>
                         <td class="pb t3"><button class="btnEditar listBtn" data-id="${dt.placa}"><img src="img/edit.svg" alt="editar"></button></td>
                     </tr>
                 </tbody>
@@ -73,10 +84,13 @@ export async function flota(placa) {
             </div>
             <hr>
             <div id="seccionRuedasFlota"></div>
+            <hr>
+            <div id="seccionPlanillaFlota"></div>
         `;
         cont.innerHTML = html;
 
         cargarSeccionRuedasFlota(placa);
+        cargarSeccionPlanillaFlota(placa, dt);
 
         document.querySelector("#tbFlotaEnt .btnEditar").addEventListener("click", function() {
             editarFlota(this.dataset.id);
@@ -318,6 +332,177 @@ async function editarAceiteFlota(placa, dt) {
         viajesInput.addEventListener("input", recalcular);
         recalcular();
     }
+}
+
+async function cargarSeccionPlanillaFlota(placa, dt) {
+    const cont = document.getElementById("seccionPlanillaFlota");
+    if (!cont) return;
+
+    if (!dt || !dt.nombre_planilla) {
+        cont.innerHTML = `
+            <h3>PLANILLA</h3>
+            <p>Sin Asignar</p>
+            <button id="btnAsignarPlanilla2" class="btnAddDetalle" type="button">Asignar Planilla</button>
+        `;
+        const btn = document.getElementById("btnAsignarPlanilla2");
+        if (btn) btn.addEventListener("click", () => abrirModalAsignarPlanilla(placa, dt));
+        return;
+    }
+
+    const nombre = dt.nombre_planilla;
+    let rows = [];
+    try {
+        const res = await fetch(`php/api/get/planilla/route.php?nombre=${encodeURIComponent(nombre)}`);
+        const data = await res.json();
+        if (data.status === "success") rows = data.data || [];
+    } catch (e) {
+        console.error(e);
+    }
+
+    const imgName = nombre.replace(/\s+/g, "_") + ".webp";
+    let html = `
+        <h3>PLANILLA: ${nombre}</h3>
+        <div style="display:flex; gap:1vh; margin-bottom:1vh;">
+            <button id="btnEditarPlanillaFlota" class="btnAddDetalle" type="button">Editar</button>
+            <button id="btnQuitarPlanillaFlota" class="btnAddDetalle" type="button">Quitar Planilla</button>
+        </div>
+        <div class="planilla-diagrama">
+    `;
+
+    const scale = 0.5;
+    rows.forEach(el => {
+        const x = Math.round((parseInt(el.posX) || 0) * scale);
+        const y = Math.round((parseInt(el.posY) || 0) * scale);
+        const tipo = el.tipo;
+        if (tipo === "asiento") {
+            html += `<div class="asiento" style="left:${x}px; top:${y}px;">${el.numAs}</div>`;
+        } else if (tipo === "puerta") {
+            html += `<div class="extra elePue" style="left:${x}px; top:${y}px;"><img src="img/diagrama/puerta.png" alt="puerta"></div>`;
+        } else if (tipo === "baño") {
+            html += `<div class="extra eleBan" style="left:${x}px; top:${y}px;"><img src="img/diagrama/bath.png" alt="baño"></div>`;
+        } else if (tipo === "tv") {
+            html += `<div class="extra eleTv" style="left:${x}px; top:${y}px;"><img src="img/diagrama/tv.png" alt="tv"></div>`;
+        } else if (tipo === "2do piso") {
+            html += `<div class="extra ele2" style="left:${x}px; top:${y}px;"><img src="img/diagrama/2do.png" alt="2do piso"></div>`;
+        }
+    });
+
+    html += `</div>`;
+    cont.innerHTML = html;
+
+    const btnEditar = document.getElementById("btnEditarPlanillaFlota");
+    if (btnEditar) {
+        btnEditar.addEventListener("click", () => abrirEditorPlanilla(nombre, "e"));
+    }
+
+    const btnQuitar = document.getElementById("btnQuitarPlanillaFlota");
+    if (btnQuitar) {
+        btnQuitar.addEventListener("click", () => quitarPlanillaFlota(placa));
+    }
+}
+
+async function quitarPlanillaFlota(placa) {
+    const resultado = abrirModal({
+        titulo: "QUITAR PLANILLA",
+        contenidoHTML: `
+            <div class="modal-fila">
+                <label>Contrasena:</label>
+                <input type="password" id="inpPassQuitar" placeholder="Contrasena">
+            </div>
+        `,
+        botonGuardar: "QUITAR",
+        onSubmit: async (cerrar) => {
+            const pass = document.getElementById("inpPassQuitar").value;
+            const resv = await fetch("php/api/auth/verificarContra/route.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pass })
+            });
+            const datav = await resv.json();
+            if (datav.status !== "success") {
+                abrirAlert({ mensaje: "Contrasena incorrecta." });
+                return;
+            }
+            const res = await fetch("php/api/store/flotaPlanilla/route.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ placa: placa, nombre_planilla: null })
+            });
+            const data = await res.json();
+            if (data.status === "success") {
+                cerrar();
+                flota(placa);
+            } else {
+                abrirAlert({ mensaje: data.message || "Error al quitar." });
+            }
+        }
+    });
+    const panel = resultado.overlay.querySelector(".modal-panel");
+    const btn = resultado.overlay.querySelector(".modal-accept");
+    if (panel) panel.classList.add("modal-danger");
+    if (btn) btn.classList.add("modal-danger-accept");
+}
+
+async function abrirModalAsignarPlanilla(placa, dt) {
+    const res = await fetch("php/api/get/planillas/route.php");
+    const data = await res.json();
+    const nombres = (data.status === "success") ? (data.data || []) : [];
+
+    const contenido = `
+        <div class="modal-fila">
+            <label>Buscar:</label>
+            <input type="text" id="planillaSearch" placeholder="Buscar planilla...">
+        </div>
+        <div id="planillaGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:1vh; max-height:50vh; overflow-y:auto; margin-top:1vh;">
+            ${nombres.map(n => {
+                const img = n.replace(/\s+/g, "_") + ".webp";
+                return `
+                    <div class="planillaOption" data-nombre="${n}" style="border:1px solid #ccc; border-radius:8px; padding:1vh; text-align:center; cursor:pointer;">
+                        <strong>${n}</strong>
+                        <img src="img/planillas/${img}" alt="${n}" style="width:100%; max-height:15vh; object-fit:contain; background:#f5f5f5; margin-top:1vh;" onerror="this.style.display='none'">
+                    </div>
+                `;
+            }).join("")}
+        </div>
+    `;
+
+    const resultado = abrirModal({
+        titulo: `ASIGNAR PLANILLA - ${placa}`,
+        contenidoHTML: contenido,
+        botonGuardar: "CERRAR",
+        onSubmit: (cerrar) => cerrar()
+    });
+
+    const search = resultado.overlay.querySelector("#planillaSearch");
+    const grid = resultado.overlay.querySelector("#planillaGrid");
+
+    if (search && grid) {
+        search.addEventListener("input", () => {
+            const q = search.value.toLowerCase();
+            grid.querySelectorAll(".planillaOption").forEach(opt => {
+                const name = (opt.dataset.nombre || "").toLowerCase();
+                opt.style.display = name.includes(q) ? "" : "none";
+            });
+        });
+    }
+
+    grid.querySelectorAll(".planillaOption").forEach(opt => {
+        opt.addEventListener("click", async () => {
+            const nombre = opt.dataset.nombre;
+            const r = await fetch("php/api/store/flotaPlanilla/route.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ placa: placa, nombre_planilla: nombre })
+            });
+            const result = await r.json();
+            if (result.status === "success") {
+                resultado.cerrar();
+                flota(placa);
+            } else {
+                abrirAlert({ mensaje: result.message || "Error al asignar." });
+            }
+        });
+    });
 }
 
 

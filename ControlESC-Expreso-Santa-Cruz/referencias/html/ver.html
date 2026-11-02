@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>INFORMACION DEL VIAJE</title>
+    <link rel="stylesheet" href="css/ver.css">
+<link rel="stylesheet" href="css/layout2.css"></head>
+<body>
+    <header>
+        <img src="img/logoX.png" alt="Logo">
+        <div>
+            <h3 id="total"></h3>
+            <h1>INFORMACION DEL VIAJE</h1>
+            <h3 id="fecha"></h3>
+            <h3 id="hora"></h3>
+        </div>
+    </header>
+
+    <main>
+        <div class="botones">
+            <div id="backC" class="bot">
+            <button id="back" onclick="back()">
+                <span class="emoji">⬅</span>
+                <span>ATRAS</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="add" onclick="printy(-1)">
+                <span class="emoji">➕</span>
+                <span>VACIO</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="print" onclick="printy(0)">
+                <span class="emoji">🖨</span>
+                <span>IMPRIMIR</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="edit" onclick="edit()">
+                <span class="emoji">✏</span>
+                <span>EDITAR</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="deta" onclick="printy(-2)">
+                <span class="emoji">📋</span>
+                <span>DETALLE</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="ordenSalida" onclick="printOrdenSalida()">
+                <span class="emoji">🚌</span>
+                <span>SALIDA</span>
+            </button>
+            </div>
+            <div class="bot">
+            <button id="del" onclick="del()">
+                <span class="emoji">🗑</span>
+                <span>ELIMINAR</span>
+            </button>
+            </div>
+        </div>
+        <div id="superBus">
+            <div id="bus"></div>
+        </div>
+        <div id="lista">
+            <div id="top">
+                <h1 id="titleDat"></h1>
+                <div id="entradas">
+                    <div>
+                        <div>
+                            <h3>PROPIETARIO: </h3>
+                            <h3 id="propietario">-</h3>
+                        </div>
+                        <div>
+                            <h3>CONDUCTOR 1: </h3>
+                            <h3 id="c1">CONDUCTOR 1</h3>
+                        </div>
+                        <div>
+                            <h3>CONDUCTOR 2: </h3>
+                            <h3 id="c2">CONDUCTOR 1</h3>
+                        </div>
+                        <div>
+                            <h3>AYUDANTE: </h3>
+                            <h3 id="ay">AYUDANTE</h3>
+                        </div>
+                        <div>
+                            <h3>PLACA: </h3>
+                            <h3 id="pl">PLACA</h3>
+                        </div>
+                        <div>
+                            <h3>FECHA: </h3>
+                            <h3 id="fe">FECHA</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <h3>MARCA: </h3>
+                            <h3 id="marca">-</h3>
+                        </div>
+                        <div>
+                            <h3>LICENCIA 1: </h3>
+                            <h3 id="l1">CONDUCTOR 1</h3>
+                        </div>
+                        <div>
+                            <h3>LICENCIA 2: </h3>
+                            <h3 id="l2">LICENCIA 1</h3>
+                        </div>
+                        <div>
+                            <h3>DESTINO: </h3>
+                            <h3 id="dt">DESTINO</h3>
+                        </div>
+                        <div>
+                            <h3>PLANILLA:</h3>
+                            <h3 id="placa">PLANILLA</h3>
+                        </div>
+                        <div>
+                            <h3>HORA: </h3>
+                            <h3 id="hr">HORA</h3>
+                            <h3>CARRIL: </h3>
+                            <h3 id="ca">CARRIL</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="boxi">
+                <div id="titleBoxi">
+                    <h2 id="tb1">N°</h2>
+                    <h2 id="tb2">NOMBRE</h2>
+                    <h2 id="tb3">CI</h2>
+                    <h2 id="tb4">PRECIO</h2>
+                    <h2 id="tb5"><img src="img/printB.png" alt=""></h2>
+                </div>
+                <hr>
+                <div id="dinamic"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="printReporte"></div>
+    <div id="printPasajero"></div>
+    <script src="js/ver.js"></script>
+</body>
+</html>
